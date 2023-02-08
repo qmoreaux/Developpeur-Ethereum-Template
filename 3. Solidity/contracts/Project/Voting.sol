@@ -152,7 +152,7 @@ contract Voting is Ownable {
             }
             proposalString = string.concat(proposalString, '\n');
         }
-        
+
         return proposalString;
     }
 
@@ -169,7 +169,7 @@ contract Voting is Ownable {
      * @dev
      * @param
      */
-    function submitVote() private isWhitelisted { // TODO Currently here
+    function submitVote(uint _proposalId) external isWhitelisted { // TODO Currently here
         // TODO List and implement check
 
     }
