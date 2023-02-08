@@ -4,6 +4,9 @@
 // Using latest version as of 2023-02-06
 pragma solidity 0.8.18;
 
+// import "@openzeppelin/contracts@4.8.1/access/Ownable.sol";
+// import "@openzeppelin/contracts@4.8.1/utils/Strings.sol";
+
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol";
 
@@ -18,12 +21,6 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
  * @dev Implements a simple voting system
  */
 contract Voting is Ownable {
-
-    // Listing required event, enum and struct
-    event VoterRegistered(address voterAddress); 
-    event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
-    event ProposalRegistered(uint proposalId);
-    event Voted (address voter, uint proposalId);
 
     enum WorkflowStatus {
         RegisteringVoters,
@@ -47,7 +44,23 @@ contract Voting is Ownable {
 
     WorkflowStatus workflowStatus; // No need to init since it will take the first value by default
     Proposal[] proposals; // Stocking proposals in a dynamic array so we can iterate on it
+    Proposal[] winningProposals; // Using a dynamic array in case of a tie
     mapping(address => Voter) voters; // Stocking voters in a mapping since there is no need to iterate on it
+
+
+    event VoterRegistered(address voterAddress); 
+    event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
+    event ProposalRegistered(uint proposalId);
+    event Voted (address voter, uint proposalId);
+
+    /** 
+     * @dev Add the owner to the whitelist and add a default proposal to the list
+     */
+    constructor() {
+        addToWhitelist(msg.sender);
+        submitProposal(Proposal("Default proposal", 0));
+    }
+
 
     // modifier to check if caller is registered
     modifier isWhitelisted() {
@@ -55,16 +68,12 @@ contract Voting is Ownable {
         _;
     }
 
-    constructor() {
-        voters[msg.sender] = Voter(true, false, 0);
-        proposals.push(Proposal("Default proposal", 0));
-    }
 
     /** 
      * @dev Create a new Voter from an address and register him, to allow him to submit proposals and votes
      * @param _address Address of the voter we wish to register
      */
-    function addToWhitelist(address _address) external onlyOwner {
+    function addToWhitelist(address _address) public onlyOwner {
         require(!voters[_address].isRegistered, "Voter already registered"); // Checking that the voters isn't already registred
 
         voters[_address] = Voter(true, false, 0);
@@ -84,7 +93,7 @@ contract Voting is Ownable {
      * @dev Used to submit proposal by passing directy a Proposal struct
      * @param _proposal The Proposal struct the user want to submit
      */
-    function submitProposal(Proposal memory _proposal) external isWhitelisted {
+    function submitProposal(Proposal memory _proposal) public isWhitelisted {
         require(workflowStatus == WorkflowStatus.ProposalsRegistrationStarted, "The current status isn't ProposalsRegistrationStarted");
         require(_proposal.voteCount == 0, "Can't submit a proposal with an initial voteCount superior to 0");
         require(bytes(_proposal.description).length > 0, "Can't submit a proposal with an empty description"); // We need to convert the description to bytes to check its length
@@ -143,30 +152,40 @@ contract Voting is Ownable {
     }
 
     /** 
-     * @dev
-     * @param
+     * @dev End the voting session
      */
-    function endVotingSession() private onlyOwner {
-        // TODO List and implement check
+    function endVotingSession() external onlyOwner {
+        require(workflowStatus == WorkflowStatus.VotingSessionStarted, "The current status isn't VotingSessionStarted");
 
+        incrementWorkflowStatus();
+    }
+
+    /** 
+     * @dev Determinate the winningProposal(s) according to their votecount
+     */
+    function tallyingVote() external onlyOwner {
+        require(workflowStatus == WorkflowStatus.VotingSessionEnded, "The current status isn't VotingSessionEnded");
+
+        for (uint i = 1 ; i < proposals.length ; i++) { // Starting at index 1 to ignore the default proposal
+            if (proposals[i].voteCount > winningProposals[0].voteCount) {
+                delete winningProposals;
+                winningProposals.push(proposals[i]);
+            } else if (proposals[i].voteCount == winningProposals[0].voteCount) {
+                winningProposals.push(proposals[i]);
+            }
+        }
+
+        incrementWorkflowStatus();
     }
 
     /** 
      * @dev
      * @param
      */
-    function tallyingVote() private onlyOwner {
-        // TODO List and implement check
+    function getWinner() external view isWhitelisted returns (Proposal[] memory) {
+        require(workflowStatus == WorkflowStatus.VotesTallied, "The current status isn't VotesTallied");
 
-    }
-
-    /** 
-     * @dev
-     * @param
-     */
-    function getWinner() private isWhitelisted {
-        // TODO List and implement check
-
+        return winningProposals;
     }
 
     /** 
