@@ -47,7 +47,7 @@ contract Voting is Ownable {
 
     WorkflowStatus workflowStatus; // No need to init since it will take the first value by default
     Proposal[] proposals; // Stocking proposals in a dynamic array so we can iterate on it
-    mapping(address => Voter) public voters; // Stocking voters in a mapping since there is no need to iterate on it
+    mapping(address => Voter) voters; // Stocking voters in a mapping since there is no need to iterate on it
 
     // modifier to check if caller is registered
     modifier isWhitelisted() {
