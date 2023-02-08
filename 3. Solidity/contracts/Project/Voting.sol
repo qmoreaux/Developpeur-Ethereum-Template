@@ -174,7 +174,7 @@ contract Voting is Ownable {
      * @param _addr Address of the voter we want to get the votedProposalId
      * @return The votedProposalId of the address passed in parameters
      */
-    function getVoteFromAddress(address _addr) external view returns (uint) {
+    function getVoteFromAddress(address _addr) external view isWhitelisted returns (uint) {
         return voters[_addr].votedProposalId;
     }
 
