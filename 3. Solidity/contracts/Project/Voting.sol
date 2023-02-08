@@ -4,7 +4,7 @@
 // Using latest version as of 2023-02-06
 pragma solidity 0.8.18;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol";
 
 /** TODO
@@ -47,7 +47,7 @@ contract Voting is Ownable {
 
     WorkflowStatus workflowStatus; // No need to init since it will take the first value by default
     Proposal[] proposals; // Stocking proposals in a dynamic array so we can iterate on it
-    mapping(address => Voter) voters; // Stocking voters in a mapping since there is no need to iterate on it
+    mapping(address => Voter) public voters; // Stocking voters in a mapping since there is no need to iterate on it
 
     // modifier to check if caller is registered
     modifier isWhitelisted() {
@@ -107,20 +107,6 @@ contract Voting is Ownable {
     }
 
     /** 
-     * @dev Check if a proposal has already been submitted
-     * @param _description The description for the proposal the user want to submit
-     * @return A boolean that indicates if the proposal has already been submitted
-     */
-    function alreadySubmitedProposal(string memory _description) private view returns (bool) {
-        for (uint i = 0; i < proposals.length; i++) {
-            if (Strings.equal(_description, proposals[i].description)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** 
      * @dev End the proposing session
      */
     function endProposalSession() external onlyOwner {
@@ -136,24 +122,6 @@ contract Voting is Ownable {
      */
     function getListedProposal() external view isWhitelisted returns (Proposal[] memory) {
         return proposals;
-    }
-
-    /** 
-     * @dev Get all proposals as a string
-     * @return Formatted string of all proposals
-     */
-    function getListedProposalAsString() external view isWhitelisted returns (string memory) {
-        string memory proposalString;
-
-        for (uint i = 0; i < proposals.length ; i++) {
-            proposalString = string.concat(proposalString, "Proposal ", Strings.toString(i), " : ", proposals[i].description);
-            if (workflowStatus == WorkflowStatus.VotesTallied) {
-                proposalString = string.concat(proposalString, " (", Strings.toString(proposals[i].voteCount), " votes)");
-            }
-            proposalString = string.concat(proposalString, '\n');
-        }
-
-        return proposalString;
     }
 
     /** 
@@ -196,17 +164,39 @@ contract Voting is Ownable {
      * @dev
      * @param
      */
-    function getWinner() private {
+    function getWinner() private isWhitelisted {
         // TODO List and implement check
 
     }
 
     /** 
-     * @dev
-     * @param
+     * @dev Return the votedProposalId of a voter
+     * @param _addr Address of the voter we want to get the votedProposalId
+     * @return The votedProposalId of the address passed in parameters
+     */
+    function getVoteFromAddress(address _addr) external view returns (uint) {
+        return voters[_addr].votedProposalId;
+    }
+
+    /** 
+     * @dev Go to the next step of the workflow
      */
     function incrementWorkflowStatus() private {
         emit WorkflowStatusChange(workflowStatus, WorkflowStatus(uint(workflowStatus) + 1));
         workflowStatus = WorkflowStatus(uint(workflowStatus) + 1);
+    }
+
+    /** 
+     * @dev Check if a proposal has already been submitted
+     * @param _description The description for the proposal the user want to submit
+     * @return A boolean that indicates if the proposal has already been submitted
+     */
+    function alreadySubmitedProposal(string memory _description) private view returns (bool) {
+        for (uint i = 0; i < proposals.length; i++) {
+            if (Strings.equal(_description, proposals[i].description)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
