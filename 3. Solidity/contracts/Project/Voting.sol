@@ -5,10 +5,12 @@
 pragma solidity 0.8.18;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol";
 
 /** TODO
  *
  * Vérifier visibilité des fonctions
+ * Check emit event
  */
 
 /** 
@@ -53,13 +55,20 @@ contract Voting is Ownable {
         _;
     }
 
+    constructor() {
+        voters[msg.sender] = Voter(true, false, 0);
+        proposals.push(Proposal("Default proposal", 0));
+    }
+
     /** 
      * @dev Create a new Voter from an address and register him, to allow him to submit proposals and votes
      * @param _address Address of the voter we wish to register
      */
     function addToWhitelist(address _address) external onlyOwner {
         require(!voters[_address].isRegistered, "Voter already registered"); // Checking that the voters isn't already registred
+
         voters[_address] = Voter(true, false, 0);
+        emit VoterRegistered(_address);
     }
 
     /** 
@@ -67,6 +76,7 @@ contract Voting is Ownable {
      */
     function startProposingSession() external onlyOwner {
         require(workflowStatus == WorkflowStatus.RegisteringVoters, "The current status isn't RegisteringVoters");
+
         incrementWorkflowStatus();
     }
 
@@ -78,8 +88,10 @@ contract Voting is Ownable {
         require(workflowStatus == WorkflowStatus.ProposalsRegistrationStarted, "The current status isn't ProposalsRegistrationStarted");
         require(_proposal.voteCount == 0, "Can't submit a proposal with an initial voteCount superior to 0");
         require(bytes(_proposal.description).length > 0, "Can't submit a proposal with an empty description"); // We need to convert the description to bytes to check its length
+        require(!alreadySubmitedProposal(_proposal.description), "This proposal has already been submited");
 
         proposals.push(_proposal);
+        emit ProposalRegistered(proposals.length - 1);
     }
 
     /** 
@@ -89,8 +101,23 @@ contract Voting is Ownable {
     function submitProposal(string memory _description) external isWhitelisted {
         require(workflowStatus == WorkflowStatus.ProposalsRegistrationStarted, "The current status isn't ProposalsRegistrationStarted");
         require(bytes(_description).length > 0, "Can't submit a proposal with an empty description"); // We need to convert the description to bytes to check its length
-        
+        require(!alreadySubmitedProposal(_description), "This proposal has already been submited");
+
         proposals.push(Proposal(_description, 0));
+    }
+
+    /** 
+     * @dev Check if a proposal has already been submitted
+     * @param _description The description for the proposal the user want to submit
+     * @return A boolean that indicates if the proposal has already been submitted
+     */
+    function alreadySubmitedProposal(string memory _description) private view returns (bool) {
+        for (uint i = 0; i < proposals.length; i++) {
+            if (Strings.equal(_description, proposals[i].description)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** 
@@ -98,13 +125,14 @@ contract Voting is Ownable {
      */
     function endProposalSession() external onlyOwner {
         require(workflowStatus == WorkflowStatus.ProposalsRegistrationStarted, "The current status isn't ProposalsRegistrationStarted");
-        require(proposals.length > 2, "There isn't enough proposal yet (minimum 2 required");
+        require(proposals.length > 2, "There isn't enough proposal yet (minimum 2 required (not counting default proposal))");
 
         incrementWorkflowStatus();
     }
 
     /** 
      * @dev Get all proposals as an array
+     * @return Array of proposals
      */
     function getListedProposal() external view isWhitelisted returns (Proposal[] memory) {
         return proposals;
@@ -112,16 +140,36 @@ contract Voting is Ownable {
 
     /** 
      * @dev Get all proposals as a string
+     * @return Formatted string of all proposals
      */
-    function getListedProposalAsString() external view isWhitelisted returns (string memory) { // TODO Currently here
-        return "";
+    function getListedProposalAsString() external view isWhitelisted returns (string memory) {
+        string memory proposalString;
+
+        for (uint i = 0; i < proposals.length ; i++) {
+            proposalString = string.concat(proposalString, "Proposal ", Strings.toString(i), " : ", proposals[i].description);
+            if (workflowStatus == WorkflowStatus.VotesTallied) {
+                proposalString = string.concat(proposalString, " (", Strings.toString(proposals[i].voteCount), " votes)");
+            }
+            proposalString = string.concat(proposalString, '\n');
+        }
+        
+        return proposalString;
     }
 
     /** 
-     * @dev
-     * @param
+     * @dev Start the voting session
      */
     function startVotingSession() external onlyOwner {
+        require(workflowStatus == WorkflowStatus.ProposalsRegistrationEnded, "The current status isn't ProposalsRegistrationEnded");
+
+        incrementWorkflowStatus();
+    }
+
+    /** 
+     * @dev
+     * @param
+     */
+    function submitVote() private isWhitelisted { // TODO Currently here
         // TODO List and implement check
 
     }
@@ -130,7 +178,7 @@ contract Voting is Ownable {
      * @dev
      * @param
      */
-    function submitVote() external isWhitelisted {
+    function endVotingSession() private onlyOwner {
         // TODO List and implement check
 
     }
@@ -139,7 +187,7 @@ contract Voting is Ownable {
      * @dev
      * @param
      */
-    function endVotingSession() external onlyOwner {
+    function tallyingVote() private onlyOwner {
         // TODO List and implement check
 
     }
@@ -148,16 +196,7 @@ contract Voting is Ownable {
      * @dev
      * @param
      */
-    function tallyingVote() external onlyOwner {
-        // TODO List and implement check
-
-    }
-
-    /** 
-     * @dev
-     * @param
-     */
-    function getWinner() external {
+    function getWinner() private {
         // TODO List and implement check
 
     }
