@@ -4,14 +4,11 @@
 // Using latest version as of 2023-02-06
 pragma solidity 0.8.18;
 
-// import "@openzeppelin/contracts@4.8.1/access/Ownable.sol";
-// import "@openzeppelin/contracts@4.8.1/utils/Strings.sol";
-
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /** TODO
  * Find a way to use a memory variable in tallyingVote
+ * Check calldata vs memory
  * Verify that all requirement are complete
  * Test
  */
@@ -217,7 +214,7 @@ contract Voting is Ownable {
      */
     function alreadySubmitedProposal(string memory _description) private view returns (bool) {
         for (uint i = 0; i < proposals.length; i++) {
-            if (Strings.equal(_description, proposals[i].description)) {
+            if (keccak256(bytes(_description)) == keccak256(bytes(proposals[i].description))) {
                 return true;
             }
         }
