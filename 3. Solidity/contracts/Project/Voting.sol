@@ -11,9 +11,9 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol";
 
 /** TODO
- *
- * Vérifier visibilité des fonctions
- * Check emit event
+ * Find a way to use a memory variable in tallyingVote
+ * Verify that all requirement are complete
+ * Test
  */
 
 /** 
@@ -146,9 +146,15 @@ contract Voting is Ownable {
      * @dev
      * @param
      */
-    function submitVote(uint _proposalId) external isWhitelisted { // TODO Currently here
-        // TODO List and implement check
+    function submitVote(uint _proposalId) external isWhitelisted {
+        require(workflowStatus == WorkflowStatus.VotingSessionStarted, "The current status isn't VotingSessionStarted");
+        require(!voters[msg.sender].hasVoted, "You have already voted");
+        require(_proposalId > 0, "You can not vote for the default proposal");
 
+        voters[msg.sender].votedProposalId = _proposalId;
+        proposals[_proposalId].voteCount++;
+
+        emit Voted(msg.sender, _proposalId);
     }
 
     /** 
@@ -179,8 +185,7 @@ contract Voting is Ownable {
     }
 
     /** 
-     * @dev
-     * @param
+     * @dev Return the wining proposal(s)
      */
     function getWinner() external view isWhitelisted returns (Proposal[] memory) {
         require(workflowStatus == WorkflowStatus.VotesTallied, "The current status isn't VotesTallied");
