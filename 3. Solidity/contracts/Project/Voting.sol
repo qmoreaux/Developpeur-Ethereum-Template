@@ -7,9 +7,7 @@ pragma solidity 0.8.18;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /** TODO
- * Find a way to use a memory variable in tallyingVote
- * Check calldata vs memory
- * Verify that all requirement are complete
+ * Check formatting and docs
  * Test
  */
 
@@ -32,7 +30,7 @@ contract Voting is Ownable {
         bool isRegistered;
         bool hasVoted;
         uint votedProposalId;
-        }
+    }
 
     struct Proposal {
         string description;
@@ -55,7 +53,8 @@ contract Voting is Ownable {
      */
     constructor() {
         addToWhitelist(msg.sender);
-        submitProposal(Proposal("Default proposal", 0));
+        proposals.push(Proposal("Default proposal", 0));
+        winningProposals.push(Proposal("Default proposal", 0));
     }
 
 
@@ -71,6 +70,7 @@ contract Voting is Ownable {
      * @param _address Address of the voter we wish to register
      */
     function addToWhitelist(address _address) public onlyOwner {
+        require(workflowStatus == WorkflowStatus.RegisteringVoters, "The current status isn't RegisteringVoters");
         require(!voters[_address].isRegistered, "Voter already registered"); // Checking that the voters isn't already registred
 
         voters[_address] = Voter(true, false, 0);
@@ -97,6 +97,7 @@ contract Voting is Ownable {
         require(!alreadySubmitedProposal(_proposal.description), "This proposal has already been submited");
 
         proposals.push(_proposal);
+
         emit ProposalRegistered(proposals.length - 1);
     }
 
@@ -104,12 +105,14 @@ contract Voting is Ownable {
      * @dev Used to submit proposal by passing only a description
      * @param _description The description for the proposal the user want to submit
      */
-    function submitProposal(string memory _description) external isWhitelisted {
+    function submitProposal(string calldata _description) external isWhitelisted {
         require(workflowStatus == WorkflowStatus.ProposalsRegistrationStarted, "The current status isn't ProposalsRegistrationStarted");
         require(bytes(_description).length > 0, "Can't submit a proposal with an empty description"); // We need to convert the description to bytes to check its length
         require(!alreadySubmitedProposal(_description), "This proposal has already been submited");
 
         proposals.push(Proposal(_description, 0));
+
+        emit ProposalRegistered(proposals.length - 1);
     }
 
     /** 
@@ -140,14 +143,16 @@ contract Voting is Ownable {
     }
 
     /** 
-     * @dev
-     * @param
+     * @dev Submit a vote for a proposal
+     * @param _proposalId Id of the proposal the user wish to vote for
      */
     function submitVote(uint _proposalId) external isWhitelisted {
         require(workflowStatus == WorkflowStatus.VotingSessionStarted, "The current status isn't VotingSessionStarted");
         require(!voters[msg.sender].hasVoted, "You have already voted");
         require(_proposalId > 0, "You can not vote for the default proposal");
+        require(_proposalId < proposals.length, "This proposal doesn't exist");
 
+        voters[msg.sender].hasVoted = true;
         voters[msg.sender].votedProposalId = _proposalId;
         proposals[_proposalId].voteCount++;
 
@@ -159,6 +164,9 @@ contract Voting is Ownable {
      */
     function endVotingSession() external onlyOwner {
         require(workflowStatus == WorkflowStatus.VotingSessionStarted, "The current status isn't VotingSessionStarted");
+        require(minimumOneVote(), "No one has voted yet");
+
+        // Require at least one vote
 
         incrementWorkflowStatus();
     }
@@ -184,7 +192,7 @@ contract Voting is Ownable {
     /** 
      * @dev Return the wining proposal(s)
      */
-    function getWinner() external view isWhitelisted returns (Proposal[] memory) {
+    function getWinner() external view returns (Proposal[] memory) { // No modifier since everyone can view the winning proposal(s)
         require(workflowStatus == WorkflowStatus.VotesTallied, "The current status isn't VotesTallied");
 
         return winningProposals;
@@ -196,6 +204,8 @@ contract Voting is Ownable {
      * @return The votedProposalId of the address passed in parameters
      */
     function getVoteFromAddress(address _addr) external view isWhitelisted returns (uint) {
+        require(voters[_addr].votedProposalId != 0, "This user hasn't voted yet");
+
         return voters[_addr].votedProposalId;
     }
 
@@ -213,8 +223,17 @@ contract Voting is Ownable {
      * @return A boolean that indicates if the proposal has already been submitted
      */
     function alreadySubmitedProposal(string memory _description) private view returns (bool) {
-        for (uint i = 0; i < proposals.length; i++) {
+        for (uint i = 0; i < proposals.length ; i++) {
             if (keccak256(bytes(_description)) == keccak256(bytes(proposals[i].description))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function minimumOneVote() private view returns (bool) {
+        for (uint i = 0 ; i < proposals.length ; i++) {
+            if (proposals[i].voteCount > 0) {
                 return true;
             }
         }
