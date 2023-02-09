@@ -90,7 +90,7 @@ contract Voting is Ownable {
      * @dev Used to submit proposal by passing directy a Proposal struct
      * @param _proposal The Proposal struct the user want to submit
      */
-    function submitProposal(Proposal memory _proposal) public isWhitelisted {
+    function submitProposal(Proposal calldata _proposal) public isWhitelisted {
         require(workflowStatus == WorkflowStatus.ProposalsRegistrationStarted, "The current status isn't ProposalsRegistrationStarted");
         require(_proposal.voteCount == 0, "Can't submit a proposal with an initial voteCount superior to 0");
         require(bytes(_proposal.description).length > 0, "Can't submit a proposal with an empty description"); // We need to convert the description to bytes to check its length
@@ -166,8 +166,6 @@ contract Voting is Ownable {
         require(workflowStatus == WorkflowStatus.VotingSessionStarted, "The current status isn't VotingSessionStarted");
         require(minimumOneVote(), "No one has voted yet");
 
-        // Require at least one vote
-
         incrementWorkflowStatus();
     }
 
@@ -222,7 +220,7 @@ contract Voting is Ownable {
      * @param _description The description for the proposal the user want to submit
      * @return A boolean that indicates if the proposal has already been submitted
      */
-    function alreadySubmitedProposal(string memory _description) private view returns (bool) {
+    function alreadySubmitedProposal(string calldata _description) private view returns (bool) {
         for (uint i = 0; i < proposals.length ; i++) {
             if (keccak256(bytes(_description)) == keccak256(bytes(proposals[i].description))) {
                 return true;
