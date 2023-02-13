@@ -1,15 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
-
 // Using latest version as of 2023-02-06
 pragma solidity 0.8.18;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-
-/** TODO
- * Check formatting and docs
- * Test
- */
 
 /** 
  * @title Voting
@@ -37,16 +31,18 @@ contract Voting is Ownable {
         uint voteCount;
     }
 
+
     WorkflowStatus workflowStatus; // No need to init since it will take the first value by default
-    Proposal[] proposals; // Stocking proposals in a dynamic array so we can iterate on it
-    Proposal[] winningProposals; // Using a dynamic array in case of a tie
-    mapping(address => Voter) voters; // Stocking voters in a mapping since there is no need to iterate on it
+    Proposal[] proposals; // Stocking proposals in dynamic array so we can iterate on it
+    Proposal[] winningProposals; // Using dynamic array in case of a tie
+    mapping(address => Voter) voters; // Stocking voters in mapping since there is no need to iterate on it
 
 
     event VoterRegistered(address voterAddress); 
     event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
     event ProposalRegistered(uint proposalId);
     event Voted (address voter, uint proposalId);
+
 
     /** 
      * @dev Add the owner to the whitelist and add a default proposal to the list
@@ -58,7 +54,9 @@ contract Voting is Ownable {
     }
 
 
-    // modifier to check if caller is registered
+    /** 
+     * @dev Modifier to check if caller is registered
+     */
     modifier isWhitelisted() {
         require(voters[msg.sender].isRegistered, "You are not whitelisted");
         _;
@@ -74,6 +72,7 @@ contract Voting is Ownable {
         require(!voters[_address].isRegistered, "Voter already registered"); // Checking that the voters isn't already registred
 
         voters[_address] = Voter(true, false, 0);
+
         emit VoterRegistered(_address);
     }
 
@@ -226,15 +225,21 @@ contract Voting is Ownable {
                 return true;
             }
         }
+
         return false;
     }
 
+    /** 
+     * @dev Check if at least a vote has been submitted
+     * @return A boolean that indicates if at least one vote has been submitted
+     */
     function minimumOneVote() private view returns (bool) {
         for (uint i = 0 ; i < proposals.length ; i++) {
             if (proposals[i].voteCount > 0) {
                 return true;
             }
         }
+
         return false;
     }
 }
