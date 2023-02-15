@@ -3,14 +3,14 @@ const SimpleStorage = artifacts.require('SimpleStorage');
 module.exports = async (deployer, networks, accounts) => {
     const value = 20;
     const ethToSend = 1000000000000000000;
-    const deployMethod = 1;
+    const deployMethod = 2;
     if (accounts) {
         /* Method n°1 */
 
         if (deployMethod === 1) {
             await deployer.deploy(SimpleStorage, value, { from: accounts[0], value: ethToSend });
             instance = await SimpleStorage.deployed();
-
+            console.log('Using first deploy method');
             await instance.get().then((data) => {
                 console.log(`Initial value : ${data.words[0]}`);
             });
@@ -22,6 +22,7 @@ module.exports = async (deployer, networks, accounts) => {
             /* Method n°2 */
 
             deployer.deploy(SimpleStorage, value, { from: accounts[0], value: ethToSend }).then(async (instance) => {
+                console.log('Using second deploy method');
                 await instance.get().then((data) => {
                     console.log(`Initial value : ${data.words[0]}`);
                 });
