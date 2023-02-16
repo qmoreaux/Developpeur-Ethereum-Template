@@ -25,6 +25,11 @@ module.exports = {
                 });
             },
             network_id: 80001
+        },
+        goerli_fork: {
+            host: '127.0.0.1', // Localhost (default: none)
+            port: 8545, // Standard Ethereum port (default: none)
+            network_id: 5 // Any network (default: none)
         }
     },
     mocha: {},
