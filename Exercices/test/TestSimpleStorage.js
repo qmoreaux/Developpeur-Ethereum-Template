@@ -3,13 +3,12 @@ const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
 contract('SimpleStorage', async (accounts) => {
-    const numberToStore = 20;
+    const numberToStore = 1;
     const numberFail = 9;
 
     before(async function () {
         simpleStorageInstance = await SimpleStorage.deployed();
     });
-
 
     it('should store a number', async () => {
         const storeNumber = await simpleStorageInstance.store(numberToStore);
@@ -20,8 +19,7 @@ contract('SimpleStorage', async (accounts) => {
         });
     });
 
-    it('should fail to store a number', async () => {
-        await expectRevert(simpleStorageInstance.store(numberFail), 'Num must be greater than 10');
-    });
-
+    // it('should not store a number bigger than 2', async () => {
+    //     await expectRevert(simpleStorageInstance.store(numberFail), expectRevert.unspecified);
+    // });
 });

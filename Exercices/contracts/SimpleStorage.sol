@@ -9,27 +9,31 @@ pragma solidity 0.8.18;
  */
 contract SimpleStorage {
 
-    uint256 public number;
+    enum Data {
+        Toto,
+        Tata,
+        Titi
+    }
 
-        event NumberSet(uint number); 
+    event NumberSet(Data number); 
+    Data public storedData;
 
 
     /**
      * @dev Store value in variable
      * @param num value to store
      */
-    function store(uint256 num) public {
-        require(num > 10, 'Num must be greater than 10');
-        number = num;
+    function store(Data num) public {
+        storedData = num;
 
-        emit NumberSet(number);
+        emit NumberSet(storedData);
     }
 
     /**
      * @dev Return value 
      * @return value of 'number'
      */
-    function retrieve() public view returns (uint256){
-        return number;
+    function retrieve() public view returns (Data){
+        return storedData;
     }
 }
