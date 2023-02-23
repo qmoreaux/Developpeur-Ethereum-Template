@@ -1,4 +1,2 @@
 Update README
-Check that event, require and storage are tested
-Use an array for checking workflowStatus
 Implement some Fuzz Testing

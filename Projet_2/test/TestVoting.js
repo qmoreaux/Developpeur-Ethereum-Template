@@ -74,6 +74,13 @@ contract('Voting', (accounts) => {
                 });
             });
 
+            it('should check that the genesis proposal has been added', async() => {
+                const genesisDescription = 'GENESIS';
+                const proposal = await votingInstance.getOneProposal.call(0);
+
+                expect(proposal.description).to.be.equal(genesisDescription);
+            })
+
         });
 
         describe('Register', async () => {
