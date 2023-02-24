@@ -75,6 +75,14 @@ Once the install is completed, you can simply launch `ganache` and run `truffle 
 
     To describe
 
+- **should register a lot of proposal** :
+
+    To describe
+
+- **should check that all proposal are registered (and not one more)** :
+
+    To describe
+
 - **should not be able to register empty proposal** :
 
     To describe
@@ -204,6 +212,6 @@ mocha: {
         //    gasPrice: 1,
         //    token: 'ETH',
         //    showTimeSpent: true
-        }
+        // }
     }
 ```

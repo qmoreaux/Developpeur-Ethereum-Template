@@ -84,6 +84,7 @@ contract('Voting', (accounts) => {
         });
 
         describe('Register', async () => {
+            
 
             it('should register a proposal', async () => {
                 const registerProposal = await votingInstance.addProposal(description, { from: _owner });
@@ -98,6 +99,25 @@ contract('Voting', (accounts) => {
 
                 expect(proposal.description).to.be.equal(description);
             });
+
+            it('should register a lot of proposal', async () => {
+                for (let i = 2; i < 20; i++) {
+                    let registerProposal = await votingInstance.addProposal(description + ':' + i, { from: _owner });
+                    expectEvent(registerProposal, 'ProposalRegistered', {
+                        proposalId: BN(i),
+                    });
+                }
+            });
+
+            it('should check that all proposal are registered (and not one more)', async () => {
+                let i;
+                for (i = 2; i < 20; i++) {
+                    let proposal = await votingInstance.getOneProposal.call(i, { from: _owner });
+                    expect(proposal.description).to.be.equal(description + ':' + i);
+                }
+                await expectRevert.unspecified(votingInstance.getOneProposal(i + 1, {from: _owner}));
+            });
+
 
 
             it('should not be able to register empty proposal', async () => {
