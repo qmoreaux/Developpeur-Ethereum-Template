@@ -9,6 +9,7 @@ This project implements all the units and functionals tests for the smart contra
 First, launch `npm install`
 
 This will install the following dependencies :
+
 ```js
     "@openzeppelin/contracts": "^4.8.1",
     "@openzeppelin/test-helpers": "^0.5.16",
@@ -31,161 +32,161 @@ Once the install is completed, you can simply launch `ganache` and run `truffle 
 
 - **should check that a voter is registered** :
 
-    To describe
+    *Get the voter we registered previously and check that isRegistred is true*
 
 - **should not be able whitelist the same address** :
 
-    To describe
+    *Attempt to whitelist the same address and expect a revert*
 
 - **only owner should be able to whitelist address** :
 
-    To describe
+    *Attempt to add a user to the whitelist without being the owner of the contract and expect a revert*
 
 ## Proposal
 
 - Before :
 
-    To describe
+    *Create a new instance of the contract, and whitelist 2 users*
 
 ### Start
 
 - **Workflow Status : should not be able to do anything else than startProposalsRegistering** :
 
-    To describe
+    *Check that the owner can not do anything else than starting the proposal registering*
 
 - **only owner should be able to start proposal registering** :
 
-    To describe
+    *Attempt to start the proposal registering without being the owner and expect a revert*
 
 - **should start proposal registering** :
 
-    To describe
+    *Start the proposal registering, check that the workflowStatus is correctly updated and that the correct event has been emitted*
 
 - **should check that the genesis proposal has been added** :
 
-    To describe
+    *Get the first proposal and verify that its description matches 'GENESIS'*
 
 ### Register
 
 - **should register a proposal** :
 
-    To describe
+    *Register a proposal and check that the correct event has been emitted*
 
 - **should check that the proposal has been registered** :
 
-    To describe
+    *Get the proposal we registered previously and check that the description matches the one we used previously*
 
 - **should register a lot of proposal** :
 
-    To describe
+    *Register a large number of proposal, and check that the correct event are emitted each times*
 
 - **should check that all proposal are registered (and not one more)** :
 
-    To describe
+    *Verify the description of each proposal we registered previously, attempt to get one more proposal and expect a revert*
 
 - **should not be able to register empty proposal** :
 
-    To describe
+    *Attempt to register an empty proposal and expect a revert*
 
 - **only whitelisted address should be able to register proposal** :
 
-    To describe
+    *Attempt to register a proposal with an address that isn't whitelisted and expect a revert*
 
 ### End
 
 - **Workflow Status : should not be able to do anything else than ending the proposal session**  :
 
-    To describe
+    *Check that the owner can not do anything else than ending the proposal registering*
 
 - **only owner should be able to end the proposal session** :
 
-    To describe
+    *Attempt to end the proposal registering without being the owner and expect a revert*
 
 - **should end the proposal session** :
 
-    To describe
+    *End the proposal registering, check that the workflowStatus is correctly updated and that the correct event has been emitted*
 
 ## Voting
 
 - Before :
 
-    To describe
+    *Create a new instance of the contract, whitelist 2 users and register 4 proposals (2 for each users)*
 
-### Start 
+### Start
 
-- **Workflow Status : should not be able to do anything else than starting the voting session** : 
+- **Workflow Status : should not be able to do anything else than starting the voting session** :
 
-    To describe
+    *Check that the owner can not do anything else than starting the voting session*
 
 - **only owner should be able to start the voting session** :
 
-    To describe
+    *Attempt to start the voting session without being the owner and expect a revert*
 
 - **should start the voting session** :
 
-    To describe
+    *Start the voting session, check that the workflowStatus is correctly updated and that the correct event has been emitted*
 
 ### Submit
 
 - **should submit a vote** :
 
-    To describe
+    *Submit a vote and check that correct event has been emitted*
 
 - **should check that the voter status has been correctly updated** :
 
-    To describe
+    *Get the user that submitted the vote, and check that his attributes has been correctly updated*
 
 - **should check that the proposal status has been correctly updated** :
 
-    To describe
+    *Get the proposal the user voted for, and check that its attributes has been correctly updated*
 
 - **should not be able to vote twice** :
 
-    To describe
+    *Attempt to vote a second time with the same user, and expect a revert*
 
 - **only voters should be able to submit a vote** :
 
-    To describe
+    *Attempt to vote with a user that isn't whitelisted, and expect a revert*
 
 - **should not be able to vote for a proposal that does not exist** :
 
-    To describe
+    *Attempt to vote for a proposal that doesn't exist, and expect a revert*
 
 ### End
 
 - **Workflow Status : should not be able to do anything else than ending the voting session** :
 
-    To describe
+    *Check that the owner can not do anything else than ending the voting session*
 
 - **only owner should be able to end the voting session** :
 
-    To describe
+    *Attempt to end the voting session without being the owner and expect a revert*
 
 - **should end the voting session** :
 
-    To describe
+    *End the voting session, check that the workflowStatus is correctly updated and that the correct event has been emitted*
 
 ## Tallying Vote
 
 - Before :
 
-    To describe
+    *Create a new instance of the contract, whitelist 5 users, register 4 proposals and submit a vote for each users*
 
 - **Workflow Status : should not be able to do anything else than tallying votes** :
 
-    To describe
+    *Check that the owner can not do anything else than tallying the votes*
 
 - **only owner should be able to tally the votes** :
 
-    To describe
+    *Attempt to tally the votes without being the owner and expect a revert*
 
 - **should tally the votes** :
 
-    To describe
+    *Tally the votes, check that the workflowStatus is correctly updated and that the correct event has been emitted*
 
 - **should get the winning proposal id** :
 
-    To describe
+    *Get the winning proposal id, and check that it is the proposal that has received the most votes*
 
 ---
 
