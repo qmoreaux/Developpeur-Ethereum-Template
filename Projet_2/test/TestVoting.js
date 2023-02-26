@@ -3,6 +3,7 @@ const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
 contract('Voting', (accounts) => {
+
     const _owner = accounts[0];
 
     describe('Whitelist', async () => {
@@ -80,11 +81,9 @@ contract('Voting', (accounts) => {
 
                 expect(proposal.description).to.be.equal(genesisDescription);
             })
-
         });
 
         describe('Register', async () => {
-            
 
             it('should register a proposal', async () => {
                 const registerProposal = await votingInstance.addProposal(description, { from: _owner });
@@ -118,8 +117,6 @@ contract('Voting', (accounts) => {
                 await expectRevert.unspecified(votingInstance.getOneProposal(i + 1, {from: _owner}));
             });
 
-
-
             it('should not be able to register empty proposal', async () => {
                 await expectRevert(votingInstance.addProposal('', { from: _owner }), "Vous ne pouvez pas ne rien proposer");
             });
@@ -127,7 +124,6 @@ contract('Voting', (accounts) => {
             it('only whitelisted address should be able to register proposal', async () => {
                 await expectRevert(votingInstance.addProposal(description, { from: nonVoter }), "You're not a voter");
             });
-
         });
 
         describe('End', async () => {
@@ -154,7 +150,6 @@ contract('Voting', (accounts) => {
                     newStatus: BN(2)
                 });
             });
-
         });
     });
 
@@ -211,7 +206,6 @@ contract('Voting', (accounts) => {
                     newStatus: BN(3)
                 });
             });
-
         });
 
         describe('Submit', async () => {
@@ -252,7 +246,6 @@ contract('Voting', (accounts) => {
             it('should not be able to vote for a proposal that does not exist', async () => {
                 await expectRevert(votingInstance.setVote(nonExistingProposalId, { from: voter1 }), "Proposal not found");
             });
-
         });
 
         describe('End', async () => {
@@ -279,7 +272,6 @@ contract('Voting', (accounts) => {
                     newStatus: BN(4)
                 });
             });
-        
         })
     });
 
@@ -357,5 +349,4 @@ contract('Voting', (accounts) => {
             expect(await votingInstance.winningProposalID.call()).to.be.bignumber.equal(BN(expectedWinningProposalId));
         })
     });
-
 });
