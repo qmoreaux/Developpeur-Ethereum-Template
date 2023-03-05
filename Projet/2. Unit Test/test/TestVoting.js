@@ -3,9 +3,11 @@ const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
 contract('Voting', (accounts) => {
+
     const _owner = accounts[0];
 
     describe('Whitelist', async () => {
+
         let votingInstance;
 
         before(async function () {
@@ -29,14 +31,12 @@ contract('Voting', (accounts) => {
         });
 
         it('only owner should be able to whitelist address', async () => {
-            await expectRevert(
-                votingInstance.addVoter(accounts[1], { from: accounts[1] }),
-                'Ownable: caller is not the owner'
-            );
+            await expectRevert(votingInstance.addVoter(accounts[1], { from: accounts[1] }), 'Ownable: caller is not the owner.');
         });
     });
 
     describe('Proposal', async () => {
+
         let votingInstance;
 
         const voter1 = accounts[1];
@@ -46,40 +46,23 @@ contract('Voting', (accounts) => {
 
         before(async function () {
             votingInstance = await Voting.new({ from: _owner });
-            await votingInstance.addVoter(_owner, { from: _owner });
-            await votingInstance.addVoter(voter1, { from: _owner });
+            await votingInstance.addVoter(_owner, { from: _owner })
+            await votingInstance.addVoter(voter1, { from: _owner })
         });
 
         describe('Start', async () => {
+
             it('Workflow Status : should not be able to do anything else than startProposalsRegistering', async () => {
-                await expectRevert(
-                    votingInstance.addProposal('Test description', { from: _owner }),
-                    'Proposals are not allowed yet'
-                );
-                await expectRevert(
-                    votingInstance.endProposalsRegistering({ from: _owner }),
-                    'Registering proposals havent started yet'
-                );
-                await expectRevert(
-                    votingInstance.startVotingSession({ from: _owner }),
-                    'Registering proposals phase is not finished'
-                );
+                await expectRevert(votingInstance.addProposal('Test description', { from: _owner }), 'Proposals are not allowed yet');
+                await expectRevert(votingInstance.endProposalsRegistering({ from: _owner }), 'Registering proposals havent started yet');
+                await expectRevert(votingInstance.startVotingSession({ from: _owner }), 'Registering proposals phase is not finished');
                 await expectRevert(votingInstance.setVote(1, { from: _owner }), 'Voting session havent started yet');
-                await expectRevert(
-                    votingInstance.endVotingSession({ from: _owner }),
-                    'Voting session havent started yet'
-                );
-                await expectRevert(
-                    votingInstance.tallyVotes({ from: _owner }),
-                    'Current status is not voting session ended'
-                );
+                await expectRevert(votingInstance.endVotingSession({ from: _owner }), 'Voting session havent started yet');
+                await expectRevert(votingInstance.tallyVotes({ from: _owner }), 'Current status is not voting session ended');
             });
 
             it('only owner should be able to start proposal registering', async () => {
-                await expectRevert(
-                    votingInstance.startProposalsRegistering({ from: voter1 }),
-                    'Ownable: caller is not the owner'
-                );
+                await expectRevert(votingInstance.startProposalsRegistering({ from: voter1 }), 'Ownable: caller is not the owner.');
             });
 
             it('should start proposal registering', async () => {
@@ -92,20 +75,21 @@ contract('Voting', (accounts) => {
                 });
             });
 
-            it('should check that the genesis proposal has been added', async () => {
+            it('should check that the genesis proposal has been added', async() => {
                 const genesisDescription = 'GENESIS';
                 const proposal = await votingInstance.getOneProposal.call(0);
 
                 expect(proposal.description).to.be.equal(genesisDescription);
-            });
+            })
         });
 
         describe('Register', async () => {
+
             it('should register a proposal', async () => {
                 const registerProposal = await votingInstance.addProposal(description, { from: _owner });
 
                 expectEvent(registerProposal, 'ProposalRegistered', {
-                    proposalId: BN(1)
+                    proposalId: BN(1),
                 });
             });
 
@@ -115,11 +99,26 @@ contract('Voting', (accounts) => {
                 expect(proposal.description).to.be.equal(description);
             });
 
+            it('should register a lot of proposal', async () => {
+                for (let i = 2; i < 20; i++) {
+                    let registerProposal = await votingInstance.addProposal(description + ':' + i, { from: _owner });
+                    expectEvent(registerProposal, 'ProposalRegistered', {
+                        proposalId: BN(i),
+                    });
+                }
+            });
+
+            it('should check that all proposal are registered (and not one more)', async () => {
+                let i;
+                for (i = 2; i < 20; i++) {
+                    let proposal = await votingInstance.getOneProposal.call(i, { from: _owner });
+                    expect(proposal.description).to.be.equal(description + ':' + i);
+                }
+                await expectRevert.unspecified(votingInstance.getOneProposal(i + 1, {from: _owner}));
+            });
+
             it('should not be able to register empty proposal', async () => {
-                await expectRevert(
-                    votingInstance.addProposal('', { from: _owner }),
-                    'Vous ne pouvez pas ne rien proposer'
-                );
+                await expectRevert(votingInstance.addProposal('', { from: _owner }), "Vous ne pouvez pas ne rien proposer");
             });
 
             it('only whitelisted address should be able to register proposal', async () => {
@@ -128,35 +127,18 @@ contract('Voting', (accounts) => {
         });
 
         describe('End', async () => {
+
             it('Workflow Status : should not be able to do anything else than ending the proposal session', async () => {
-                await expectRevert(
-                    votingInstance.addVoter(nonVoter, { from: _owner }),
-                    'Voters registration is not open yet'
-                );
-                await expectRevert(
-                    votingInstance.startProposalsRegistering({ from: _owner }),
-                    'Registering proposals cant be started now'
-                );
-                await expectRevert(
-                    votingInstance.startVotingSession({ from: _owner }),
-                    'Registering proposals phase is not finished'
-                );
+                await expectRevert(votingInstance.addVoter(nonVoter, { from: _owner }), 'Voters registration is not open yet');
+                await expectRevert(votingInstance.startProposalsRegistering({ from: _owner }), 'Registering proposals cant be started now');
+                await expectRevert(votingInstance.startVotingSession({ from: _owner }), 'Registering proposals phase is not finished');
                 await expectRevert(votingInstance.setVote(1, { from: _owner }), 'Voting session havent started yet');
-                await expectRevert(
-                    votingInstance.endVotingSession({ from: _owner }),
-                    'Voting session havent started yet'
-                );
-                await expectRevert(
-                    votingInstance.tallyVotes({ from: _owner }),
-                    'Current status is not voting session ended'
-                );
+                await expectRevert(votingInstance.endVotingSession({ from: _owner }), 'Voting session havent started yet');
+                await expectRevert(votingInstance.tallyVotes({ from: _owner }), 'Current status is not voting session ended');
             });
 
             it('only owner should be able to end the proposal session', async () => {
-                await expectRevert(
-                    votingInstance.endProposalsRegistering({ from: voter1 }),
-                    'Ownable: caller is not the owner'
-                );
+                await expectRevert(votingInstance.endProposalsRegistering({ from: voter1 }), 'Ownable: caller is not the owner.');
             });
 
             it('should end the proposal session', async () => {
@@ -172,6 +154,7 @@ contract('Voting', (accounts) => {
     });
 
     describe('Voting', async () => {
+
         let votingInstance;
 
         const voter1 = accounts[1];
@@ -182,56 +165,36 @@ contract('Voting', (accounts) => {
 
         before(async function () {
             votingInstance = await Voting.new({ from: _owner });
-            await votingInstance.addVoter(_owner, { from: _owner });
-            await votingInstance.addVoter(voter1, { from: _owner });
+            await votingInstance.addVoter(_owner, { from: _owner })
+            await votingInstance.addVoter(voter1, { from: _owner })
 
-            await votingInstance.startProposalsRegistering({ from: _owner });
+            await votingInstance.startProposalsRegistering({from: _owner});
 
             for (let i = 0; i < proposalFromOwner.length; i++) {
-                await votingInstance.addProposal(proposalFromOwner[i], { from: _owner });
+                await votingInstance.addProposal(proposalFromOwner[i], {from: _owner});
             }
 
             for (let i = 0; i < proposalFromVoter1.length; i++) {
-                await votingInstance.addProposal(proposalFromVoter1[i], { from: voter1 });
+                await votingInstance.addProposal(proposalFromVoter1[i], {from: voter1});
             }
 
-            await votingInstance.endProposalsRegistering({ from: _owner });
+            await votingInstance.endProposalsRegistering({from: _owner});
         });
 
         describe('Start', async () => {
+
             it('Workflow Status : should not be able to do anything else than starting the voting session', async () => {
-                await expectRevert(
-                    votingInstance.addVoter(nonVoter, { from: _owner }),
-                    'Voters registration is not open yet'
-                );
-                await expectRevert(
-                    votingInstance.startProposalsRegistering({ from: _owner }),
-                    'Registering proposals cant be started now'
-                );
-                await expectRevert(
-                    votingInstance.addProposal('Test description', { from: _owner }),
-                    'Proposals are not allowed yet'
-                );
-                await expectRevert(
-                    votingInstance.endProposalsRegistering({ from: _owner }),
-                    'Registering proposals havent started yet'
-                );
+                await expectRevert(votingInstance.addVoter(nonVoter, { from: _owner }), 'Voters registration is not open yet');
+                await expectRevert(votingInstance.startProposalsRegistering({ from: _owner }), 'Registering proposals cant be started now');
+                await expectRevert(votingInstance.addProposal('Test description', { from: _owner }), 'Proposals are not allowed yet');
+                await expectRevert(votingInstance.endProposalsRegistering({ from: _owner }), 'Registering proposals havent started yet');
                 await expectRevert(votingInstance.setVote(1, { from: _owner }), 'Voting session havent started yet');
-                await expectRevert(
-                    votingInstance.endVotingSession({ from: _owner }),
-                    'Voting session havent started yet'
-                );
-                await expectRevert(
-                    votingInstance.tallyVotes({ from: _owner }),
-                    'Current status is not voting session ended'
-                );
+                await expectRevert(votingInstance.endVotingSession({ from: _owner }), 'Voting session havent started yet');
+                await expectRevert(votingInstance.tallyVotes({ from: _owner }), 'Current status is not voting session ended');
             });
 
             it('only owner should be able to start the voting session', async () => {
-                await expectRevert(
-                    votingInstance.startVotingSession({ from: voter1 }),
-                    'Ownable: caller is not the owner'
-                );
+                await expectRevert(votingInstance.startVotingSession({ from: voter1 }), 'Ownable: caller is not the owner.');
             });
 
             it('should start the voting session', async () => {
@@ -246,6 +209,7 @@ contract('Voting', (accounts) => {
         });
 
         describe('Submit', async () => {
+
             const proposalVotedId = 1;
             const nonExistingProposalId = 99;
 
@@ -263,16 +227,16 @@ contract('Voting', (accounts) => {
 
                 expect(voter.votedProposalId).to.be.bignumber.equal(BN(proposalVotedId));
                 expect(voter.hasVoted).to.be.equal(true);
-            });
+            })
 
             it('should check that the proposal status has been correctly updated', async () => {
                 const proposal = await votingInstance.getOneProposal.call(proposalVotedId);
 
                 expect(proposal.voteCount).to.be.bignumber.equal(BN(1));
-            });
+            })
 
             it('should not be able to vote twice', async () => {
-                await expectRevert(votingInstance.setVote(proposalVotedId, { from: _owner }), 'You have already voted');
+                await expectRevert(votingInstance.setVote(proposalVotedId, { from: _owner }), "You have already voted");
             });
 
             it('only voters should be able to submit a vote', async () => {
@@ -280,46 +244,23 @@ contract('Voting', (accounts) => {
             });
 
             it('should not be able to vote for a proposal that does not exist', async () => {
-                await expectRevert(
-                    votingInstance.setVote(nonExistingProposalId, { from: voter1 }),
-                    'Proposal not found'
-                );
+                await expectRevert(votingInstance.setVote(nonExistingProposalId, { from: voter1 }), "Proposal not found");
             });
         });
 
         describe('End', async () => {
+
             it('Workflow Status : should not be able to do anything else than ending the voting session', async () => {
-                await expectRevert(
-                    votingInstance.addVoter(nonVoter, { from: _owner }),
-                    'Voters registration is not open yet'
-                );
-                await expectRevert(
-                    votingInstance.startProposalsRegistering({ from: _owner }),
-                    'Registering proposals cant be started now'
-                );
-                await expectRevert(
-                    votingInstance.addProposal('Test description', { from: _owner }),
-                    'Proposals are not allowed yet'
-                );
-                await expectRevert(
-                    votingInstance.endProposalsRegistering({ from: _owner }),
-                    'Registering proposals havent started yet'
-                );
-                await expectRevert(
-                    votingInstance.startVotingSession({ from: _owner }),
-                    'Registering proposals phase is not finished'
-                );
-                await expectRevert(
-                    votingInstance.tallyVotes({ from: _owner }),
-                    'Current status is not voting session ended'
-                );
+                await expectRevert(votingInstance.addVoter(nonVoter, { from: _owner }), 'Voters registration is not open yet');
+                await expectRevert(votingInstance.startProposalsRegistering({ from: _owner }), 'Registering proposals cant be started now');
+                await expectRevert(votingInstance.addProposal('Test description', { from: _owner }), 'Proposals are not allowed yet');
+                await expectRevert(votingInstance.endProposalsRegistering({ from: _owner }), 'Registering proposals havent started yet');
+                await expectRevert(votingInstance.startVotingSession({ from: _owner }), 'Registering proposals phase is not finished');
+                await expectRevert(votingInstance.tallyVotes({ from: _owner }), 'Current status is not voting session ended');
             });
 
             it('only owner should be able to end the voting session', async () => {
-                await expectRevert(
-                    votingInstance.endVotingSession({ from: voter1 }),
-                    'Ownable: caller is not the owner'
-                );
+                await expectRevert(votingInstance.endVotingSession({ from: voter1 }), 'Ownable: caller is not the owner.');
             });
 
             it('should end the voting session', async () => {
@@ -331,10 +272,11 @@ contract('Voting', (accounts) => {
                     newStatus: BN(4)
                 });
             });
-        });
+        })
     });
 
     describe('Tallying Vote', async () => {
+
         let votingInstance;
 
         const voter1 = accounts[1];
@@ -351,61 +293,46 @@ contract('Voting', (accounts) => {
         before(async function () {
             votingInstance = await Voting.new({ from: _owner });
 
-            await votingInstance.addVoter(_owner, { from: _owner });
-            await votingInstance.addVoter(voter1, { from: _owner });
-            await votingInstance.addVoter(voter2, { from: _owner });
-            await votingInstance.addVoter(voter3, { from: _owner });
-            await votingInstance.addVoter(voter4, { from: _owner });
+            await votingInstance.addVoter(_owner, { from: _owner })
+            await votingInstance.addVoter(voter1, { from: _owner })
+            await votingInstance.addVoter(voter2, { from: _owner })
+            await votingInstance.addVoter(voter3, { from: _owner })
+            await votingInstance.addVoter(voter4, { from: _owner })
 
-            await votingInstance.startProposalsRegistering({ from: _owner });
+            await votingInstance.startProposalsRegistering({from: _owner});
 
             for (let i = 0; i < proposalFromOwner.length; i++) {
-                await votingInstance.addProposal(proposalFromOwner[i], { from: _owner });
+                await votingInstance.addProposal(proposalFromOwner[i], {from: _owner});
             }
 
             for (let i = 0; i < proposalFromVoter1.length; i++) {
-                await votingInstance.addProposal(proposalFromVoter1[i], { from: voter1 });
+                await votingInstance.addProposal(proposalFromVoter1[i], {from: voter1});
             }
 
-            await votingInstance.endProposalsRegistering({ from: _owner });
-            await votingInstance.startVotingSession({ from: _owner });
+            await votingInstance.endProposalsRegistering({from: _owner});
+            await votingInstance.startVotingSession({from: _owner});
 
-            await votingInstance.setVote(1, { from: _owner });
-            await votingInstance.setVote(2, { from: voter1 });
-            await votingInstance.setVote(3, { from: voter2 });
-            await votingInstance.setVote(2, { from: voter3 });
-            await votingInstance.setVote(2, { from: voter4 });
+            await votingInstance.setVote(1, {from: _owner});
+            await votingInstance.setVote(2, {from: voter1});
+            await votingInstance.setVote(3, {from: voter2});
+            await votingInstance.setVote(2, {from: voter3});
+            await votingInstance.setVote(2, {from: voter4});
 
-            await votingInstance.endVotingSession({ from: _owner });
+            await votingInstance.endVotingSession({from: _owner});
         });
 
         it('Workflow Status : should not be able to do anything else than tallying votes', async () => {
-            await expectRevert(
-                votingInstance.addVoter(nonVoter, { from: _owner }),
-                'Voters registration is not open yet'
-            );
-            await expectRevert(
-                votingInstance.startProposalsRegistering({ from: _owner }),
-                'Registering proposals cant be started now'
-            );
-            await expectRevert(
-                votingInstance.addProposal('Test description', { from: _owner }),
-                'Proposals are not allowed yet'
-            );
-            await expectRevert(
-                votingInstance.endProposalsRegistering({ from: _owner }),
-                'Registering proposals havent started yet'
-            );
-            await expectRevert(
-                votingInstance.startVotingSession({ from: _owner }),
-                'Registering proposals phase is not finished'
-            );
+            await expectRevert(votingInstance.addVoter(nonVoter, { from: _owner }), 'Voters registration is not open yet');
+            await expectRevert(votingInstance.startProposalsRegistering({ from: _owner }), 'Registering proposals cant be started now');
+            await expectRevert(votingInstance.addProposal('Test description', { from: _owner }), 'Proposals are not allowed yet');
+            await expectRevert(votingInstance.endProposalsRegistering({ from: _owner }), 'Registering proposals havent started yet');
+            await expectRevert(votingInstance.startVotingSession({ from: _owner }), 'Registering proposals phase is not finished');
             await expectRevert(votingInstance.setVote(1, { from: _owner }), 'Voting session havent started yet');
             await expectRevert(votingInstance.endVotingSession({ from: _owner }), 'Voting session havent started yet');
         });
 
         it('only owner should be able to tally the votes', async () => {
-            await expectRevert(votingInstance.tallyVotes({ from: voter1 }), 'Ownable: caller is not the owner');
+            await expectRevert(votingInstance.tallyVotes({ from: voter1 }), 'Ownable: caller is not the owner.');
         });
 
         it('should tally the votes', async () => {
@@ -420,6 +347,6 @@ contract('Voting', (accounts) => {
 
         it('should get the winning proposal id', async () => {
             expect(await votingInstance.winningProposalID.call()).to.be.bignumber.equal(BN(expectedWinningProposalId));
-        });
+        })
     });
 });
