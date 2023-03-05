@@ -1,0 +1,2 @@
+Ajouter commentaire natspec dans le Voting.sol
+Fix le DOS gas limit dans le tallyVote
