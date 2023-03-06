@@ -40,14 +40,14 @@ function EthProvider({ children }) {
     }, [init]);
 
     useEffect(() => {
-        // const events = ["chainChanged", "accountsChanged"];
-        // const handleChange = () => {
-        //   init(state.artifact);
-        // };
-        // events.forEach(e => window.ethereum.on(e, handleChange));
-        // return () => {
-        //   events.forEach(e => window.ethereum.removeListener(e, handleChange));
-        // };
+        const events = ["chainChanged", "accountsChanged"];
+        const handleChange = () => {
+          init(state.artifact);
+        };
+        events.forEach(e => window.ethereum.on(e, handleChange));
+        return () => {
+          events.forEach(e => window.ethereum.removeListener(e, handleChange));
+        };
     }, [init, state.artifact]);
 
     return (
