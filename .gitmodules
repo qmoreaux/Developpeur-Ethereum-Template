@@ -1,0 +1,3 @@
+[submodule "Projet/3. Dapp"]
+	path = Projet/3. Dapp
+	url = https://github.com/qmoreaux/Dapp_Voting.git
