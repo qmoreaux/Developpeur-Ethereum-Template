@@ -1,0 +1,14 @@
+{
+    "image": "https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr",
+    "description": "Le bonhomme 1",
+    "name": "Bonhomme1",
+    "attributes": [{
+        "trait_type": "Taille",
+        "value": 170
+    },
+    {
+        "trait_type": "Cheveux",
+        "value": false
+    }
+    ]
+}
