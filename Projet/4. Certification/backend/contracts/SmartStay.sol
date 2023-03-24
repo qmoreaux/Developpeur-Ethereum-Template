@@ -25,7 +25,7 @@ contract SmartStay {
     // Modifiers
 
     modifier isRentingOwner(uint index) {
-        require(getUserRentingIndex(index) != -1, 'SmartStay : Not owner of the renting');
+        getUserRentingIndex(index) >= 0;
         _;
     }
 
@@ -46,6 +46,9 @@ contract SmartStay {
     constructor() {}
 
     function searchRenting(uint16 unitPrice, uint8 personCount) external view returns (Renting[] memory) {
+        if (unitPrice > 0 && personCount > 0) {
+            return rentings;
+        }
         return rentings;
     }
 
@@ -105,24 +108,24 @@ contract SmartStay {
         rentings[index] = rentings[rentings.length - 1];
         rentings.pop();
 
-        uint calldata userIndex = getUserRentingIndex(index);
+        uint userIndex = getUserRentingIndex(index);
         userRentings[msg.sender][userIndex] = userRentings[msg.sender][userRentings[msg.sender].length - 1];
         userRentings[msg.sender].pop();
 
         emit RentingDeleted(index);
     }
 
-    function getUserRenting() {
+    function getUserRenting() external view returns (Renting[] memory) {
         return userRentings[msg.sender];
     }
 
-    function getUserRentingIndex(uint256 index) private returns (int) {
-        for (int i = 0; i < userRentings[msg.sender].length; i++) {
+    function getUserRentingIndex(uint256 index) private view returns (uint) {
+        for (uint i = 0; i < userRentings[msg.sender].length; i++) {
             if (userRentings[msg.sender][i].index == index) {
                 return i;
             }
         }
-        return -1;
+        revert('SmartStay : Not owner of the renting');
     }
 
 }
