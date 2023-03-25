@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import hre, { ethers } from 'hardhat';
 import * as fs from 'fs';
 import { SmartStay, SmartStay__factory } from '../typechain-types';
 
@@ -10,6 +10,8 @@ async function main() {
 
     await smartStay.deployed();
 
+    const artifacts = await hre.artifacts.readArtifact('SmartStay');
+
     let fileContent: string;
     if (fs.existsSync(filename)) {
         fileContent = fs.readFileSync(filename, 'utf-8');
@@ -17,11 +19,21 @@ async function main() {
         fileContent = '{}';
     }
     let fileContentJSON = JSON.parse(fileContent);
-
-    fileContentJSON[smartStay.deployTransaction.chainId] = {
-        address: smartStay.address,
-        abi: JSON.parse(smartStay.interface.format('json').toString())
-    };
+    if (fileContentJSON.abi && JSON.stringify(fileContentJSON.abi) === JSON.stringify(artifacts.abi)) {
+        fileContentJSON.networks[smartStay.deployTransaction.chainId] = {
+            address: smartStay.address,
+            transactionHash: smartStay.deployTransaction.hash
+        };
+    } else {
+        fileContentJSON = {
+            abi: artifacts.abi,
+            networks: {}
+        };
+        fileContentJSON.networks[smartStay.deployTransaction.chainId] = {
+            address: smartStay.address,
+            transactionHash: smartStay.deployTransaction.hash
+        };
+    }
 
     fs.writeFileSync(filename, JSON.stringify(fileContentJSON));
 

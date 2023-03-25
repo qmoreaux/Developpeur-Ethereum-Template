@@ -25,7 +25,7 @@ contract SmartStay {
     // Modifiers
 
     modifier isRentingOwner(uint index) {
-        getUserRentingIndex(index) >= 0;
+        require(isUserRentingOwner(index), 'SmartStay: Not owner of the renting');
         _;
     }
 
@@ -43,7 +43,11 @@ contract SmartStay {
 
     // Constructor
 
-    constructor() {}
+    constructor() {
+        Renting memory _renting;
+        rentings.push(_renting);
+        currentIndex.increment();
+    }
 
     function searchRenting(uint16 unitPrice, uint8 personCount) external view returns (Renting[] memory) {
         if (unitPrice > 0 && personCount > 0) {
@@ -59,7 +63,7 @@ contract SmartStay {
         string[] calldata tags,
         string calldata description,
         string calldata imageURL
-        ) external {
+        ) external returns (uint) {
         require(userRentings[msg.sender].length < 5, 'SmartStay : Too many renting');
 
         Renting memory tempRenting;
@@ -77,6 +81,8 @@ contract SmartStay {
         currentIndex.increment();
 
         emit RentingCreated(tempRenting);
+
+        return currentIndex.current();
     }
 
     function updateRenting(
@@ -105,8 +111,7 @@ contract SmartStay {
     }
 
     function deleteRenting(uint index) external isRentingOwner(index) {
-        rentings[index] = rentings[rentings.length - 1];
-        rentings.pop();
+        delete rentings[index];
 
         uint userIndex = getUserRentingIndex(index);
         userRentings[msg.sender][userIndex] = userRentings[msg.sender][userRentings[msg.sender].length - 1];
@@ -119,13 +124,22 @@ contract SmartStay {
         return userRentings[msg.sender];
     }
 
+    function isUserRentingOwner(uint index) private view returns (bool) {
+        for (uint i = 0; i < userRentings[msg.sender].length; i++) {
+            if (userRentings[msg.sender][i].index == index) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function getUserRentingIndex(uint256 index) private view returns (uint) {
         for (uint i = 0; i < userRentings[msg.sender].length; i++) {
             if (userRentings[msg.sender][i].index == index) {
                 return i;
             }
         }
-        revert('SmartStay : Not owner of the renting');
+        return 0;
     }
 
 }
