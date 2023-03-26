@@ -13,6 +13,8 @@ contract SmartStay {
 
     mapping(address => Renting[]) userRentings;
     Renting[] rentings;
+    string[] tags = ['Maisons', 'Appartement', 'Piscine', 'Montagne', 'Bord de mer'];
+    string[] locations;
 
     // Events 
 
@@ -47,33 +49,72 @@ contract SmartStay {
         Renting memory _renting;
         rentings.push(_renting);
         currentIndex.increment();
+
     }
 
-    function searchRenting(uint16 unitPrice, uint8 personCount) external view returns (Renting[] memory) {
-        if (unitPrice > 0 && personCount > 0) {
-            return rentings;
+    function getTags() external view returns (string[] memory) {
+        return tags;
+    }
+
+    function getLocations() external view returns (string[] memory) {
+        return locations;
+    }
+
+
+    function searchRenting(uint16 _maxUnitPrice, uint8 _personCount, string calldata _location, string[] calldata _tags) external view returns (Renting[] memory) {
+        uint _count;
+        for (uint i; i < rentings.length; i++) {
+            if (rentings[i].index != 0) {
+                if (_maxUnitPrice == 0 || rentings[i].unitPrice <= _maxUnitPrice) {
+                    if (_personCount == 0 || rentings[i].personCount <= _personCount) {
+                        if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
+                            if (_tags.length == 0 || containTags(rentings[i], _tags)) {
+                                _count++;
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return rentings;
+
+        Renting[] memory _rentings = new Renting[](_count);
+        uint _index;
+        for (uint i; i < rentings.length; i++) {
+            if (rentings[i].index != 0) {
+                if (_maxUnitPrice == 0 || rentings[i].unitPrice <= _maxUnitPrice) {
+                    if (_personCount == 0 || rentings[i].personCount == _personCount) {
+                        if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
+                            if (_tags.length == 0 || containTags(rentings[i], _tags)) {
+                                _rentings[_index] = rentings[i];
+                                _index++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return _rentings;
     }
 
     function createRenting(
-        uint16 unitPrice,
-        uint8 personCount,
-        string calldata location,
-        string[] calldata tags,
-        string calldata description,
-        string calldata imageURL
+        uint16 _unitPrice,
+        uint8 _personCount,
+        string calldata _location,
+        string[] calldata _tags,
+        string calldata _description,
+        string calldata _imageURL
         ) external returns (uint) {
         require(userRentings[msg.sender].length < 5, 'SmartStay : Too many renting');
 
         Renting memory tempRenting;
         tempRenting.index = currentIndex.current();
-        tempRenting.unitPrice = unitPrice;
-        tempRenting.personCount = personCount;
-        tempRenting.location = location;
-        tempRenting.tags = tags;
-        tempRenting.description = description;
-        tempRenting.imageURL = imageURL;
+        tempRenting.unitPrice = _unitPrice;
+        tempRenting.personCount = _personCount;
+        tempRenting.location = _location;
+        tempRenting.tags = _tags;
+        tempRenting.description = _description;
+        tempRenting.imageURL = _imageURL;
 
         rentings.push(tempRenting);
         userRentings[msg.sender].push(tempRenting);
@@ -86,26 +127,26 @@ contract SmartStay {
     }
 
     function updateRenting(
-        uint index,
-        uint16 unitPrice,
-        uint8 personCount,
-        string calldata location,
-        string[] calldata tags,
-        string calldata description,
-        string calldata imageURL
-    ) external isRentingOwner(index) {
+        uint _index,
+        uint16 _unitPrice,
+        uint8 _personCount,
+        string calldata _location,
+        string[] calldata _tags,
+        string calldata _description,
+        string calldata _imageURL
+    ) external isRentingOwner(_index) {
 
         Renting memory tempRenting;
-        tempRenting.index = index;
-        tempRenting.unitPrice = unitPrice;
-        tempRenting.personCount = personCount;
-        tempRenting.location = location;
-        tempRenting.tags = tags;
-        tempRenting.description = description;
-        tempRenting.imageURL = imageURL;
+        tempRenting.index = _index;
+        tempRenting.unitPrice = _unitPrice;
+        tempRenting.personCount = _personCount;
+        tempRenting.location = _location;
+        tempRenting.tags = _tags;
+        tempRenting.description = _description;
+        tempRenting.imageURL = _imageURL;
 
-        rentings[index]= tempRenting;
-        userRentings[msg.sender][getUserRentingIndex(index)] = tempRenting;
+        rentings[_index]= tempRenting;
+        userRentings[msg.sender][getUserRentingIndex(_index)] = tempRenting;
 
         emit RentingUpdated(tempRenting);
     }
@@ -140,6 +181,27 @@ contract SmartStay {
             }
         }
         return 0;
+    }
+
+    // Utils
+
+    function compareString(string memory a, string memory b) private pure returns (bool) {
+        return keccak256(bytes(a)) == keccak256(bytes(b));
+    }
+
+    function containTags(Renting memory _renting, string[] memory _tags) private pure returns (bool) {
+        for (uint i; i < _tags.length; i++) {
+            bool tagFound;
+            for (uint j; j < _renting.tags.length; j++) {
+                if (compareString(_renting.tags[j], _tags[i])) {
+                    tagFound = true;
+                }
+            }
+            if (!tagFound) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

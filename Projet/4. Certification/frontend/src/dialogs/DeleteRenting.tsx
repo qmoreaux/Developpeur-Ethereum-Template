@@ -26,7 +26,7 @@ export default function DeleteRentingDialog(props: any) {
                 await transaction.wait();
                 handleClose(true);
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
         }
     };

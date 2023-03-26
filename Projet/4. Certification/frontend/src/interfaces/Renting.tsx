@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 
-export default interface Renting {
+export default interface RentingInterface {
     index: BigNumber;
     unitPrice: number;
     personCount: number;

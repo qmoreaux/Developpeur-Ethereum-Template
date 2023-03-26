@@ -18,7 +18,7 @@ import Renting from "../interfaces/Renting";
 import Networks from "../interfaces/Networks";
 
 export default function Renter() {
-    const { isConnected } = useAccount();
+    const { address, isConnected } = useAccount();
     const { chain } = useNetwork();
     const provider = useProvider();
     const router = useRouter();
@@ -33,14 +33,13 @@ export default function Renter() {
             if (provider && chain && chain.id) {
                 try {
                     const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, provider);
-                    setUserRentings(await contract.getUserRenting());
-                    console.log(await contract.searchRenting(10, 10));
+                    setUserRentings(await contract.getUserRenting({ from: address }));
                 } catch (e) {
-                    console.log(e);
+                    console.error(e);
                 }
             }
         })();
-    }, []);
+    }, [address]);
 
     useEffect(() => {
         if (!isConnected) {
@@ -74,7 +73,6 @@ export default function Renter() {
             }
             case "UpdateRenting": {
                 if (data) {
-                    console.log(data);
                     setUserRentings(
                         userRentings.map((userRenting) => {
                             if (userRenting.index.toNumber() === data.index.toNumber()) {
@@ -166,6 +164,8 @@ export default function Renter() {
                         ))}
                     </Box>
                     <Button
+                        color="error"
+                        variant="contained"
                         sx={{
                             position: "absolute",
                             bottom: "2rem",
@@ -173,8 +173,6 @@ export default function Renter() {
                             minWidth: "50px",
                             height: "50px",
                             borderRadius: "50px",
-                            backgroundColor: "red",
-                            color: "white",
                             padding: "0"
                         }}
                         onClick={() => handleClickOpen("NewRenting")}
