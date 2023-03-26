@@ -3,18 +3,14 @@ import { useRouter } from "next/router";
 
 import Head from "next/head";
 import Layout from "@/components/Layout/Layout";
-import NewRentingDialog from "@/dialogs/NewRenting";
-import UpdateRentingDialog from "@/dialogs/UpdateRenting";
-import DeleteRentingDialog from "@/dialogs/DeleteRenting";
 
 import { ethers } from "ethers";
 import { useNetwork, useProvider, useAccount } from "wagmi";
-import { Button, Typography, Box, Card, CardContent, CardMedia } from "@mui/material";
-import { Add, Update, Delete } from "@mui/icons-material";
+import { Button, Typography, Box, Card, CardContent } from "@mui/material";
 
 import { networks, abi } from "../../contracts/SmartStay.json";
 
-import Renting from "../interfaces/Renting";
+import Booking from "../interfaces/Booking";
 import Networks from "../interfaces/Networks";
 
 export default function Renter() {
@@ -23,17 +19,29 @@ export default function Renter() {
     const provider = useProvider();
     const router = useRouter();
 
-    const [userRentings, setUserRentings] = useState<Array<Renting>>([]);
-    const [open, setOpen] = useState({ NewRenting: false, UpdateRenting: false, DeleteRenting: false });
-    const [updateRenting, setUpdateRenting] = useState({});
-    const [deleteRenting, setDeleteRenting] = useState<number>(0);
+    const [bookingOwner, setBookingOwner] = useState<Array<Booking>>([]);
+    const [bookingRecipient, setBookingRecipient] = useState<Array<Booking>>([]);
 
     useEffect(() => {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
                     const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, provider);
-                    setUserRentings(await contract.getUserRenting({ from: address }));
+                    setBookingOwner(await contract.getBookingOwner({ from: address }));
+                    console.log(await contract.getBookingOwner({ from: address }));
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        })();
+    }, [address]);
+
+    useEffect(() => {
+        (async () => {
+            if (provider && chain && chain.id) {
+                try {
+                    const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, provider);
+                    setBookingRecipient(await contract.getBookingRecipient({ from: address }));
                 } catch (e) {
                     console.error(e);
                 }
@@ -47,65 +55,10 @@ export default function Renter() {
         }
     }, []);
 
-    const handleClickOpen = (dialog: any, data?: any) => {
-        setOpen({ ...open, [dialog]: true });
-        switch (dialog) {
-            case "UpdateRenting": {
-                setUpdateRenting(data);
-                break;
-            }
-            case "DeleteRenting": {
-                setDeleteRenting(data);
-                break;
-            }
-        }
-    };
-
-    const handleClose = (dialog: any, data: any) => {
-        setOpen({ ...open, [dialog]: false });
-
-        switch (dialog) {
-            case "NewRenting": {
-                if (data) {
-                    setUserRentings([...userRentings, data]);
-                }
-                break;
-            }
-            case "UpdateRenting": {
-                if (data) {
-                    setUserRentings(
-                        userRentings.map((userRenting) => {
-                            if (userRenting.index.toNumber() === data.index.toNumber()) {
-                                return data;
-                            }
-                            return userRenting;
-                        })
-                    );
-                }
-                setUpdateRenting({});
-                break;
-            }
-            case "DeleteRenting": {
-                if (data) {
-                    setUserRentings(
-                        userRentings.filter((userRenting: Renting) => {
-                            if (userRenting.index.toNumber() === deleteRenting) {
-                                return false;
-                            }
-                            return true;
-                        })
-                    );
-                }
-                setDeleteRenting(0);
-                break;
-            }
-        }
-    };
-
     return (
         <>
             <Head>
-                <title>SmartStay: Renter</title>
+                <title>SmartStay: Booking</title>
                 <meta name="description" content="SmartStay project for Alyra certification" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
@@ -113,33 +66,58 @@ export default function Renter() {
             <Layout>
                 <Box width="80%" flexGrow="1" position="relative">
                     <Typography variant="h4" textAlign={"center"} m="2rem">
-                        Booking waiting for confirmation
+                        Booking Owner
                     </Typography>
-                    <Box display="flex" justifyContent={"space-evenly"}></Box>
+                    <Box display="flex" justifyContent={"space-evenly"}>
+                        {bookingOwner.map((booking: Booking) => (
+                            <Card
+                                key={booking.id.toNumber()}
+                                sx={{
+                                    backgroundColor: "whitesmoke",
+                                    width: "400px",
+                                    boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)"
+                                }}
+                            >
+                                <CardContent>
+                                    <Typography>Booking ID : #{booking.id.toNumber()}</Typography>
+                                    <Typography>
+                                        {" "}
+                                        Start date : {new Date(booking.timestampStart * 1000).toLocaleDateString()}
+                                    </Typography>
+                                    <Typography>Person count: {booking.personCount}</Typography>
+                                    <Typography>Duration : {booking.duration}</Typography>
+                                    <Box display="flex" justifyContent="space-between" mt="1rem"></Box>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </Box>
                 </Box>
                 <Box width="80%" flexGrow="1" position="relative">
                     <Typography variant="h4" textAlign={"center"} m="2rem">
-                        Booking waiting for my confirmation
+                        Booking Recipient
                     </Typography>
-                    <Box display="flex" justifyContent={"space-evenly"}></Box>
-                </Box>
-                <Box width="80%" flexGrow="1" position="relative">
-                    <Typography variant="h4" textAlign={"center"} m="2rem">
-                        Booking waiting for payement
-                    </Typography>
-                    <Box display="flex" justifyContent={"space-evenly"}></Box>
-                </Box>
-                <Box width="80%" flexGrow="1" position="relative">
-                    <Typography variant="h4" textAlign={"center"} m="2rem">
-                        Booking confirmed
-                    </Typography>
-                    <Box display="flex" justifyContent={"space-evenly"}></Box>
-                </Box>
-                <Box width="80%" flexGrow="1" position="relative">
-                    <Typography variant="h4" textAlign={"center"} m="2rem">
-                        Booking completed
-                    </Typography>
-                    <Box display="flex" justifyContent={"space-evenly"}></Box>
+                    <Box display="flex" justifyContent={"space-evenly"}>
+                        {bookingRecipient.map((booking) => (
+                            <Card
+                                key={booking.id.toNumber()}
+                                sx={{
+                                    backgroundColor: "whitesmoke",
+                                    width: "400px",
+                                    boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)"
+                                }}
+                            >
+                                <CardContent>
+                                    <Typography>Booking ID : #{booking.id.toNumber()}</Typography>
+                                    <Typography>
+                                        Start date : {new Date(booking.timestampStart * 1000).toLocaleDateString()}
+                                    </Typography>
+                                    <Typography>Person count: {booking.personCount}</Typography>
+                                    <Typography>Duration : {booking.duration}</Typography>
+                                    <Box display="flex" justifyContent="space-between" mt="1rem"></Box>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </Box>
                 </Box>
             </Layout>
         </>

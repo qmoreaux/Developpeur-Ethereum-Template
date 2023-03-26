@@ -12,7 +12,7 @@ export default function DeleteRentingDialog(props: any) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
 
-    const { onClose, index, open } = props;
+    const { onClose, id, open } = props;
 
     const handleClose = (status: boolean) => {
         onClose(status);
@@ -22,7 +22,7 @@ export default function DeleteRentingDialog(props: any) {
         if (signer && chain && chain.id) {
             try {
                 const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
-                const transaction = await contract.deleteRenting(index);
+                const transaction = await contract.deleteRenting(id);
                 await transaction.wait();
                 handleClose(true);
             } catch (e) {
@@ -52,5 +52,5 @@ export default function DeleteRentingDialog(props: any) {
 DeleteRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    index: PropTypes.number.isRequired
+    id: PropTypes.number.isRequired
 };

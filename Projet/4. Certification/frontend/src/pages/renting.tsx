@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 
 import Head from "next/head";
 import Layout from "@/components/Layout/Layout";
+import BookRentingDialog from "@/dialogs/BookRenting";
 
 import { useNetwork, useProvider, useAccount } from "wagmi";
 import { ethers } from "ethers";
@@ -39,8 +40,21 @@ export default function Renting() {
     const [tags, setTags] = useState<Array<string>>([]);
     const [availableTags, setAvailableTags] = useState<Array<string>>([]);
 
-    const handleStartBooking = (dialog: any, data?: any) => {
-        // TODO
+    const [openBooking, setOpenBooking] = useState(false);
+    const [bookingRentingID, setBookingRentingID] = useState(0);
+
+    const handleStartBooking = (data?: any) => {
+        setOpenBooking(true);
+        setBookingRentingID(data);
+    };
+
+    const handleCloseBooking = (data: any) => {
+        setOpenBooking(false);
+        setBookingRentingID(0);
+
+        if (data) {
+            router.push("/booking");
+        }
     };
 
     const handleTagsChange = (newValue: Array<string>) => {
@@ -171,7 +185,7 @@ export default function Renting() {
                     <Box display="flex" justifyContent={"space-evenly"}>
                         {rentings.map((renting: RentingInterface) => (
                             <Card
-                                key={renting.index.toNumber()}
+                                key={renting.id.toNumber()}
                                 sx={{
                                     backgroundColor: "whitesmoke",
                                     width: "400px",
@@ -186,7 +200,7 @@ export default function Renting() {
                                     sx={{ backgroundColor: "white", objectFit: "contain" }}
                                 ></CardMedia>
                                 <CardContent>
-                                    <Typography>Renting ID : #{renting.index.toNumber()}</Typography>
+                                    <Typography>Renting ID : #{renting.id.toNumber()}</Typography>
                                     <Typography>Night price : {renting.unitPrice}</Typography>
                                     <Typography>Maximum persons: {renting.personCount}</Typography>
                                     <Typography>Location : {renting.location}</Typography>
@@ -195,9 +209,7 @@ export default function Renting() {
                                     <Box display="flex" justifyContent="space-between" mt="1rem">
                                         <Button
                                             variant="contained"
-                                            onClick={() =>
-                                                handleStartBooking("DeleteRenting", renting.index.toNumber())
-                                            }
+                                            onClick={() => handleStartBooking(renting.id.toNumber())}
                                             startIcon={<BookOnline />}
                                         >
                                             <Typography>Book</Typography>
@@ -208,6 +220,11 @@ export default function Renting() {
                         ))}
                     </Box>
                 </Box>
+                <BookRentingDialog
+                    open={openBooking}
+                    _rentingID={bookingRentingID}
+                    onClose={(status: boolean) => handleCloseBooking(status)}
+                />
             </Layout>
         </>
     );

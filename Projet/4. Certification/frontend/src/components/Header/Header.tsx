@@ -24,6 +24,9 @@ const Header = () => {
                 <Typography>
                     <Link href="/renter">Renter</Link>
                 </Typography>
+                <Typography>
+                    <Link href="/booking">Booking</Link>
+                </Typography>
             </Box>
             <ConnectButton />
         </Box>

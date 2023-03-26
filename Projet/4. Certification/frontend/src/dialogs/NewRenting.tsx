@@ -85,7 +85,7 @@ export default function NewRentingDialog(props: any) {
                     "https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr?_gl=1*1f1pqix*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY3OTc1NjYyNC44LjEuMTY3OTc1NjYyNy41Ny4wLjA."
                 );
                 const receipt = await transaction.wait();
-                handleClose(receipt.events[0].args["_renting"]);
+                handleClose(receipt.events[0].args["renting"]);
             } catch (e) {
                 console.error(e);
             }

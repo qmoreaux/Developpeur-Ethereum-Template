@@ -75,7 +75,7 @@ export default function Renter() {
                 if (data) {
                     setUserRentings(
                         userRentings.map((userRenting) => {
-                            if (userRenting.index.toNumber() === data.index.toNumber()) {
+                            if (userRenting.id.toNumber() === data.id.toNumber()) {
                                 return data;
                             }
                             return userRenting;
@@ -89,7 +89,7 @@ export default function Renter() {
                 if (data) {
                     setUserRentings(
                         userRentings.filter((userRenting: Renting) => {
-                            if (userRenting.index.toNumber() === deleteRenting) {
+                            if (userRenting.id.toNumber() === deleteRenting) {
                                 return false;
                             }
                             return true;
@@ -118,7 +118,7 @@ export default function Renter() {
                     <Box display="flex" justifyContent={"space-evenly"}>
                         {userRentings.map((userRenting: Renting) => (
                             <Card
-                                key={userRenting.index.toNumber()}
+                                key={userRenting.id.toNumber()}
                                 sx={{
                                     backgroundColor: "whitesmoke",
                                     width: "400px",
@@ -133,7 +133,7 @@ export default function Renter() {
                                     sx={{ backgroundColor: "white", objectFit: "contain" }}
                                 ></CardMedia>
                                 <CardContent>
-                                    <Typography>Renting ID : #{userRenting.index.toNumber()}</Typography>
+                                    <Typography>Renting ID : #{userRenting.id.toNumber()}</Typography>
                                     <Typography>Night price : {userRenting.unitPrice}</Typography>
                                     <Typography>Maximum persons: {userRenting.personCount}</Typography>
                                     <Typography>Location : {userRenting.location}</Typography>
@@ -152,7 +152,7 @@ export default function Renter() {
                                             variant="contained"
                                             color="error"
                                             onClick={() =>
-                                                handleClickOpen("DeleteRenting", userRenting.index.toNumber())
+                                                handleClickOpen("DeleteRenting", userRenting.id.toNumber())
                                             }
                                             startIcon={<Delete />}
                                         >
@@ -188,7 +188,7 @@ export default function Renter() {
                 />
                 <DeleteRentingDialog
                     open={open.DeleteRenting}
-                    index={deleteRenting}
+                    id={deleteRenting}
                     onClose={(status) => handleClose("DeleteRenting", status)}
                 />
             </Layout>

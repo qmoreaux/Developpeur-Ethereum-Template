@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 
 export default interface RentingInterface {
-    index: BigNumber;
+    id: BigNumber;
     unitPrice: number;
     personCount: number;
     location: string;
