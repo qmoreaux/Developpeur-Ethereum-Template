@@ -3,8 +3,8 @@ import { BigNumber } from "ethers";
 export default interface BookingInterface {
     id: BigNumber;
     rentingID: BigNumber;
-    amountPayed: BigNumber;
-    cautionPayed: BigNumber;
+    amountLocked: BigNumber;
+    cautionLocked: BigNumber;
     timestampStart: number;
     personCount: number;
     duration: number;

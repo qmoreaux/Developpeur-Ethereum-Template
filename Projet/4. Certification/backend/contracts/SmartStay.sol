@@ -92,8 +92,8 @@ contract SmartStay {
     struct Booking {
         uint256 id;
         uint256 rentingID;
-        uint256 amountPayed;
-        uint256 cautionPayed;
+        uint256 amountLocked;
+        uint256 cautionLocked;
         uint32 timestampStart;
         uint32 timestampEnd;
         uint16 duration;
@@ -337,20 +337,32 @@ contract SmartStay {
     }
 
     function confirmBooking(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
-        console.log(msg.value);
-        console.log(rentings[bookings[_bookingID].rentingID].unitPrice);
-        console.log(bookings[_bookingID].duration );
-        console.log(rentings[bookings[_bookingID].rentingID].caution);
-        console.log(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution);
-        console.log(150 * 1 ether);
-        console.log((rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution) * 1 ether);
-
-        require(msg.value >= (rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution) * 1 ether, 'SmartStay: Not enought send');
+        require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution) * 1 ether, 'SmartStay: Not enought send');
         
-        // bookings[_bookingID].amountPayed = rentings[bookings[_bookingID].rentingID].unitPrice * 1 ether * bookings[_bookingID].duration;
-        // bookings[_bookingID].cautionPayed = rentings[bookings[_bookingID].rentingID].caution * 1 ether;
+        bookings[_bookingID].amountLocked = uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration) * 1 ether;
+        bookings[_bookingID].cautionLocked = uint256(rentings[bookings[_bookingID].rentingID].caution) * 1 ether;
 
         bookings[_bookingID].status = BookingStatus.ONGOING;
+    }
+
+    function retrieveCaution(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
+        uint256 cautionToSend = bookings[_bookingID].cautionLocked;
+        bookings[_bookingID].cautionLocked = 0;
+        (bool success, ) = msg.sender.call{value: cautionToSend}("");
+        require(success, 'SmartStay: Caution retrieve failed');
+        if (bookings[_bookingID].amountLocked == 0) {
+            bookings[_bookingID].status = BookingStatus.COMPLETED;
+        }
+    }
+
+    function retrieveAmount(uint256 _bookingID) external payable isBookingOwner(_bookingID) {
+        uint256 amountToSend = bookings[_bookingID].amountLocked;
+        bookings[_bookingID].amountLocked = 0;
+        (bool success, ) = msg.sender.call{value: amountToSend}("");
+        require(success, 'SmartStay: Amount retrieve failed');
+        if (bookings[_bookingID].cautionLocked == 0) {
+            bookings[_bookingID].status = BookingStatus.COMPLETED;
+        }
     }
 
 

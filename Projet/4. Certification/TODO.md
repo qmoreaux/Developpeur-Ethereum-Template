@@ -5,3 +5,7 @@ Utiliser le theme pour le style
 Add loading durant le transaction.wait()
 List and implements check in DApp
 List and implements checks in SC
+
+Check isBookingOwner et isBookingRecipient
+Check BigNumber
+Check uint size
