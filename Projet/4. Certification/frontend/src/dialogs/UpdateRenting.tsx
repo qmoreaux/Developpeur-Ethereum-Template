@@ -11,8 +11,6 @@ import { networks, abi } from "../../contracts/SmartStay.json";
 import Networks from "../interfaces/Networks";
 import Renting from "../interfaces/Renting";
 
-const emails = ["username@gmail.com", "user02@gmail.com"];
-
 export default function UpdateRentingDialog(props: any) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
@@ -20,7 +18,8 @@ export default function UpdateRentingDialog(props: any) {
 
     const { onClose, open, data } = props;
 
-    const [nightPrice, setNightPrice] = useState(0);
+    const [unitPrice, setUnitPrice] = useState(0);
+    const [caution, setCaution] = useState(0);
     const [personCount, setPersonCount] = useState(0);
     const [location, setLocation] = useState("");
     const [tags, setTags] = useState<Array<string>>([]);
@@ -46,7 +45,7 @@ export default function UpdateRentingDialog(props: any) {
 
     useEffect(() => {
         if (data) {
-            setNightPrice(data.unitPrice);
+            setUnitPrice(data.unitPrice);
             setPersonCount(data.personCount);
             setLocation(data.location);
             setDescription(data.description);
@@ -73,7 +72,7 @@ export default function UpdateRentingDialog(props: any) {
     };
 
     const canUpdate = () => {
-        return nightPrice && personCount && location && tags.length && description;
+        return unitPrice && personCount && location && tags.length && description;
     };
 
     const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -90,15 +89,18 @@ export default function UpdateRentingDialog(props: any) {
         if (signer && chain && chain.id) {
             try {
                 const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
-                const transaction = await contract.updateRenting(
-                    data.id,
-                    nightPrice,
+                const transaction = await contract.updateRenting({
+                    id: 0,
+                    owner: "0x0000000000000000000000000000000000000000",
+                    unitPrice,
+                    caution,
                     personCount,
                     location,
                     tags,
                     description,
-                    "https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr?_gl=1*1f1pqix*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY3OTc1NjYyNC44LjEuMTY3OTc1NjYyNy41Ny4wLjA."
-                );
+                    imageURL:
+                        "https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr?_gl=1*1f1pqix*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY3OTc1NjYyNC44LjEuMTY3OTc1NjYyNy41Ny4wLjA."
+                });
                 const receipt = await transaction.wait();
                 handleClose(receipt.events[0].args["renting"]);
             } catch (e) {
@@ -119,9 +121,22 @@ export default function UpdateRentingDialog(props: any) {
                         InputProps={{
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
-                        value={nightPrice || 0}
+                        value={unitPrice || 0}
                         onChange={(event) => {
-                            setNightPrice(+event.target.value);
+                            setUnitPrice(+event.target.value);
+                        }}
+                    />
+                </Box>
+                <Box>
+                    <TextField
+                        label="Caution"
+                        type="number"
+                        sx={{ width: "300px" }}
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end">€</InputAdornment>
+                        }}
+                        onChange={(event) => {
+                            setCaution(+event.target.value);
                         }}
                     />
                 </Box>

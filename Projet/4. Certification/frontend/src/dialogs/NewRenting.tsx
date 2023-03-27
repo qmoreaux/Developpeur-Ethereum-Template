@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from "@mui/material";
 import { ethers } from "ethers";
-import { useNetwork, useSigner, useProvider } from "wagmi";
+import { useNetwork, useSigner, useProvider, useAccount } from "wagmi";
 
 import { networks, abi } from "../../contracts/SmartStay.json";
 
@@ -12,11 +12,14 @@ import Networks from "../interfaces/Networks";
 import Renting from "../interfaces/Renting";
 
 export default function NewRentingDialog(props: any) {
+    const { address } = useAccount();
+
     const { chain } = useNetwork();
     const provider = useProvider();
     const { data: signer } = useSigner();
 
-    const [nightPrice, setNightPrice] = useState(0);
+    const [unitPrice, setUnitPrice] = useState(0);
+    const [caution, setCaution] = useState(0);
     const [personCount, setPersonCount] = useState(0);
     const [location, setLocation] = useState("");
     const [tags, setTags] = useState<Array<string>>([]);
@@ -69,21 +72,25 @@ export default function NewRentingDialog(props: any) {
     };
 
     const canCreate = () => {
-        return nightPrice && personCount && location && tags.length && description;
+        return unitPrice && personCount && location && tags.length && description;
     };
 
     const createRenting = async () => {
         if (signer && chain && chain.id) {
             try {
                 const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
-                const transaction = await contract.createRenting(
-                    nightPrice,
+                const transaction = await contract.createRenting({
+                    id: 0,
+                    owner: "0x0000000000000000000000000000000000000000",
+                    unitPrice,
+                    caution,
                     personCount,
                     location,
                     tags,
                     description,
-                    "https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr?_gl=1*1f1pqix*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY3OTc1NjYyNC44LjEuMTY3OTc1NjYyNy41Ny4wLjA."
-                );
+                    imageURL:
+                        "https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr?_gl=1*1f1pqix*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY3OTc1NjYyNC44LjEuMTY3OTc1NjYyNy41Ny4wLjA."
+                });
                 const receipt = await transaction.wait();
                 handleClose(receipt.events[0].args["renting"]);
             } catch (e) {
@@ -105,7 +112,20 @@ export default function NewRentingDialog(props: any) {
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
                         onChange={(event) => {
-                            setNightPrice(+event.target.value);
+                            setUnitPrice(+event.target.value);
+                        }}
+                    />
+                </Box>
+                <Box>
+                    <TextField
+                        label="Caution"
+                        type="number"
+                        sx={{ width: "300px" }}
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end">€</InputAdornment>
+                        }}
+                        onChange={(event) => {
+                            setCaution(+event.target.value);
                         }}
                     />
                 </Box>

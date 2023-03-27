@@ -3,6 +3,8 @@ pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+import "hardhat/console.sol";
+
 /** 
  * @title Voting
  * @author Quentin Moreaux
@@ -24,7 +26,6 @@ contract SmartStay {
     Renting[] rentings;
 
     Booking[] bookings;
-
     mapping(address => uint[]) bookingRecipient; // mapping to array of booking id (as recipient)
     mapping(address => uint[]) bookingOwner; // mapping to array of booking id (as owner)
 
@@ -47,12 +48,40 @@ contract SmartStay {
         _;
     }
 
+    modifier isBookingOwner(uint _bookingID) {
+        bool foundBooking;
+        for (uint i; i < bookingOwner[msg.sender].length; i++) {
+            if (bookingOwner[msg.sender][i] == _bookingID) {
+                foundBooking = true;
+            }
+        }
+        if (!foundBooking) {
+            revert('SmartStay: Not owner of the booking');
+        }
+        _;
+    }
+
+    modifier isBookingRecipient(uint _bookingID) {
+        bool foundBooking;
+        for (uint i; i < bookingRecipient[msg.sender].length; i++) {
+            if (bookingRecipient[msg.sender][i] == _bookingID) {
+                foundBooking = true;
+            }
+        }
+        if (!foundBooking) {
+            revert('SmartStay: Not owner of the booking');
+        }
+        _;
+    }
+
+
     // Struct, Arrays, Enums
 
     struct Renting {
         address owner;
         uint256 id;
         uint16 unitPrice;
+        uint16 caution;
         uint8 personCount;
         string location;
         string[] tags;
@@ -63,6 +92,8 @@ contract SmartStay {
     struct Booking {
         uint256 id;
         uint256 rentingID;
+        uint256 amountPayed;
+        uint256 cautionPayed;
         uint32 timestampStart;
         uint32 timestampEnd;
         uint16 duration;
@@ -73,7 +104,7 @@ contract SmartStay {
     enum BookingStatus {
         CREATED,
         REJECTED,
-        WAITING_FOR_PAYEMENT,
+        WAITING_FOR_PAYMENT,
         ONGOING,
         COMPLETED
     }
@@ -84,6 +115,9 @@ contract SmartStay {
         Renting memory _renting;
         rentings.push(_renting);
         indexRenting.increment();
+
+        Booking memory _booking;
+        bookings.push(_booking);
         indexBooking.increment();
     }
 
@@ -143,32 +177,23 @@ contract SmartStay {
 
     /**
      * @dev Create a new renting
-     * @param _unitPrice Price for a single day
-     * @param _personCount Maximum number of person
-     * @param _location  Location of the renting
-     * @param _tags Tags for the renting
-     * @param _description Description for the renting
-     * @param _imageURL URL of the image of the renting
+     * @param _renting The renting to create
      */
     function createRenting(
-        uint16 _unitPrice,
-        uint8 _personCount,
-        string calldata _location,
-        string[] calldata _tags,
-        string calldata _description,
-        string calldata _imageURL
+        Renting calldata _renting
         ) external {
         require(userRentings[msg.sender].length < 5, 'SmartStay : Too many renting');
 
         Renting memory tempRenting;
         tempRenting.id = indexRenting.current();
         tempRenting.owner = msg.sender;
-        tempRenting.unitPrice = _unitPrice;
-        tempRenting.personCount = _personCount;
-        tempRenting.location = _location;
-        tempRenting.tags = _tags;
-        tempRenting.description = _description;
-        tempRenting.imageURL = _imageURL;
+        tempRenting.unitPrice = _renting.unitPrice;
+        tempRenting.caution = _renting.caution;
+        tempRenting.personCount = _renting.personCount;
+        tempRenting.location = _renting.location;
+        tempRenting.tags = _renting.tags;
+        tempRenting.description = _renting.description;
+        tempRenting.imageURL = _renting.imageURL;
 
         rentings.push(tempRenting);
         userRentings[msg.sender].push(tempRenting);
@@ -181,31 +206,23 @@ contract SmartStay {
     /**
      * @dev Update an existing renting if the caller is the owner of the renting
      * @param _id Id of the renting to update
-     * @param _unitPrice Price for a single day
-     * @param _personCount Maximum number of person
-     * @param _location  Location of the renting
-     * @param _tags Tags for the renting
-     * @param _description Description for the renting
-     * @param _imageURL URL of the image of the renting
+     * @param _renting The updated renting
      */
     function updateRenting(
         uint _id,
-        uint16 _unitPrice,
-        uint8 _personCount,
-        string calldata _location,
-        string[] calldata _tags,
-        string calldata _description,
-        string calldata _imageURL
+        Renting calldata _renting
     ) external isRentingOwner(_id) {
 
         Renting memory tempRenting;
         tempRenting.id = _id;
-        tempRenting.unitPrice = _unitPrice;
-        tempRenting.personCount = _personCount;
-        tempRenting.location = _location;
-        tempRenting.tags = _tags;
-        tempRenting.description = _description;
-        tempRenting.imageURL = _imageURL;
+        tempRenting.owner = msg.sender;
+        tempRenting.unitPrice = _renting.unitPrice;
+        tempRenting.caution = _renting.caution;
+        tempRenting.personCount = _renting.personCount;
+        tempRenting.location = _renting.location;
+        tempRenting.tags = _renting.tags;
+        tempRenting.description = _renting.description;
+        tempRenting.imageURL = _renting.imageURL;
 
         rentings[_id]= tempRenting;
         userRentings[msg.sender][getUserRentingIndex(_id)] = tempRenting;
@@ -225,6 +242,14 @@ contract SmartStay {
         userRentings[msg.sender].pop();
 
         emit RentingDeleted(_id);
+    }
+
+    function getRenting(uint _id) external view returns (Renting memory) {
+        return rentings[_id];
+    }
+
+    function getRentingFromBookingID(uint _bookingID) external view returns (Renting memory) {
+        return rentings[bookings[_bookingID].rentingID];
     }
 
     /**
@@ -271,6 +296,8 @@ contract SmartStay {
         bookings.push(_booking);
         bookingOwner[rentings[_rentingID].owner].push(indexBooking.current());
         bookingRecipient[msg.sender].push(indexBooking.current());
+
+        indexBooking.increment();
     }
 
     /**
@@ -300,6 +327,32 @@ contract SmartStay {
 
         return _bookings;
     }
+
+    function approveBooking(uint256 _bookingID) external isBookingOwner(_bookingID) {
+        bookings[_bookingID].status = BookingStatus.WAITING_FOR_PAYMENT;
+    }
+
+    function rejectBooking(uint256 _bookingID) external isBookingOwner(_bookingID) {
+        bookings[_bookingID].status = BookingStatus.REJECTED;
+    }
+
+    function confirmBooking(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
+        console.log(msg.value);
+        console.log(rentings[bookings[_bookingID].rentingID].unitPrice);
+        console.log(bookings[_bookingID].duration );
+        console.log(rentings[bookings[_bookingID].rentingID].caution);
+        console.log(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution);
+        console.log(150 * 1 ether);
+        console.log((rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution) * 1 ether);
+
+        require(msg.value >= (rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution) * 1 ether, 'SmartStay: Not enought send');
+        
+        // bookings[_bookingID].amountPayed = rentings[bookings[_bookingID].rentingID].unitPrice * 1 ether * bookings[_bookingID].duration;
+        // bookings[_bookingID].cautionPayed = rentings[bookings[_bookingID].rentingID].caution * 1 ether;
+
+        bookings[_bookingID].status = BookingStatus.ONGOING;
+    }
+
 
     // Utils
 
