@@ -111,7 +111,14 @@ export default function Renter() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout>
-                <Box width="100%" display="flex" alignItems="center" flexDirection="column" overflow="auto">
+                <Box
+                    width="100%"
+                    height="100%"
+                    display="flex"
+                    alignItems="center"
+                    flexDirection="column"
+                    overflow="auto"
+                >
                     <Box width="80%" flexGrow="1" position="relative">
                         <Typography variant="h4" textAlign={"center"} m="2rem">
                             My proposed rentings
@@ -124,7 +131,7 @@ export default function Renter() {
                                         backgroundColor: "whitesmoke",
                                         width: "400px",
                                         boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)",
-                                        marginBottom: "1rem"
+                                        marginBottom: "2rem"
                                     }}
                                 >
                                     <CardMedia

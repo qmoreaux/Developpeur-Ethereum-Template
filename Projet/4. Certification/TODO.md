@@ -7,3 +7,7 @@ List and implements check in DApp
 
 Check isBookingOwner et isBookingRecipient
 Check BigNumber
+
+Search : Do not show own rentingq
+
+Check eth low value

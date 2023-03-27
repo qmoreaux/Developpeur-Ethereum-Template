@@ -147,7 +147,7 @@ contract SmartStay {
         for (uint i; i < rentings.length; i++) {
             if (rentings[i].id != 0) {
                 if (_maxUnitPrice == 0 || rentings[i].unitPrice <= _maxUnitPrice) {
-                    if (_maxPersonCount == 0 || rentings[i].personCount <= _maxPersonCount) {
+                    if (_maxPersonCount == 0 || rentings[i].personCount >= _maxPersonCount) {
                         if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
                             if (_tags.length == 0 || containTags(rentings[i], _tags)) {
                                 _count++;
@@ -163,7 +163,7 @@ contract SmartStay {
         for (uint i; i < rentings.length; i++) {
             if (rentings[i].id != 0) {
                 if (_maxUnitPrice == 0 || rentings[i].unitPrice <= _maxUnitPrice) {
-                    if (_maxPersonCount == 0 || rentings[i].personCount == _maxPersonCount) {
+                    if (_maxPersonCount == 0 || rentings[i].personCount >= _maxPersonCount) {
                         if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
                             if (_tags.length == 0 || containTags(rentings[i], _tags)) {
                                 _rentings[_index] = rentings[i];
@@ -296,7 +296,8 @@ contract SmartStay {
      * @param _personCount Number of person
      */
     function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
-        require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
+        // require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
+        // TODO DO NOT FORGET TO UNCOMMENT
 
         Booking memory _booking;
         _booking.id = indexBooking.current();
