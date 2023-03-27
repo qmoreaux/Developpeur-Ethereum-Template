@@ -111,74 +111,95 @@ export default function Renter() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout>
-                <Box width="80%" flexGrow="1" position="relative">
-                    <Typography variant="h4" textAlign={"center"} m="2rem">
-                        My proposed rentings
-                    </Typography>
-                    <Box display="flex" justifyContent={"space-evenly"}>
-                        {userRentings.map((userRenting: IRenting) => (
-                            <Card
-                                key={userRenting.id.toNumber()}
+                <Box width="100%" display="flex" alignItems="center" flexDirection="column" overflow="auto">
+                    <Box width="80%" flexGrow="1" position="relative">
+                        <Typography variant="h4" textAlign={"center"} m="2rem">
+                            My proposed rentings
+                        </Typography>
+                        <Box display="flex" justifyContent={"space-evenly"} flexWrap="wrap">
+                            {userRentings.map((userRenting: IRenting) => (
+                                <Card
+                                    key={userRenting.id.toNumber()}
+                                    sx={{
+                                        backgroundColor: "whitesmoke",
+                                        width: "400px",
+                                        boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)",
+                                        marginBottom: "1rem"
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        height="200px"
+                                        image={userRenting.imageURL}
+                                        alt="Image rental"
+                                        sx={{ backgroundColor: "white", objectFit: "contain" }}
+                                    ></CardMedia>
+                                    <CardContent>
+                                        <Typography>Renting ID : #{userRenting.id.toString()}</Typography>
+                                        <Typography>
+                                            Night price : {ethers.utils.formatEther(userRenting.unitPrice)} ETH
+                                        </Typography>
+                                        <Typography>
+                                            Caution : {ethers.utils.formatEther(userRenting.caution)} ETH
+                                        </Typography>
+                                        <Typography>Maximum persons: {userRenting.personCount.toString()}</Typography>
+                                        <Typography>Location : {userRenting.location}</Typography>
+                                        <Typography>Tags : {userRenting.tags.join(", ")}</Typography>
+                                        <Typography>Description : {userRenting.description}</Typography>
+                                        <Box display="flex" justifyContent="space-between" mt="1rem">
+                                            <Button
+                                                variant="contained"
+                                                color="warning"
+                                                onClick={() => handleClickOpen("UpdateRenting", userRenting)}
+                                                startIcon={<Update />}
+                                            >
+                                                <Typography>Update</Typography>
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                color="error"
+                                                onClick={() =>
+                                                    handleClickOpen("DeleteRenting", userRenting.id.toNumber())
+                                                }
+                                                startIcon={<Delete />}
+                                            >
+                                                <Typography>Delete</Typography>
+                                            </Button>
+                                        </Box>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            {userRentings.length == 0 ? (
+                                <Typography textAlign="center">
+                                    You don't have any rentings yet.
+                                    <br />
+                                    Use the icon in the bottom right to start creating one.
+                                </Typography>
+                            ) : (
+                                ""
+                            )}
+                        </Box>
+                        {userRentings.length < 5 ? (
+                            <Button
+                                color="error"
+                                variant="contained"
                                 sx={{
-                                    backgroundColor: "whitesmoke",
-                                    width: "400px",
-                                    boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)"
+                                    position: "fixed",
+                                    bottom: "calc(1rem + 10vh)",
+                                    right: "2rem",
+                                    minWidth: "50px",
+                                    height: "50px",
+                                    borderRadius: "50px",
+                                    padding: "0"
                                 }}
+                                onClick={() => handleClickOpen("NewRenting")}
                             >
-                                <CardMedia
-                                    component="img"
-                                    height="200px"
-                                    image={userRenting.imageURL}
-                                    alt="Image rental"
-                                    sx={{ backgroundColor: "white", objectFit: "contain" }}
-                                ></CardMedia>
-                                <CardContent>
-                                    <Typography>Renting ID : #{userRenting.id.toNumber()}</Typography>
-                                    <Typography>Night price : {userRenting.unitPrice}</Typography>
-                                    <Typography>Maximum persons: {userRenting.personCount}</Typography>
-                                    <Typography>Location : {userRenting.location}</Typography>
-                                    <Typography>Tags : {userRenting.tags.join(", ")}</Typography>
-                                    <Typography>Description : {userRenting.description}</Typography>
-                                    <Box display="flex" justifyContent="space-between" mt="1rem">
-                                        <Button
-                                            variant="contained"
-                                            color="warning"
-                                            onClick={() => handleClickOpen("UpdateRenting", userRenting)}
-                                            startIcon={<Update />}
-                                        >
-                                            <Typography>Update</Typography>
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            color="error"
-                                            onClick={() =>
-                                                handleClickOpen("DeleteRenting", userRenting.id.toNumber())
-                                            }
-                                            startIcon={<Delete />}
-                                        >
-                                            <Typography>Delete</Typography>
-                                        </Button>
-                                    </Box>
-                                </CardContent>
-                            </Card>
-                        ))}
+                                <Add sx={{ fontSize: 35 }}></Add>
+                            </Button>
+                        ) : (
+                            ""
+                        )}
                     </Box>
-                    <Button
-                        color="error"
-                        variant="contained"
-                        sx={{
-                            position: "absolute",
-                            bottom: "2rem",
-                            right: "2rem",
-                            minWidth: "50px",
-                            height: "50px",
-                            borderRadius: "50px",
-                            padding: "0"
-                        }}
-                        onClick={() => handleClickOpen("NewRenting")}
-                    >
-                        <Add sx={{ fontSize: 35 }}></Add>
-                    </Button>
                 </Box>
                 <NewRentingDialog open={open.NewRenting} onClose={(status) => handleClose("NewRenting", status)} />
                 <UpdateRentingDialog

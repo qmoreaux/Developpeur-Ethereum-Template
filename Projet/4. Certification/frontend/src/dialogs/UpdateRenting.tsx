@@ -44,8 +44,9 @@ export default function UpdateRentingDialog(props: any) {
     }, []);
 
     useEffect(() => {
-        if (data) {
-            setUnitPrice(data.unitPrice);
+        if (Object.keys(data).length) {
+            setUnitPrice(+ethers.utils.formatEther(data.unitPrice));
+            setCaution(+ethers.utils.formatEther(data.caution));
             setPersonCount(data.personCount);
             setLocation(data.location);
             setDescription(data.description);
@@ -89,11 +90,11 @@ export default function UpdateRentingDialog(props: any) {
         if (signer && chain && chain.id) {
             try {
                 const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
-                const transaction = await contract.updateRenting({
+                const transaction = await contract.updateRenting(data.id, {
                     id: 0,
                     owner: "0x0000000000000000000000000000000000000000",
-                    unitPrice,
-                    caution,
+                    unitPrice: ethers.utils.parseUnits(unitPrice.toString(), "ether"),
+                    caution: ethers.utils.parseUnits(caution.toString(), "ether"),
                     personCount,
                     location,
                     tags,
@@ -115,7 +116,7 @@ export default function UpdateRentingDialog(props: any) {
             <Stack spacing={2} justifyContent="center" alignItems="center">
                 <Box>
                     <TextField
-                        label="Night price"
+                        label="Night price (ETH)"
                         type="number"
                         sx={{ width: "300px" }}
                         InputProps={{
@@ -129,12 +130,13 @@ export default function UpdateRentingDialog(props: any) {
                 </Box>
                 <Box>
                     <TextField
-                        label="Caution"
+                        label="Caution (ETH)"
                         type="number"
                         sx={{ width: "300px" }}
                         InputProps={{
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
+                        value={caution || 0}
                         onChange={(event) => {
                             setCaution(+event.target.value);
                         }}

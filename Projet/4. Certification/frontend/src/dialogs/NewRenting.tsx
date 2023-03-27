@@ -10,10 +10,9 @@ import { networks, abi } from "../../contracts/SmartStay.json";
 
 import INetworks from "../interfaces/Networks";
 import IRenting from "../interfaces/Renting";
+import { AttachMoney } from "@mui/icons-material";
 
 export default function NewRentingDialog(props: any) {
-    const { address } = useAccount();
-
     const { chain } = useNetwork();
     const provider = useProvider();
     const { data: signer } = useSigner();
@@ -72,7 +71,7 @@ export default function NewRentingDialog(props: any) {
     };
 
     const canCreate = () => {
-        return unitPrice && personCount && location && tags.length && description;
+        return unitPrice && caution && personCount && location && tags.length && description;
     };
 
     const createRenting = async () => {
@@ -82,8 +81,8 @@ export default function NewRentingDialog(props: any) {
                 const transaction = await contract.createRenting({
                     id: 0,
                     owner: "0x0000000000000000000000000000000000000000",
-                    unitPrice,
-                    caution,
+                    unitPrice: ethers.utils.parseUnits(unitPrice.toString(), "ether"),
+                    caution: ethers.utils.parseUnits(caution.toString(), "ether"),
                     personCount,
                     location,
                     tags,
@@ -105,11 +104,15 @@ export default function NewRentingDialog(props: any) {
             <Stack spacing={2} justifyContent="center" alignItems="center">
                 <Box>
                     <TextField
-                        label="Night price"
+                        label="Night price (ETH)"
                         type="number"
                         sx={{ width: "300px" }}
                         InputProps={{
-                            endAdornment: <InputAdornment position="end">€</InputAdornment>
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <AttachMoney />
+                                </InputAdornment>
+                            )
                         }}
                         onChange={(event) => {
                             setUnitPrice(+event.target.value);
@@ -118,11 +121,15 @@ export default function NewRentingDialog(props: any) {
                 </Box>
                 <Box>
                     <TextField
-                        label="Caution"
+                        label="Caution (ETH)"
                         type="number"
                         sx={{ width: "300px" }}
                         InputProps={{
-                            endAdornment: <InputAdornment position="end">€</InputAdornment>
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <AttachMoney />
+                                </InputAdornment>
+                            )
                         }}
                         onChange={(event) => {
                             setCaution(+event.target.value);

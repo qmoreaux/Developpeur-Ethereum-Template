@@ -104,7 +104,7 @@ export default function Renting() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout>
-                <Box width="80%" flexGrow="1" position="relative">
+                <Box width="80%" flexGrow="1" position="relative" overflow="auto">
                     <Typography variant="h4" textAlign={"center"} m="2rem">
                         Available bookings
                     </Typography>
@@ -112,7 +112,7 @@ export default function Renting() {
                         <Grid container justifyContent="space-between" mb="2rem">
                             <Grid item>
                                 <TextField
-                                    label="Night price"
+                                    label="Night price (ETH)"
                                     variant="standard"
                                     type="number"
                                     InputProps={{

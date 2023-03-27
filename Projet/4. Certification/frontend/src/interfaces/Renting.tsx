@@ -2,7 +2,9 @@ import { BigNumber } from "ethers";
 
 export default interface IRenting {
     id: BigNumber;
-    unitPrice: number;
+    unitPrice: BigNumber;
+    caution: BigNumber;
+    owner: string;
     personCount: number;
     location: string;
     tags: Array<string>;
