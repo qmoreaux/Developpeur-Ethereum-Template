@@ -367,11 +367,11 @@ contract SmartStay {
      * @param _bookingID Id of booking to confirm
      */
     function confirmBooking(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
-        require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution) * 1 ether, 'SmartStay: Not enought send');
+        require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution), 'SmartStay: Not enought send');
         require(bookings[_bookingID].status == BookingStatus.WAITING_FOR_PAYMENT, 'SmartStay : Wrong booking status');
         
-        bookings[_bookingID].amountLocked = uint128(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration) * 1 ether;
-        bookings[_bookingID].cautionLocked = uint128(rentings[bookings[_bookingID].rentingID].caution) * 1 ether;
+        bookings[_bookingID].amountLocked = uint128(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration);
+        bookings[_bookingID].cautionLocked = uint128(rentings[bookings[_bookingID].rentingID].caution);
 
         bookings[_bookingID].status = BookingStatus.ONGOING;
     }

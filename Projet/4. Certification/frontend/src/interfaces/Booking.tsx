@@ -5,9 +5,11 @@ export default interface IBooking {
     rentingID: BigNumber;
     amountLocked: BigNumber;
     cautionLocked: BigNumber;
-    timestampStart: number;
-    personCount: number;
-    duration: number;
+    personCount: BigNumber;
+    duration: BigNumber;
+    timestampStart: BigNumber;
+    timestampEnd: BigNumber;
+    validatedOwner: boolean;
+    validatedRecipient: boolean;
     status: number;
-    timestampEnd: number;
 }
