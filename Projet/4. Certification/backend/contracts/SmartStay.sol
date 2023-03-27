@@ -3,8 +3,6 @@ pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "hardhat/console.sol";
-
 /** 
  * @title Voting
  * @author Quentin Moreaux
@@ -34,6 +32,7 @@ contract SmartStay {
     event RentingCreated(Renting renting);
     event RentingUpdated(Renting renting);
     event RentingDeleted(uint rentingIndex);
+
     event BookingCreated();
     event BookingValidated();
 
@@ -41,13 +40,17 @@ contract SmartStay {
 
     /**
      * @dev Modifier to check if caller is owner of a renting
-     * @param _id Id of a renting
+     * @param _rentingID Id of a renting
      */
-    modifier isRentingOwner(uint _id) {
-        require (rentings[_id].owner == msg.sender, 'SmartStay: Not owner of the renting');
+    modifier isRentingOwner(uint _rentingID) {
+        require (rentings[_rentingID].owner == msg.sender, 'SmartStay: Not owner of the renting');
         _;
     }
 
+    /**
+     * @dev Modifier to check if caller is owner of a booking
+     * @param _bookingID Id of a booking
+     */
     modifier isBookingOwner(uint _bookingID) {
         bool foundBooking;
         for (uint i; i < bookingOwner[msg.sender].length; i++) {
@@ -61,6 +64,10 @@ contract SmartStay {
         _;
     }
 
+    /**
+     * @dev Modifier to check if caller is recipient of a booking
+     * @param _bookingID Id of a booking
+     */
     modifier isBookingRecipient(uint _bookingID) {
         bool foundBooking;
         for (uint i; i < bookingRecipient[msg.sender].length; i++) {
@@ -69,7 +76,7 @@ contract SmartStay {
             }
         }
         if (!foundBooking) {
-            revert('SmartStay: Not owner of the booking');
+            revert('SmartStay: Not recipient of the booking');
         }
         _;
     }
@@ -78,11 +85,11 @@ contract SmartStay {
     // Struct, Arrays, Enums
 
     struct Renting {
-        address owner;
         uint256 id;
-        uint16 unitPrice;
-        uint16 caution;
-        uint8 personCount;
+        uint128 unitPrice;
+        uint128 caution;
+        address owner;
+        uint64 personCount;
         string location;
         string[] tags;
         string description;
@@ -92,12 +99,14 @@ contract SmartStay {
     struct Booking {
         uint256 id;
         uint256 rentingID;
-        uint256 amountLocked;
-        uint256 cautionLocked;
-        uint32 timestampStart;
-        uint32 timestampEnd;
-        uint16 duration;
-        uint8 personCount;
+        uint128 amountLocked;
+        uint128 cautionLocked;
+        uint64 timestampStart;
+        uint64 timestampEnd;
+        uint64 duration;
+        uint64 personCount;
+        bool validatedOwner;
+        bool validatedRecipient;
         BookingStatus status;
     }
 
@@ -106,12 +115,14 @@ contract SmartStay {
         REJECTED,
         WAITING_FOR_PAYMENT,
         ONGOING,
+        VALIDATED,
         COMPLETED
     }
 
     // Constructor
 
     constructor() {
+        // Create empty renting and booking to avoid issue with index 0
         Renting memory _renting;
         rentings.push(_renting);
         indexRenting.increment();
@@ -121,30 +132,22 @@ contract SmartStay {
         indexBooking.increment();
     }
 
-    /**
-     * @dev Returns all possible tags for a renting
-     * @return All possible tags for a renting
-     */
-    function getTags() external view returns (string[] memory) {
-        return tags;
-    }
-
     // Renting
 
     /**
      * @dev Search rentings matching the filters passed as parameters
      * @param _maxUnitPrice Maximum price for a single day
-     * @param _personCount Maximum number of person
+     * @param _maxPersonCount Maximum number of person
      * @param _location Location of the renting
      * @param _tags List of tags of the renting
      * @return All the rentings matching the filters
      */
-    function searchRenting(uint16 _maxUnitPrice, uint8 _personCount, string calldata _location, string[] calldata _tags) external view returns (Renting[] memory) {
+    function searchRenting(uint128 _maxUnitPrice, uint64 _maxPersonCount, string calldata _location, string[] calldata _tags) external view returns (Renting[] memory) {
         uint _count;
         for (uint i; i < rentings.length; i++) {
             if (rentings[i].id != 0) {
                 if (_maxUnitPrice == 0 || rentings[i].unitPrice <= _maxUnitPrice) {
-                    if (_personCount == 0 || rentings[i].personCount <= _personCount) {
+                    if (_maxPersonCount == 0 || rentings[i].personCount <= _maxPersonCount) {
                         if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
                             if (_tags.length == 0 || containTags(rentings[i], _tags)) {
                                 _count++;
@@ -160,7 +163,7 @@ contract SmartStay {
         for (uint i; i < rentings.length; i++) {
             if (rentings[i].id != 0) {
                 if (_maxUnitPrice == 0 || rentings[i].unitPrice <= _maxUnitPrice) {
-                    if (_personCount == 0 || rentings[i].personCount == _personCount) {
+                    if (_maxPersonCount == 0 || rentings[i].personCount == _maxPersonCount) {
                         if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
                             if (_tags.length == 0 || containTags(rentings[i], _tags)) {
                                 _rentings[_index] = rentings[i];
@@ -205,16 +208,15 @@ contract SmartStay {
 
     /**
      * @dev Update an existing renting if the caller is the owner of the renting
-     * @param _id Id of the renting to update
+     * @param _rentingID Id of the renting to update
      * @param _renting The updated renting
      */
     function updateRenting(
-        uint _id,
+        uint _rentingID,
         Renting calldata _renting
-    ) external isRentingOwner(_id) {
-
+    ) external isRentingOwner(_rentingID) {
         Renting memory tempRenting;
-        tempRenting.id = _id;
+        tempRenting.id = _rentingID;
         tempRenting.owner = msg.sender;
         tempRenting.unitPrice = _renting.unitPrice;
         tempRenting.caution = _renting.caution;
@@ -224,30 +226,40 @@ contract SmartStay {
         tempRenting.description = _renting.description;
         tempRenting.imageURL = _renting.imageURL;
 
-        rentings[_id]= tempRenting;
-        userRentings[msg.sender][getUserRentingIndex(_id)] = tempRenting;
+        rentings[_rentingID]= tempRenting;
+        userRentings[msg.sender][getUserRentingIndex(_rentingID)] = tempRenting;
 
         emit RentingUpdated(tempRenting);
     }
 
     /**
      * @dev Delete a renting
-     * @param _id Id of the renting to delete
+     * @param _rentingID Id of the renting to delete
      */
-    function deleteRenting(uint _id) external isRentingOwner(_id) {
-        delete rentings[_id];
+    function deleteRenting(uint _rentingID) external isRentingOwner(_rentingID) {
+        delete rentings[_rentingID];
 
-        uint userIndex = getUserRentingIndex(_id);
+        uint userIndex = getUserRentingIndex(_rentingID);
         userRentings[msg.sender][userIndex] = userRentings[msg.sender][userRentings[msg.sender].length - 1];
         userRentings[msg.sender].pop();
 
-        emit RentingDeleted(_id);
+        emit RentingDeleted(_rentingID);
     }
 
-    function getRenting(uint _id) external view returns (Renting memory) {
-        return rentings[_id];
+    /**
+     * @dev Get a renting from an ID
+     * @param _rentingID Id of the renting to get
+     * @return Renting matching the id passed in parameters
+     */
+    function getRenting(uint _rentingID) external view returns (Renting memory) {
+        return rentings[_rentingID];
     }
 
+    /**
+     * @dev Get a renting from a booking ID
+     * @param _bookingID Id of the booking to get the renting from
+     * @return Renting matching the _bookingID passed in parameters
+     */
     function getRentingFromBookingID(uint _bookingID) external view returns (Renting memory) {
         return rentings[bookings[_bookingID].rentingID];
     }
@@ -283,9 +295,10 @@ contract SmartStay {
      * @param _duration Duration of the booking (in days)
      * @param _personCount Number of person
      */
-    function createBooking(uint256 _rentingID, uint32 _timestampStart, uint16 _duration, uint8 _personCount) external {
-        Booking memory _booking;
+    function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
+        require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
 
+        Booking memory _booking;
         _booking.id = indexBooking.current();
         _booking.rentingID = _rentingID;
         _booking.timestampStart = _timestampStart;
@@ -328,26 +341,70 @@ contract SmartStay {
         return _bookings;
     }
 
+    /**
+     * @dev Approve the booking
+     * @param _bookingID Id of booking to approve
+     */
     function approveBooking(uint256 _bookingID) external isBookingOwner(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.CREATED, 'SmartStay : Wrong booking status');
+
         bookings[_bookingID].status = BookingStatus.WAITING_FOR_PAYMENT;
     }
 
+    /**
+     * @dev Reject the booking
+     * @param _bookingID Id of booking to reject
+     */
     function rejectBooking(uint256 _bookingID) external isBookingOwner(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.CREATED, 'SmartStay : Wrong booking status');
+
         bookings[_bookingID].status = BookingStatus.REJECTED;
     }
 
+    /**
+     * @dev Confirm a booking by locking (renting price * duration + caution) amount ETH for the duration of the booking
+     * @param _bookingID Id of booking to confirm
+     */
     function confirmBooking(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
         require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution) * 1 ether, 'SmartStay: Not enought send');
+        require(bookings[_bookingID].status == BookingStatus.WAITING_FOR_PAYMENT, 'SmartStay : Wrong booking status');
         
-        bookings[_bookingID].amountLocked = uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration) * 1 ether;
-        bookings[_bookingID].cautionLocked = uint256(rentings[bookings[_bookingID].rentingID].caution) * 1 ether;
+        bookings[_bookingID].amountLocked = uint128(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration) * 1 ether;
+        bookings[_bookingID].cautionLocked = uint128(rentings[bookings[_bookingID].rentingID].caution) * 1 ether;
 
         bookings[_bookingID].status = BookingStatus.ONGOING;
     }
 
+    function validateBookingAsRecipient(uint256 _bookingID) external isBookingRecipient(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
+        require(block.timestamp > bookings[_bookingID].timestampEnd, 'SmartStay : Booking is not finished yet');
+
+        bookings[_bookingID].validatedRecipient = true;
+        if (bookings[_bookingID].validatedOwner == true) {
+            bookings[_bookingID].status = BookingStatus.VALIDATED;
+        }
+    }
+
+        function validateBookingAsOwner(uint256 _bookingID) external isBookingOwner(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
+        require(block.timestamp > bookings[_bookingID].timestampEnd, 'SmartStay : Booking is not finished yet');
+
+        bookings[_bookingID].validatedOwner = true;
+        if (bookings[_bookingID].validatedRecipient == true) {
+            bookings[_bookingID].status = BookingStatus.VALIDATED;
+        }
+    }
+
+    /**
+     * Retrieve caution as recipient of a booking
+     * @param _bookingID Od of booking to retrieve caution
+     */
     function retrieveCaution(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.VALIDATED, 'SmartStay : Wrong booking status');
+
         uint256 cautionToSend = bookings[_bookingID].cautionLocked;
         bookings[_bookingID].cautionLocked = 0;
+
         (bool success, ) = msg.sender.call{value: cautionToSend}("");
         require(success, 'SmartStay: Caution retrieve failed');
         if (bookings[_bookingID].amountLocked == 0) {
@@ -355,9 +412,16 @@ contract SmartStay {
         }
     }
 
+    /**
+     * Retrieve amount as owner of a booking
+     * @param _bookingID Od of booking to retrieve caution
+     */
     function retrieveAmount(uint256 _bookingID) external payable isBookingOwner(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.VALIDATED, 'SmartStay : Wrong booking status');
+
         uint256 amountToSend = bookings[_bookingID].amountLocked;
         bookings[_bookingID].amountLocked = 0;
+
         (bool success, ) = msg.sender.call{value: amountToSend}("");
         require(success, 'SmartStay: Amount retrieve failed');
         if (bookings[_bookingID].cautionLocked == 0) {
@@ -369,13 +433,11 @@ contract SmartStay {
     // Utils
 
     /**
-     * @dev Check if two strings are equal
-     * @param a First string to compare
-     * @param b Second string to compare
-     * @return True of both string are equal, false otherwise
+     * @dev Returns all possible tags for a renting
+     * @return All possible tags for a renting
      */
-    function compareString(string memory a, string memory b) private pure returns (bool) {
-        return keccak256(bytes(a)) == keccak256(bytes(b));
+    function getTags() external view returns (string[] memory) {
+        return tags;
     }
 
     /**
@@ -399,4 +461,13 @@ contract SmartStay {
         return true;
     }
 
+    /**
+     * @dev Check if two strings are equal
+     * @param a First string to compare
+     * @param b Second string to compare
+     * @return True of both string are equal, false otherwise
+     */
+    function compareString(string memory a, string memory b) private pure returns (bool) {
+        return keccak256(bytes(a)) == keccak256(bytes(b));
+    }
 }
