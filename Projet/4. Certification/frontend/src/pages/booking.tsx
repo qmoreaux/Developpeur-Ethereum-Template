@@ -10,24 +10,24 @@ import { Button, Typography, Box, Card, CardContent, Stack } from "@mui/material
 
 import { networks, abi } from "../../contracts/SmartStay.json";
 
-import Booking from "../interfaces/Booking";
-import Networks from "../interfaces/Networks";
+import IBooking from "../interfaces/Booking";
+import INetworks from "../interfaces/Networks";
 
-export default function Renter() {
+export default function Booking() {
     const { address, isConnected } = useAccount();
     const { chain } = useNetwork();
     const provider = useProvider();
     const { data: signer } = useSigner();
     const router = useRouter();
 
-    const [bookingOwner, setBookingOwner] = useState<Array<Booking>>([]);
-    const [bookingRecipient, setBookingRecipient] = useState<Array<Booking>>([]);
+    const [bookingOwner, setBookingOwner] = useState<Array<IBooking>>([]);
+    const [bookingRecipient, setBookingRecipient] = useState<Array<IBooking>>([]);
 
     useEffect(() => {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, provider);
+                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
                     setBookingOwner(await contract.getBookingOwner({ from: address }));
                     console.log(await contract.getBookingOwner({ from: address }));
                 } catch (e) {
@@ -41,7 +41,7 @@ export default function Renter() {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, provider);
+                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
                     setBookingRecipient(await contract.getBookingRecipient({ from: address }));
                     console.log(await contract.getBookingRecipient({ from: address }));
                 } catch (e) {
@@ -60,7 +60,7 @@ export default function Renter() {
     const getRenting = async (bookingID: number) => {
         if (provider && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, provider);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
                 const renting = await contract.getRentingFromBookingID(bookingID);
                 return renting;
             } catch (e) {
@@ -72,11 +72,11 @@ export default function Renter() {
     const handleAcceptBooking = async (bookingID: number) => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 const transaction = await contract.approveBooking(bookingID);
                 await transaction.wait();
                 setBookingOwner(
-                    bookingOwner.map((booking: Booking) => {
+                    bookingOwner.map((booking: IBooking) => {
                         if (booking.id.toNumber() === bookingID) {
                             booking = {
                                 ...booking,
@@ -95,7 +95,7 @@ export default function Renter() {
     const handleRejectBooking = async (bookingID: number) => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 const transaction = await contract.rejectBooking(bookingID);
                 await transaction.wait();
                 const bookingsUpdated = bookingOwner.map((booking) => {
@@ -111,10 +111,10 @@ export default function Renter() {
         }
     };
 
-    const handlePayBooking = async (booking: Booking) => {
+    const handlePayBooking = async (booking: IBooking) => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 let renting = await getRenting(booking.id.toNumber());
                 const transaction = await contract.confirmBooking(booking.id.toNumber(), {
                     value: ethers.utils.parseUnits(
@@ -124,7 +124,7 @@ export default function Renter() {
                 });
                 await transaction.wait();
                 setBookingRecipient(
-                    bookingRecipient.map((_booking: Booking) => {
+                    bookingRecipient.map((_booking: IBooking) => {
                         if (_booking.id.toNumber() === booking.id.toNumber()) {
                             _booking = {
                                 ..._booking,
@@ -140,14 +140,14 @@ export default function Renter() {
         }
     };
 
-    const handleRetrieveCaution = async (booking: Booking) => {
+    const handleRetrieveCaution = async (booking: IBooking) => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 const transaction = await contract.retrieveCaution(booking.id.toNumber());
                 await transaction.wait();
                 setBookingRecipient(
-                    bookingRecipient.map((_booking: Booking) => {
+                    bookingRecipient.map((_booking: IBooking) => {
                         if (_booking.id.toNumber() === booking.id.toNumber()) {
                             _booking = {
                                 ..._booking,
@@ -164,14 +164,14 @@ export default function Renter() {
         }
     };
 
-    const handleRetrieveAmount = async (booking: Booking) => {
+    const handleRetrieveAmount = async (booking: IBooking) => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 const transaction = await contract.retrieveAmount(booking.id.toNumber());
                 await transaction.wait();
                 setBookingRecipient(
-                    bookingRecipient.map((_booking: Booking) => {
+                    bookingRecipient.map((_booking: IBooking) => {
                         if (_booking.id.toNumber() === booking.id.toNumber()) {
                             _booking = {
                                 ..._booking,
@@ -234,7 +234,7 @@ export default function Renter() {
                             Booking Owner
                         </Typography>
                         <Box display="flex" justifyContent="space-evenly" flexWrap="wrap">
-                            {bookingOwner.map((booking: Booking) => (
+                            {bookingOwner.map((booking: IBooking) => (
                                 <Card
                                     key={booking.id.toNumber()}
                                     sx={{

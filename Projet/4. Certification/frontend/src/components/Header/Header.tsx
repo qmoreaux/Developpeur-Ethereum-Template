@@ -13,8 +13,10 @@ const Header = () => {
             padding="2rem"
             sx={{ backgroundColor: "whitesmoke" }}
         >
-            <Typography fontWeight="bold">Logo</Typography>
-            <Box width="30%" display="flex" justifyContent="space-between" alignItems="center">
+            <Typography fontWeight="bold" width="30%">
+                Logo
+            </Typography>
+            <Box width="25%" display="flex" justifyContent="space-between" alignItems="center">
                 <Typography>
                     <Link href="/">Home</Link>
                 </Typography>
@@ -28,7 +30,9 @@ const Header = () => {
                     <Link href="/booking">Booking</Link>
                 </Typography>
             </Box>
-            <ConnectButton />
+            <Box width="30%" display="flex" justifyContent="flex-end">
+                <ConnectButton />
+            </Box>
         </Box>
     );
 };

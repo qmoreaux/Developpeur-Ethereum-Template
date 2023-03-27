@@ -1,3 +1,3 @@
-export default interface NetworksInterface {
+export default interface INetworks {
     [key: string]: any;
 }

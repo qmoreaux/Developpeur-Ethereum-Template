@@ -23,8 +23,8 @@ import { BookOnline, Person, Euro, LocationCity, Filter } from "@mui/icons-mater
 
 import { networks, abi } from "../../contracts/SmartStay.json";
 
-import RentingInterface from "../interfaces/Renting";
-import NetworksInterface from "../interfaces/Networks";
+import IRenting from "../interfaces/Renting";
+import INetworks from "../interfaces/Networks";
 
 export default function Renting() {
     const { address, isConnected } = useAccount();
@@ -33,7 +33,7 @@ export default function Renting() {
     const provider = useProvider();
     const router = useRouter();
 
-    const [rentings, setRentings] = useState<Array<RentingInterface>>([]);
+    const [rentings, setRentings] = useState<Array<IRenting>>([]);
     const [maxUnitPrice, setMaxUnitPrice] = useState<number>(0);
     const [personCount, setPersonCount] = useState<number>(0);
     const [location, setLocation] = useState<string>("");
@@ -64,7 +64,7 @@ export default function Renting() {
     const searchRentings = async () => {
         if (provider && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as NetworksInterface)[chain.id].address, abi, provider);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
                 setRentings(await contract.searchRenting(maxUnitPrice, personCount, location, tags, { from: address }));
             } catch (e) {
                 console.error(e);
@@ -76,11 +76,7 @@ export default function Renting() {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract(
-                        (networks as NetworksInterface)[chain.id].address,
-                        abi,
-                        provider
-                    );
+                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
                     setAvailableTags(await contract.getTags());
                 } catch (e) {
                     console.error(e);
@@ -183,7 +179,7 @@ export default function Renting() {
                         </Grid>
                     </Box>
                     <Box display="flex" justifyContent={"space-evenly"}>
-                        {rentings.map((renting: RentingInterface) => (
+                        {rentings.map((renting: IRenting) => (
                             <Card
                                 key={renting.id.toNumber()}
                                 sx={{

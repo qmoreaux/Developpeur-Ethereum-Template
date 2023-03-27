@@ -8,7 +8,7 @@ import { useNetwork, useProvider, useSigner } from "wagmi";
 
 import { networks, abi } from "../../contracts/SmartStay.json";
 
-import Networks from "../interfaces/Networks";
+import INetworks from "../interfaces/Networks";
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
@@ -40,7 +40,7 @@ export default function BookRentingDialog(props: any) {
     const createBooking = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 const transaction = await contract.createBooking(
                     rentingID,
                     new Date(startDate).getTime() / 1000,

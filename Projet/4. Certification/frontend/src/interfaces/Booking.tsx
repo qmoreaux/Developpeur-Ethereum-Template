@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 
-export default interface BookingInterface {
+export default interface IBooking {
     id: BigNumber;
     rentingID: BigNumber;
     amountLocked: BigNumber;

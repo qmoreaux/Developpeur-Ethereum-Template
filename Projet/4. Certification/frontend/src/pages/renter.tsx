@@ -14,8 +14,8 @@ import { Add, Update, Delete } from "@mui/icons-material";
 
 import { networks, abi } from "../../contracts/SmartStay.json";
 
-import Renting from "../interfaces/Renting";
-import Networks from "../interfaces/Networks";
+import IRenting from "../interfaces/Renting";
+import INetworks from "../interfaces/Networks";
 
 export default function Renter() {
     const { address, isConnected } = useAccount();
@@ -23,7 +23,7 @@ export default function Renter() {
     const provider = useProvider();
     const router = useRouter();
 
-    const [userRentings, setUserRentings] = useState<Array<Renting>>([]);
+    const [userRentings, setUserRentings] = useState<Array<IRenting>>([]);
     const [open, setOpen] = useState({ NewRenting: false, UpdateRenting: false, DeleteRenting: false });
     const [updateRenting, setUpdateRenting] = useState({});
     const [deleteRenting, setDeleteRenting] = useState<number>(0);
@@ -32,7 +32,7 @@ export default function Renter() {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, provider);
+                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
                     setUserRentings(await contract.getUserRenting({ from: address }));
                 } catch (e) {
                     console.error(e);
@@ -74,7 +74,7 @@ export default function Renter() {
             case "UpdateRenting": {
                 if (data) {
                     setUserRentings(
-                        userRentings.map((userRenting) => {
+                        userRentings.map((userRenting: IRenting) => {
                             if (userRenting.id.toNumber() === data.id.toNumber()) {
                                 return data;
                             }
@@ -88,7 +88,7 @@ export default function Renter() {
             case "DeleteRenting": {
                 if (data) {
                     setUserRentings(
-                        userRentings.filter((userRenting: Renting) => {
+                        userRentings.filter((userRenting: IRenting) => {
                             if (userRenting.id.toNumber() === deleteRenting) {
                                 return false;
                             }
@@ -116,7 +116,7 @@ export default function Renter() {
                         My proposed rentings
                     </Typography>
                     <Box display="flex" justifyContent={"space-evenly"}>
-                        {userRentings.map((userRenting: Renting) => (
+                        {userRentings.map((userRenting: IRenting) => (
                             <Card
                                 key={userRenting.id.toNumber()}
                                 sx={{

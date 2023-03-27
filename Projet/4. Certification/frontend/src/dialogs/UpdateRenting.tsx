@@ -8,8 +8,8 @@ import { useNetwork, useProvider, useSigner } from "wagmi";
 
 import { networks, abi } from "../../contracts/SmartStay.json";
 
-import Networks from "../interfaces/Networks";
-import Renting from "../interfaces/Renting";
+import INetworks from "../interfaces/Networks";
+import IRenting from "../interfaces/Renting";
 
 export default function UpdateRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -34,7 +34,7 @@ export default function UpdateRentingDialog(props: any) {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, provider);
+                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
                     setAvailableTags(await contract.getTags());
                 } catch (e) {
                     console.error(e);
@@ -53,7 +53,7 @@ export default function UpdateRentingDialog(props: any) {
         }
     }, [data]);
 
-    const handleClose = (data: Renting | boolean) => {
+    const handleClose = (data: IRenting | boolean) => {
         onClose(data);
     };
 
@@ -88,7 +88,7 @@ export default function UpdateRentingDialog(props: any) {
     const updateRenting = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 const transaction = await contract.updateRenting({
                     id: 0,
                     owner: "0x0000000000000000000000000000000000000000",

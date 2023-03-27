@@ -6,7 +6,7 @@ import { Dialog, DialogTitle, Box, Typography, Button } from "@mui/material";
 
 import { networks, abi } from "../../contracts/SmartStay.json";
 
-import Networks from "../interfaces/Networks";
+import INetworks from "../interfaces/Networks";
 
 export default function DeleteRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -21,7 +21,7 @@ export default function DeleteRentingDialog(props: any) {
     const deleteRenting = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as Networks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 const transaction = await contract.deleteRenting(id);
                 await transaction.wait();
                 handleClose(true);
