@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-import Head from "next/head";
-import Layout from "@/components/Layout/Layout";
-import CardBooking from "@/components/CardBooking/CardBooking";
+import Head from 'next/head';
+import Layout from '@/components/Layout/Layout';
+import CardBooking from '@/components/CardBooking/CardBooking';
 
-import { ethers } from "ethers";
-import { useNetwork, useProvider, useAccount } from "wagmi";
-import { Typography, Box } from "@mui/material";
+import { ethers } from 'ethers';
+import { useNetwork, useProvider, useAccount } from 'wagmi';
+import { Typography, Box } from '@mui/material';
 
-import { networks, abi } from "../../contracts/SmartStay.json";
+import artifacts from '../../contracts/SmartStay.json';
 
-import IBooking from "../interfaces/Booking";
-import INetworks from "../interfaces/Networks";
+import IBooking from '../interfaces/Booking';
+import INetworks from '../interfaces/Networks';
 
 export default function Booking() {
     const { address, isConnected } = useAccount();
@@ -27,7 +27,11 @@ export default function Booking() {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
+                    const contract = new ethers.Contract(
+                        (artifacts.networks as INetworks)[chain.id].address,
+                        artifacts.abi,
+                        provider
+                    );
                     setBookingOwner(await contract.getBookingOwner({ from: address }));
                 } catch (e) {
                     console.error(e);
@@ -40,7 +44,11 @@ export default function Booking() {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
+                    const contract = new ethers.Contract(
+                        (artifacts.networks as INetworks)[chain.id].address,
+                        artifacts.abi,
+                        provider
+                    );
                     setBookingRecipient(await contract.getBookingRecipient({ from: address }));
                 } catch (e) {
                     console.error(e);
@@ -51,7 +59,7 @@ export default function Booking() {
 
     useEffect(() => {
         if (!isConnected) {
-            router.push("/");
+            router.push('/');
         }
     }, []);
 
@@ -66,7 +74,7 @@ export default function Booking() {
             <Layout>
                 <Box width="100%" display="flex" alignItems="center" flexDirection="column" overflow="auto">
                     <Box width="80%" flexGrow="1" position="relative">
-                        <Typography variant="h4" textAlign={"center"} m="2rem">
+                        <Typography variant="h4" textAlign={'center'} m="2rem">
                             Booking Owner
                         </Typography>
                         <Box display="flex" justifyContent="space-evenly" flexWrap="wrap">
@@ -76,7 +84,7 @@ export default function Booking() {
                         </Box>
                     </Box>
                     <Box width="80%" flexGrow="1" position="relative">
-                        <Typography variant="h4" textAlign={"center"} m="2rem">
+                        <Typography variant="h4" textAlign={'center'} m="2rem">
                             Booking Recipient
                         </Typography>
                         <Box display="flex" justifyContent="space-evenly" flexWrap="wrap">

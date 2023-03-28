@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-import Head from "next/head";
-import Layout from "@/components/Layout/Layout";
-import BookRentingDialog from "@/dialogs/BookRenting";
+import Head from 'next/head';
+import Layout from '@/components/Layout/Layout';
+import BookRentingDialog from '@/dialogs/BookRenting';
 
-import { useNetwork, useProvider, useAccount } from "wagmi";
-import { ethers } from "ethers";
+import { useNetwork, useProvider, useAccount } from 'wagmi';
+import { ethers } from 'ethers';
 import {
     Button,
     Typography,
@@ -18,13 +18,13 @@ import {
     TextField,
     InputAdornment,
     Autocomplete
-} from "@mui/material";
-import { BookOnline, Person, AttachMoney, LocationCity, Filter } from "@mui/icons-material";
+} from '@mui/material';
+import { BookOnline, Person, AttachMoney, LocationCity, Filter } from '@mui/icons-material';
 
-import { networks, abi } from "../../contracts/SmartStay.json";
+import artifacts from '../../contracts/SmartStay.json';
 
-import IRenting from "../interfaces/Renting";
-import INetworks from "../interfaces/Networks";
+import IRenting from '../interfaces/Renting';
+import INetworks from '../interfaces/Networks';
 
 export default function Renting() {
     const { address, isConnected } = useAccount();
@@ -36,7 +36,7 @@ export default function Renting() {
     const [rentings, setRentings] = useState<Array<IRenting>>([]);
     const [maxUnitPrice, setMaxUnitPrice] = useState<number>(0);
     const [personCount, setPersonCount] = useState<number>(0);
-    const [location, setLocation] = useState<string>("");
+    const [location, setLocation] = useState<string>('');
     const [tags, setTags] = useState<Array<string>>([]);
     const [availableTags, setAvailableTags] = useState<Array<string>>([]);
 
@@ -53,7 +53,7 @@ export default function Renting() {
         setBookingRentingID(0);
 
         if (data) {
-            router.push("/booking");
+            router.push('/booking');
         }
     };
 
@@ -62,7 +62,7 @@ export default function Renting() {
     };
 
     const handleKeyPress = (event: React.KeyboardEvent) => {
-        if (event.key == "Enter") {
+        if (event.key == 'Enter') {
             searchRentings();
         }
     };
@@ -70,10 +70,14 @@ export default function Renting() {
     const searchRentings = async () => {
         if (provider && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    provider
+                );
                 setRentings(
                     await contract.searchRenting(
-                        ethers.utils.parseUnits(maxUnitPrice.toString(), "ether"),
+                        ethers.utils.parseUnits(maxUnitPrice.toString(), 'ether'),
                         personCount,
                         location,
                         tags,
@@ -90,7 +94,11 @@ export default function Renting() {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
+                    const contract = new ethers.Contract(
+                        (artifacts.networks as INetworks)[chain.id].address,
+                        artifacts.abi,
+                        provider
+                    );
                     setAvailableTags(await contract.getTags());
                 } catch (e) {
                     console.error(e);
@@ -105,7 +113,7 @@ export default function Renting() {
 
     useEffect(() => {
         if (!isConnected) {
-            router.push("/");
+            router.push('/');
         }
     }, []);
 
@@ -127,7 +135,7 @@ export default function Renting() {
                     overflow="auto"
                 >
                     <Box width="80%" flexGrow="1">
-                        <Typography variant="h4" textAlign={"center"} m="2rem">
+                        <Typography variant="h4" textAlign={'center'} m="2rem">
                             Available bookings
                         </Typography>
                         <Box>
@@ -211,10 +219,10 @@ export default function Renting() {
                                 <Card
                                     key={renting.id.toNumber()}
                                     sx={{
-                                        backgroundColor: "whitesmoke",
-                                        width: "400px",
-                                        boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)",
-                                        marginBottom: "2rem"
+                                        backgroundColor: 'whitesmoke',
+                                        width: '400px',
+                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                        marginBottom: '2rem'
                                     }}
                                 >
                                     <CardMedia
@@ -222,7 +230,7 @@ export default function Renting() {
                                         height="200px"
                                         image={renting.imageURL}
                                         alt="Image rental"
-                                        sx={{ backgroundColor: "white", objectFit: "contain" }}
+                                        sx={{ backgroundColor: 'white', objectFit: 'contain' }}
                                     ></CardMedia>
                                     <CardContent>
                                         <Typography>Renting ID : #{renting.id.toString()}</Typography>
@@ -234,7 +242,7 @@ export default function Renting() {
                                         </Typography>
                                         <Typography>Maximum persons: {renting.personCount.toString()}</Typography>
                                         <Typography>Location : {renting.location}</Typography>
-                                        <Typography>Tags : {renting.tags.join(", ")}</Typography>
+                                        <Typography>Tags : {renting.tags.join(', ')}</Typography>
                                         <Typography>Description : {renting.description}</Typography>
                                         <Box display="flex" justifyContent="space-between" mt="1rem">
                                             <Button
@@ -251,7 +259,7 @@ export default function Renting() {
                             {rentings.length == 0 ? (
                                 <Typography textAlign="center">No bookings matches these filters.</Typography>
                             ) : (
-                                ""
+                                ''
                             )}
                         </Box>
                     </Box>

@@ -6,7 +6,7 @@ import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, I
 import { ethers } from 'ethers';
 import { useNetwork, useProvider, useSigner } from 'wagmi';
 
-import { networks, abi } from '../../contracts/SmartStay.json';
+import artifacts from '../../contracts/SmartStay.json';
 
 import INetworks from '../interfaces/Networks';
 
@@ -40,7 +40,11 @@ export default function BookRentingDialog(props: any) {
     const createBooking = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
                 const transaction = await contract.createBooking(
                     rentingID,
                     new Date(startDate).getTime() / 1000,

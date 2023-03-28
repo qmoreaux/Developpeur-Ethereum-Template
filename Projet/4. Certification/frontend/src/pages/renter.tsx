@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-import Head from "next/head";
-import Layout from "@/components/Layout/Layout";
-import NewRentingDialog from "@/dialogs/NewRenting";
-import UpdateRentingDialog from "@/dialogs/UpdateRenting";
-import DeleteRentingDialog from "@/dialogs/DeleteRenting";
+import Head from 'next/head';
+import Layout from '@/components/Layout/Layout';
+import NewRentingDialog from '@/dialogs/NewRenting';
+import UpdateRentingDialog from '@/dialogs/UpdateRenting';
+import DeleteRentingDialog from '@/dialogs/DeleteRenting';
 
-import { ethers } from "ethers";
-import { useNetwork, useProvider, useAccount } from "wagmi";
-import { Button, Typography, Box, Card, CardContent, CardMedia } from "@mui/material";
-import { Add, Update, Delete } from "@mui/icons-material";
+import { ethers } from 'ethers';
+import { useNetwork, useProvider, useAccount } from 'wagmi';
+import { Button, Typography, Box, Card, CardContent, CardMedia } from '@mui/material';
+import { Add, Update, Delete } from '@mui/icons-material';
 
-import { networks, abi } from "../../contracts/SmartStay.json";
+import artifacts from '../../contracts/SmartStay.json';
 
-import IRenting from "../interfaces/Renting";
-import INetworks from "../interfaces/Networks";
+import IRenting from '../interfaces/Renting';
+import INetworks from '../interfaces/Networks';
 
 export default function Renter() {
     const { address, isConnected } = useAccount();
@@ -32,7 +32,11 @@ export default function Renter() {
         (async () => {
             if (provider && chain && chain.id) {
                 try {
-                    const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
+                    const contract = new ethers.Contract(
+                        (artifacts.networks as INetworks)[chain.id].address,
+                        artifacts.abi,
+                        provider
+                    );
                     setUserRentings(await contract.getUserRenting({ from: address }));
                 } catch (e) {
                     console.error(e);
@@ -43,18 +47,18 @@ export default function Renter() {
 
     useEffect(() => {
         if (!isConnected) {
-            router.push("/");
+            router.push('/');
         }
     }, []);
 
     const handleClickOpen = (dialog: any, data?: any) => {
         setOpen({ ...open, [dialog]: true });
         switch (dialog) {
-            case "UpdateRenting": {
+            case 'UpdateRenting': {
                 setUpdateRenting(data);
                 break;
             }
-            case "DeleteRenting": {
+            case 'DeleteRenting': {
                 setDeleteRenting(data);
                 break;
             }
@@ -65,13 +69,13 @@ export default function Renter() {
         setOpen({ ...open, [dialog]: false });
 
         switch (dialog) {
-            case "NewRenting": {
+            case 'NewRenting': {
                 if (data) {
                     setUserRentings([...userRentings, data]);
                 }
                 break;
             }
-            case "UpdateRenting": {
+            case 'UpdateRenting': {
                 if (data) {
                     setUserRentings(
                         userRentings.map((userRenting: IRenting) => {
@@ -85,7 +89,7 @@ export default function Renter() {
                 setUpdateRenting({});
                 break;
             }
-            case "DeleteRenting": {
+            case 'DeleteRenting': {
                 if (data) {
                     setUserRentings(
                         userRentings.filter((userRenting: IRenting) => {
@@ -120,18 +124,18 @@ export default function Renter() {
                     overflow="auto"
                 >
                     <Box width="80%" flexGrow="1" position="relative">
-                        <Typography variant="h4" textAlign={"center"} m="2rem">
+                        <Typography variant="h4" textAlign={'center'} m="2rem">
                             My proposed rentings
                         </Typography>
-                        <Box display="flex" justifyContent={"space-evenly"} flexWrap="wrap">
+                        <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             {userRentings.map((userRenting: IRenting) => (
                                 <Card
                                     key={userRenting.id.toNumber()}
                                     sx={{
-                                        backgroundColor: "whitesmoke",
-                                        width: "400px",
-                                        boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)",
-                                        marginBottom: "2rem"
+                                        backgroundColor: 'whitesmoke',
+                                        width: '400px',
+                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                        marginBottom: '2rem'
                                     }}
                                 >
                                     <CardMedia
@@ -139,7 +143,7 @@ export default function Renter() {
                                         height="200px"
                                         image={userRenting.imageURL}
                                         alt="Image rental"
-                                        sx={{ backgroundColor: "white", objectFit: "contain" }}
+                                        sx={{ backgroundColor: 'white', objectFit: 'contain' }}
                                     ></CardMedia>
                                     <CardContent>
                                         <Typography>Renting ID : #{userRenting.id.toString()}</Typography>
@@ -151,13 +155,13 @@ export default function Renter() {
                                         </Typography>
                                         <Typography>Maximum persons: {userRenting.personCount.toString()}</Typography>
                                         <Typography>Location : {userRenting.location}</Typography>
-                                        <Typography>Tags : {userRenting.tags.join(", ")}</Typography>
+                                        <Typography>Tags : {userRenting.tags.join(', ')}</Typography>
                                         <Typography>Description : {userRenting.description}</Typography>
                                         <Box display="flex" justifyContent="space-between" mt="1rem">
                                             <Button
                                                 variant="contained"
                                                 color="warning"
-                                                onClick={() => handleClickOpen("UpdateRenting", userRenting)}
+                                                onClick={() => handleClickOpen('UpdateRenting', userRenting)}
                                                 startIcon={<Update />}
                                             >
                                                 <Typography>Update</Typography>
@@ -166,7 +170,7 @@ export default function Renter() {
                                                 variant="contained"
                                                 color="error"
                                                 onClick={() =>
-                                                    handleClickOpen("DeleteRenting", userRenting.id.toNumber())
+                                                    handleClickOpen('DeleteRenting', userRenting.id.toNumber())
                                                 }
                                                 startIcon={<Delete />}
                                             >
@@ -183,7 +187,7 @@ export default function Renter() {
                                     Use the icon in the bottom right to start creating one.
                                 </Typography>
                             ) : (
-                                ""
+                                ''
                             )}
                         </Box>
                         {userRentings.length < 5 ? (
@@ -191,33 +195,33 @@ export default function Renter() {
                                 color="error"
                                 variant="contained"
                                 sx={{
-                                    position: "fixed",
-                                    bottom: "calc(1rem + 10vh)",
-                                    right: "2rem",
-                                    minWidth: "50px",
-                                    height: "50px",
-                                    borderRadius: "50px",
-                                    padding: "0"
+                                    position: 'fixed',
+                                    bottom: 'calc(1rem + 10vh)',
+                                    right: '2rem',
+                                    minWidth: '50px',
+                                    height: '50px',
+                                    borderRadius: '50px',
+                                    padding: '0'
                                 }}
-                                onClick={() => handleClickOpen("NewRenting")}
+                                onClick={() => handleClickOpen('NewRenting')}
                             >
                                 <Add sx={{ fontSize: 35 }}></Add>
                             </Button>
                         ) : (
-                            ""
+                            ''
                         )}
                     </Box>
                 </Box>
-                <NewRentingDialog open={open.NewRenting} onClose={(status) => handleClose("NewRenting", status)} />
+                <NewRentingDialog open={open.NewRenting} onClose={(status) => handleClose('NewRenting', status)} />
                 <UpdateRentingDialog
                     open={open.UpdateRenting}
                     data={updateRenting}
-                    onClose={(status) => handleClose("UpdateRenting", status)}
+                    onClose={(status) => handleClose('UpdateRenting', status)}
                 />
                 <DeleteRentingDialog
                     open={open.DeleteRenting}
                     id={deleteRenting}
-                    onClose={(status) => handleClose("DeleteRenting", status)}
+                    onClose={(status) => handleClose('DeleteRenting', status)}
                 />
             </Layout>
         </>

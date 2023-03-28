@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
-import { ethers, BigNumber } from 'ethers';
+import { ethers, BigNumber, ContractInterface } from 'ethers';
 import { useNetwork, useProvider, useSigner, useAccount } from 'wagmi';
 import { Button, Typography, Box, Card, CardContent, Stack } from '@mui/material';
 
-import { networks, abi } from '../../../contracts/SmartStay.json';
+import artifacts from '../../../contracts/SmartStay.json';
 
 import IBooking from '../../interfaces/Booking';
 import INetworks from '../../interfaces/Networks';
@@ -20,7 +20,11 @@ export default function CardBooking({ _booking, type }: any) {
     const getRenting = async (bookingID: number) => {
         if (provider && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, provider);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    provider
+                );
                 const renting = await contract.getRentingFromBookingID(bookingID, { from: address });
                 return renting;
             } catch (e) {
@@ -32,7 +36,11 @@ export default function CardBooking({ _booking, type }: any) {
     const handleRejectBooking = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
                 const transaction = await contract.rejectBooking(booking.id);
                 await transaction.wait();
 
@@ -46,7 +54,11 @@ export default function CardBooking({ _booking, type }: any) {
     const handleAcceptBooking = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
                 const transaction = await contract.approveBooking(booking.id);
                 await transaction.wait();
 
@@ -60,7 +72,11 @@ export default function CardBooking({ _booking, type }: any) {
     const handlePayBooking = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
                 let renting = await getRenting(booking.id.toNumber());
                 const transaction = await contract.confirmBooking(booking.id.toNumber(), {
                     value: renting.unitPrice.mul(booking.duration).add(renting.caution)
@@ -77,7 +93,11 @@ export default function CardBooking({ _booking, type }: any) {
     const handleValidateBookingAsOwner = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
                 const transaction = await contract.validateBookingAsOwner(booking.id.toNumber());
                 await transaction.wait();
                 setBooking({
@@ -94,7 +114,11 @@ export default function CardBooking({ _booking, type }: any) {
     const handleValidateBookingAsRecipient = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
                 const transaction = await contract.validateBookingAsRecipient(booking.id.toNumber());
                 await transaction.wait();
                 setBooking({
@@ -111,7 +135,11 @@ export default function CardBooking({ _booking, type }: any) {
     const handleRetrieveCaution = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
                 const transaction = await contract.retrieveCaution(booking.id.toNumber());
                 await transaction.wait();
                 setBooking({
@@ -128,7 +156,11 @@ export default function CardBooking({ _booking, type }: any) {
     const handleRetrieveAmount = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
                 const transaction = await contract.retrieveAmount(booking.id.toNumber());
                 await transaction.wait();
                 setBooking({
