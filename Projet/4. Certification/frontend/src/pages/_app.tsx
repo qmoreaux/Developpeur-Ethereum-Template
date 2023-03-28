@@ -1,15 +1,15 @@
-import "@/styles/globals.css";
-import "@rainbow-me/rainbowkit/styles.css";
+import '@/styles/globals.css';
+import '@rainbow-me/rainbowkit/styles.css';
 
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { configureChains, createClient, WagmiConfig, goerli } from "wagmi";
-import { hardhat, polygonMumbai, sepolia } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
+import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { configureChains, createClient, WagmiConfig, goerli } from 'wagmi';
+import { localhost, polygonMumbai, sepolia } from 'wagmi/chains';
+import { publicProvider } from 'wagmi/providers/public';
 
-const { chains, provider } = configureChains([hardhat, goerli, sepolia, polygonMumbai], [publicProvider()]);
+const { chains, provider } = configureChains([localhost, goerli, sepolia, polygonMumbai], [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
-    appName: "SmartStay",
+    appName: 'SmartStay',
     chains
 });
 

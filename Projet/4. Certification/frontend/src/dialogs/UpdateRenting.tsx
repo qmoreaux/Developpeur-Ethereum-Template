@@ -90,7 +90,7 @@ export default function UpdateRentingDialog(props: any) {
     };
 
     const canUpdate = () => {
-        return unitPrice && personCount && location && tags.length && description;
+        return unitPrice && personCount && location && tags.length && description && imageURL;
     };
 
     const updateRenting = async () => {

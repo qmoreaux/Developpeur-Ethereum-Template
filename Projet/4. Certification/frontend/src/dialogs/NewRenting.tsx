@@ -78,7 +78,7 @@ export default function NewRentingDialog(props: any) {
     };
 
     const canCreate = () => {
-        return unitPrice && caution && personCount && location && tags.length && description;
+        return unitPrice && caution && personCount && location && tags.length && description && imageURL;
     };
 
     const createRenting = async () => {
