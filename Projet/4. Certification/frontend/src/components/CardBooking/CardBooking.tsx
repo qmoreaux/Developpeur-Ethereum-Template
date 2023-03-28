@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { ethers, BigNumber } from "ethers";
-import { useNetwork, useProvider, useSigner, useAccount } from "wagmi";
-import { Button, Typography, Box, Card, CardContent, Stack } from "@mui/material";
+import { ethers, BigNumber } from 'ethers';
+import { useNetwork, useProvider, useSigner, useAccount } from 'wagmi';
+import { Button, Typography, Box, Card, CardContent, Stack } from '@mui/material';
 
-import { networks, abi } from "../../../contracts/SmartStay.json";
+import { networks, abi } from '../../../contracts/SmartStay.json';
 
-import IBooking from "../../interfaces/Booking";
-import INetworks from "../../interfaces/Networks";
+import IBooking from '../../interfaces/Booking';
+import INetworks from '../../interfaces/Networks';
 
 export default function CardBooking({ _booking, type }: any) {
     const { address } = useAccount();
@@ -117,7 +117,7 @@ export default function CardBooking({ _booking, type }: any) {
                 setBooking({
                     ..._booking,
                     cautionLocked: BigNumber.from(0),
-                    status: booking.amountLocked.toString() === "0" ? 5 : 4
+                    status: booking.amountLocked.toString() === '0' ? 5 : 4
                 });
             } catch (e) {
                 console.error(e);
@@ -134,7 +134,7 @@ export default function CardBooking({ _booking, type }: any) {
                 setBooking({
                     ..._booking,
                     amountLocked: BigNumber.from(0),
-                    status: booking.cautionLocked.toString() === "0" ? 5 : 4
+                    status: booking.cautionLocked.toString() === '0' ? 5 : 4
                 });
             } catch (e) {
                 console.error(e);
@@ -167,9 +167,9 @@ export default function CardBooking({ _booking, type }: any) {
         data.minutes = Math.trunc(timeToEnd / MINUTES_IN_SECONDS);
         timeToEnd %= MINUTES_IN_SECONDS;
 
-        return `Booking ends in : ${data.weeks ? data.weeks + " weeks, " : ""}${
-            data.days ? data.days + " days, " : ""
-        }${data.hours ? data.hours + " hours, " : ""}${data.minutes ? data.minutes + " minutes" : ""}`;
+        return `Booking ends in : ${data.weeks ? data.weeks + ' weeks, ' : ''}${
+            data.days ? data.days + ' days, ' : ''
+        }${data.hours ? data.hours + ' hours, ' : ''}${data.minutes ? data.minutes + ' minutes' : ''}`;
     };
 
     return (
@@ -177,16 +177,16 @@ export default function CardBooking({ _booking, type }: any) {
             {booking && booking.id ? (
                 <Card
                     sx={{
-                        backgroundColor: "whitesmoke",
-                        width: "400px",
-                        boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)",
-                        marginBottom: "1rem"
+                        backgroundColor: 'whitesmoke',
+                        width: '400px',
+                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                        marginBottom: '1rem'
                     }}
                 >
                     <CardContent>
                         <Typography>Booking ID : #{booking.id.toString()}</Typography>
                         <Typography>
-                            {" "}
+                            {' '}
                             Start date : {new Date(booking.timestampStart.toNumber() * 1000).toLocaleDateString()}
                         </Typography>
                         <Typography>Person count: {booking.personCount.toString()}</Typography>
@@ -194,7 +194,7 @@ export default function CardBooking({ _booking, type }: any) {
                         <Box display="flex" justifyContent="center" mt="1rem">
                             {booking.status === 0 ? (
                                 <>
-                                    {type === "owner" ? (
+                                    {type === 'owner' ? (
                                         <>
                                             <Button variant="contained" onClick={() => handleAcceptBooking()}>
                                                 Accept booking
@@ -213,7 +213,7 @@ export default function CardBooking({ _booking, type }: any) {
                                 </>
                             ) : booking.status === 1 ? (
                                 <>
-                                    {type === "owner" ? (
+                                    {type === 'owner' ? (
                                         <Typography>You rejected this booking</Typography>
                                     ) : (
                                         <Typography>The owner rejected this booking</Typography>
@@ -221,7 +221,7 @@ export default function CardBooking({ _booking, type }: any) {
                                 </>
                             ) : booking.status === 2 ? (
                                 <>
-                                    {type === "owner" ? (
+                                    {type === 'owner' ? (
                                         <Typography>Waiting for payment</Typography>
                                     ) : (
                                         <Button variant="contained" onClick={() => handlePayBooking()}>
@@ -231,7 +231,7 @@ export default function CardBooking({ _booking, type }: any) {
                                 </>
                             ) : booking.status === 3 ? (
                                 <>
-                                    {type === "owner" ? (
+                                    {type === 'owner' ? (
                                         <>
                                             {isBookingEnded() ? (
                                                 <>
@@ -277,7 +277,7 @@ export default function CardBooking({ _booking, type }: any) {
                                 </>
                             ) : booking.status === 4 ? (
                                 <>
-                                    {type === "owner" ? (
+                                    {type === 'owner' ? (
                                         <Stack>
                                             <Typography>
                                                 Amount to get :
@@ -285,7 +285,7 @@ export default function CardBooking({ _booking, type }: any) {
                                             </Typography>
                                             {isBookingEnded() ? (
                                                 <>
-                                                    {booking.amountLocked.toString() !== "0" ? (
+                                                    {booking.amountLocked.toString() !== '0' ? (
                                                         <Button
                                                             variant="contained"
                                                             onClick={() => handleRetrieveAmount()}
@@ -308,7 +308,7 @@ export default function CardBooking({ _booking, type }: any) {
                                             </Typography>
                                             {isBookingEnded() ? (
                                                 <>
-                                                    {booking.cautionLocked.toString() !== "0" ? (
+                                                    {booking.cautionLocked.toString() !== '0' ? (
                                                         <Button
                                                             variant="contained"
                                                             onClick={() => handleRetrieveCaution()}
@@ -332,7 +332,7 @@ export default function CardBooking({ _booking, type }: any) {
                     </CardContent>
                 </Card>
             ) : (
-                ""
+                ''
             )}
         </>
     );

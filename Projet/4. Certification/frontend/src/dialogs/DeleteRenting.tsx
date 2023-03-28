@@ -1,12 +1,12 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
-import { ethers } from "ethers";
-import { useNetwork, useSigner } from "wagmi";
-import { Dialog, DialogTitle, Box, Typography, Button } from "@mui/material";
+import { ethers } from 'ethers';
+import { useNetwork, useSigner } from 'wagmi';
+import { Dialog, DialogTitle, Box, Typography, Button } from '@mui/material';
 
-import { networks, abi } from "../../contracts/SmartStay.json";
+import { networks, abi } from '../../contracts/SmartStay.json';
 
-import INetworks from "../interfaces/Networks";
+import INetworks from '../interfaces/Networks';
 
 export default function DeleteRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -32,7 +32,7 @@ export default function DeleteRentingDialog(props: any) {
     };
 
     return (
-        <Dialog fullWidth={true} maxWidth={"sm"} onClose={() => handleClose(false)} open={open}>
+        <Dialog fullWidth={true} maxWidth={'sm'} onClose={() => handleClose(false)} open={open}>
             <DialogTitle textAlign="center">Delete a renting</DialogTitle>
             <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
                 <Typography>Are you sure you want to delete this renting ?</Typography>

@@ -1,15 +1,15 @@
-import { ChangeEvent, useState, useEffect } from "react";
+import { ChangeEvent, useState, useEffect } from 'react';
 
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
-import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from "@mui/material";
-import { ethers } from "ethers";
-import { useNetwork, useProvider, useSigner } from "wagmi";
+import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from '@mui/material';
+import { ethers } from 'ethers';
+import { useNetwork, useProvider, useSigner } from 'wagmi';
 
-import { networks, abi } from "../../contracts/SmartStay.json";
+import { networks, abi } from '../../contracts/SmartStay.json';
 
-import INetworks from "../interfaces/Networks";
-import IRenting from "../interfaces/Renting";
+import INetworks from '../interfaces/Networks';
+import IRenting from '../interfaces/Renting';
 
 export default function UpdateRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -21,13 +21,13 @@ export default function UpdateRentingDialog(props: any) {
     const [unitPrice, setUnitPrice] = useState(0);
     const [caution, setCaution] = useState(0);
     const [personCount, setPersonCount] = useState(0);
-    const [location, setLocation] = useState("");
+    const [location, setLocation] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
-    const [description, setDescription] = useState("");
+    const [description, setDescription] = useState('');
 
     const [availableTags, setAvailableTags] = useState([]);
 
-    const [filename, setFilename] = useState("");
+    const [filename, setFilename] = useState('');
     const [file, setFile] = useState({});
 
     useEffect(() => {
@@ -68,7 +68,7 @@ export default function UpdateRentingDialog(props: any) {
 
     const getColor = (tag: string) => {
         if (tags) {
-            return tags.indexOf(tag) > -1 ? "primary" : "default";
+            return tags.indexOf(tag) > -1 ? 'primary' : 'default';
         }
     };
 
@@ -92,18 +92,18 @@ export default function UpdateRentingDialog(props: any) {
                 const contract = new ethers.Contract((networks as INetworks)[chain.id].address, abi, signer);
                 const transaction = await contract.updateRenting(data.id, {
                     id: 0,
-                    owner: "0x0000000000000000000000000000000000000000",
-                    unitPrice: ethers.utils.parseUnits(unitPrice.toString(), "ether"),
-                    caution: ethers.utils.parseUnits(caution.toString(), "ether"),
+                    owner: '0x0000000000000000000000000000000000000000',
+                    unitPrice: ethers.utils.parseUnits(unitPrice.toString(), 'ether'),
+                    caution: ethers.utils.parseUnits(caution.toString(), 'ether'),
                     personCount,
                     location,
                     tags,
                     description,
                     imageURL:
-                        "https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr?_gl=1*1f1pqix*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY3OTc1NjYyNC44LjEuMTY3OTc1NjYyNy41Ny4wLjA."
+                        'https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr?_gl=1*1f1pqix*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY3OTc1NjYyNC44LjEuMTY3OTc1NjYyNy41Ny4wLjA.'
                 });
                 const receipt = await transaction.wait();
-                handleClose(receipt.events[0].args["renting"]);
+                handleClose(receipt.events[0].args['renting']);
             } catch (e) {
                 console.error(e);
             }
@@ -111,14 +111,14 @@ export default function UpdateRentingDialog(props: any) {
     };
 
     return (
-        <Dialog fullWidth={true} maxWidth={"sm"} onClose={() => handleClose(false)} open={open}>
+        <Dialog fullWidth={true} maxWidth={'sm'} onClose={() => handleClose(false)} open={open}>
             <DialogTitle textAlign="center">Update a renting</DialogTitle>
             <Stack spacing={2} justifyContent="center" alignItems="center">
                 <Box>
                     <TextField
                         label="Night price (ETH)"
                         type="number"
-                        sx={{ width: "300px" }}
+                        sx={{ width: '300px' }}
                         InputProps={{
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
@@ -132,7 +132,7 @@ export default function UpdateRentingDialog(props: any) {
                     <TextField
                         label="Caution (ETH)"
                         type="number"
-                        sx={{ width: "300px" }}
+                        sx={{ width: '300px' }}
                         InputProps={{
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
@@ -146,7 +146,7 @@ export default function UpdateRentingDialog(props: any) {
                     <TextField
                         type="number"
                         label="Person count"
-                        sx={{ width: "300px" }}
+                        sx={{ width: '300px' }}
                         value={personCount || 0}
                         onChange={(event) => {
                             setPersonCount(+event.target.value);
@@ -156,8 +156,8 @@ export default function UpdateRentingDialog(props: any) {
                 <Box>
                     <TextField
                         label="Location"
-                        sx={{ width: "300px" }}
-                        value={location || ""}
+                        sx={{ width: '300px' }}
+                        value={location || ''}
                         onChange={(event) => {
                             setLocation(event.target.value);
                         }}
@@ -168,8 +168,8 @@ export default function UpdateRentingDialog(props: any) {
                         label="Description"
                         multiline
                         rows={3}
-                        sx={{ width: "300px" }}
-                        value={description || ""}
+                        sx={{ width: '300px' }}
+                        value={description || ''}
                         onChange={(event) => {
                             setDescription(event.target.value);
                         }}
@@ -177,10 +177,10 @@ export default function UpdateRentingDialog(props: any) {
                 </Box>
                 <Box
                     sx={{
-                        width: "300px",
-                        border: "1px solid rgba(0, 0, 0, 0.23)",
-                        borderRadius: "4px",
-                        padding: "16.5px 14px"
+                        width: '300px',
+                        border: '1px solid rgba(0, 0, 0, 0.23)',
+                        borderRadius: '4px',
+                        padding: '16.5px 14px'
                     }}
                 >
                     <Typography>Tags</Typography>
@@ -190,7 +190,7 @@ export default function UpdateRentingDialog(props: any) {
                             label={availableTag}
                             color={getColor(availableTag)}
                             onClick={handleTagClick}
-                            sx={{ margin: "0.25rem" }}
+                            sx={{ margin: '0.25rem' }}
                         />
                     ))}
                 </Box>
@@ -199,15 +199,15 @@ export default function UpdateRentingDialog(props: any) {
                         Upload
                         <input hidden accept="image/*" type="file" onChange={handleFileUpload} />
                     </Button>
-                    {filename ? <Typography>{filename}</Typography> : ""}
+                    {filename ? <Typography>{filename}</Typography> : ''}
                 </Box>
                 <Box
                     sx={{
-                        width: "300px"
+                        width: '300px'
                     }}
                 >
                     <Button
-                        sx={{ marginBottom: "1rem", width: "100%" }}
+                        sx={{ marginBottom: '1rem', width: '100%' }}
                         variant="contained"
                         onClick={updateRenting}
                         disabled={!canUpdate()}

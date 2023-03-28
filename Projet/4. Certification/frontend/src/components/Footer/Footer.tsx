@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography } from '@mui/material';
 
 const Footer = () => {
     return (
@@ -9,7 +9,7 @@ const Footer = () => {
             width="100%"
             height="10vh"
             p="2rem"
-            sx={{ backgroundColor: "whitesmoke" }}
+            sx={{ backgroundColor: 'whitesmoke' }}
         >
             <Typography>&copy; Quentin MOREAUX {new Date().getFullYear()}</Typography>
         </Box>

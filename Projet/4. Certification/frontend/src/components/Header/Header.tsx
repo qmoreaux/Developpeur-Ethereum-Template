@@ -1,6 +1,6 @@
-import { Box, Container, Typography } from "@mui/material";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import Link from "next/link";
+import { Box, Container, Typography } from '@mui/material';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import Link from 'next/link';
 
 const Header = () => {
     return (
@@ -11,7 +11,7 @@ const Header = () => {
             height="10vh"
             width="100%"
             padding="2rem"
-            sx={{ backgroundColor: "whitesmoke" }}
+            sx={{ backgroundColor: 'whitesmoke' }}
         >
             <Typography fontWeight="bold" width="30%">
                 Logo

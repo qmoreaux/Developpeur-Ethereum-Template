@@ -1,16 +1,16 @@
-import { ChangeEvent, useState, useEffect } from "react";
+import { ChangeEvent, useState, useEffect } from 'react';
 
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
-import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from "@mui/material";
-import { ethers } from "ethers";
-import { useNetwork, useProvider, useSigner } from "wagmi";
+import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from '@mui/material';
+import { ethers } from 'ethers';
+import { useNetwork, useProvider, useSigner } from 'wagmi';
 
-import { networks, abi } from "../../contracts/SmartStay.json";
+import { networks, abi } from '../../contracts/SmartStay.json';
 
-import INetworks from "../interfaces/Networks";
+import INetworks from '../interfaces/Networks';
 
-const emails = ["username@gmail.com", "user02@gmail.com"];
+const emails = ['username@gmail.com', 'user02@gmail.com'];
 
 export default function BookRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -56,14 +56,14 @@ export default function BookRentingDialog(props: any) {
     };
 
     return (
-        <Dialog fullWidth={true} maxWidth={"sm"} onClose={() => handleClose(false)} open={open}>
+        <Dialog fullWidth={true} maxWidth={'sm'} onClose={() => handleClose(false)} open={open}>
             <DialogTitle textAlign="center">Create a booking</DialogTitle>
             <Stack spacing={2} justifyContent="center" alignItems="center">
                 <Box>
                     <TextField
                         label="Renting ID"
                         type="number"
-                        sx={{ width: "300px" }}
+                        sx={{ width: '300px' }}
                         value={rentingID || 0}
                         disabled
                     />
@@ -72,7 +72,7 @@ export default function BookRentingDialog(props: any) {
                     <TextField
                         type="number"
                         label="Person count"
-                        sx={{ width: "300px" }}
+                        sx={{ width: '300px' }}
                         value={personCount || 0}
                         onChange={(event) => {
                             setPersonCount(+event.target.value);
@@ -83,8 +83,8 @@ export default function BookRentingDialog(props: any) {
                     <TextField
                         label="Start Date"
                         type="date"
-                        sx={{ width: "300px" }}
-                        value={startDate || ""}
+                        sx={{ width: '300px' }}
+                        value={startDate || ''}
                         onChange={(event) => {
                             setStartDate(event.target.value);
                         }}
@@ -93,8 +93,8 @@ export default function BookRentingDialog(props: any) {
                 <Box>
                     <TextField
                         label="Duration"
-                        sx={{ width: "300px" }}
-                        value={duration || ""}
+                        sx={{ width: '300px' }}
+                        value={duration || ''}
                         onChange={(event) => {
                             setDuration(+event.target.value);
                         }}
@@ -102,11 +102,11 @@ export default function BookRentingDialog(props: any) {
                 </Box>
                 <Box
                     sx={{
-                        width: "300px"
+                        width: '300px'
                     }}
                 >
                     <Button
-                        sx={{ marginBottom: "1rem", width: "100%" }}
+                        sx={{ marginBottom: '1rem', width: '100%' }}
                         variant="contained"
                         onClick={createBooking}
                         disabled={!canCreate()}
