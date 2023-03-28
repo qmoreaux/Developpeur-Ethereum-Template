@@ -1,5 +1,7 @@
 import { ChangeEvent, useState, useEffect } from 'react';
 
+import { uploadFileToIPFS, uploadJSONToIPFS } from '../pinata';
+
 import PropTypes from 'prop-types';
 
 import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from '@mui/material';
@@ -23,11 +25,9 @@ export default function NewRentingDialog(props: any) {
     const [location, setLocation] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
     const [description, setDescription] = useState('');
+    const [imageURL, setImageURL] = useState('');
 
     const [availableTags, setAvailableTags] = useState([]);
-
-    const [filename, setFilename] = useState('');
-    const [file, setFile] = useState({});
 
     const { onClose, open } = props;
 
@@ -56,18 +56,21 @@ export default function NewRentingDialog(props: any) {
         }
     };
 
-    const getColor = (tag: string) => {
-        return tags.indexOf(tag) > -1 ? 'primary' : 'default';
+    const handleChangeFile = async (e: any) => {
+        var file = e.target.files[0];
+        try {
+            const response = await uploadFileToIPFS(file);
+            if (response.success === true) {
+                console.log('Uploaded image to Pinata: ', response.pinataURL);
+                setImageURL(response.pinataURL);
+            }
+        } catch (e) {
+            console.log('Error during file upload', e);
+        }
     };
 
-    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-        if (!event.target.files) {
-            return;
-        }
-        const file = event.target.files[0];
-        const { name } = file;
-        setFilename(name);
-        setFile(file);
+    const getColor = (tag: string) => {
+        return tags.indexOf(tag) > -1 ? 'primary' : 'default';
     };
 
     const canCreate = () => {
@@ -87,8 +90,7 @@ export default function NewRentingDialog(props: any) {
                     location,
                     tags,
                     description,
-                    imageURL:
-                        'https://gateway.pinata.cloud/ipfs/Qmb3nGrbsx5b5uFggrDuxTAGdE9dwnzg2i4duJCcJwSzzr?_gl=1*1f1pqix*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY3OTc1NjYyNC44LjEuMTY3OTc1NjYyNy41Ny4wLjA.'
+                    imageURL
                 });
                 const receipt = await transaction.wait();
                 handleClose(receipt.events[0].args['renting']);
@@ -186,11 +188,13 @@ export default function NewRentingDialog(props: any) {
                     ))}
                 </Box>
                 <Box>
-                    <Button variant="contained" component="label">
-                        Upload
-                        <input hidden accept="image/*" type="file" onChange={handleFileUpload} />
-                    </Button>
-                    {filename ? <Typography>{filename}</Typography> : ''}
+                    <Stack>
+                        <Button variant="contained" component="label">
+                            Upload
+                            <input hidden accept="image/*" type="file" onChange={handleChangeFile} />
+                        </Button>
+                        {imageURL ? <img height="200px" src={imageURL} /> : ''}
+                    </Stack>
                 </Box>
                 <Box
                     sx={{
