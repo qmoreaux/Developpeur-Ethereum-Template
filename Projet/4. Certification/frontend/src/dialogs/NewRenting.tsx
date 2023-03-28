@@ -195,13 +195,27 @@ export default function NewRentingDialog(props: any) {
                         />
                     ))}
                 </Box>
-                <Box>
+                <Box
+                    sx={{
+                        width: '300px',
+                        border: '1px solid rgba(0, 0, 0, 0.23)',
+                        borderRadius: '4px',
+                        padding: '16.5px 14px'
+                    }}
+                >
                     <Stack>
+                        {imageURL ? (
+                            <Box display="flex" justifyContent="center" sx={{ marginBottom: '20px' }}>
+                                <img height="200px" style={{ maxWidth: '100%', objectFit: 'contain' }} src={imageURL} />{' '}
+                            </Box>
+                        ) : (
+                            ''
+                        )}
+
                         <Button variant="contained" component="label">
                             Upload
                             <input hidden accept="image/*" type="file" onChange={handleChangeFile} />
                         </Button>
-                        {imageURL ? <img height="200px" src={imageURL} /> : ''}
                     </Stack>
                 </Box>
                 <Box

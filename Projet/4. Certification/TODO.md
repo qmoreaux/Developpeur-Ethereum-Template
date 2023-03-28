@@ -15,3 +15,5 @@ Check eth low value
 Dapp : Create booking : Max person < Renting max person
 Dapp : Create booking : Start date > current date
 Dapp : Create booking : start timestamp 00:00:00 end timestampe 23 59 59
+
+Input number : Gérer nombre négatif
