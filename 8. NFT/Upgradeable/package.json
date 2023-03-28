@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@openzeppelin/truffle-upgrades": "^1.17.1"
+  }
+}
