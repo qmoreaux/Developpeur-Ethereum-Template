@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import Head from 'next/head';
@@ -66,8 +66,7 @@ export default function Renting() {
             searchRentings();
         }
     };
-
-    const searchRentings = async () => {
+    const searchRentings = useCallback(async () => {
         if (provider && chain && chain.id) {
             try {
                 const contract = new ethers.Contract(
@@ -88,7 +87,8 @@ export default function Renting() {
                 console.error(e);
             }
         }
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [provider, chain, address]);
 
     useEffect(() => {
         (async () => {
@@ -105,17 +105,17 @@ export default function Renting() {
                 }
             }
         })();
-    }, []);
+    }, [provider, chain]);
 
     useEffect(() => {
         searchRentings();
-    }, [address]);
+    }, [address, searchRentings]);
 
     useEffect(() => {
         if (!isConnected) {
             router.push('/');
         }
-    }, []);
+    }, [isConnected, router]);
 
     return (
         <>

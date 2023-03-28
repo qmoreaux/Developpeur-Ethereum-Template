@@ -43,13 +43,13 @@ export default function Renter() {
                 }
             }
         })();
-    }, [address]);
+    }, [provider, chain, address]);
 
     useEffect(() => {
         if (!isConnected) {
             router.push('/');
         }
-    }, []);
+    }, [isConnected, router]);
 
     const handleClickOpen = (dialog: any, data?: any) => {
         setOpen({ ...open, [dialog]: true });
@@ -182,7 +182,7 @@ export default function Renter() {
                             ))}
                             {userRentings.length == 0 ? (
                                 <Typography textAlign="center">
-                                    You don't have any rentings yet.
+                                    You do not have any rentings yet.
                                     <br />
                                     Use the icon in the bottom right to start creating one.
                                 </Typography>

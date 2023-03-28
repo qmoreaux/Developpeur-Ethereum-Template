@@ -1,4 +1,5 @@
-import { ChangeEvent, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 import { uploadFileToIPFS, uploadJSONToIPFS } from '../pinata';
 
@@ -45,7 +46,7 @@ export default function UpdateRentingDialog(props: any) {
                 }
             }
         })();
-    }, []);
+    }, [provider, chain]);
 
     useEffect(() => {
         if (Object.keys(data).length) {
@@ -206,11 +207,17 @@ export default function UpdateRentingDialog(props: any) {
                 </Box>
                 <Box>
                     <Stack>
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            sx={{ marginBottom: '20px', height: '200px', position: 'relative' }}
+                        >
+                            <Image fill style={{ objectFit: 'contain' }} alt="Renting image" src={imageURL}></Image>
+                        </Box>
                         <Button variant="contained" component="label">
                             Upload
                             <input hidden accept="image/*" type="file" onChange={handleChangeFile} />
                         </Button>
-                        {imageURL ? <img height="200px" src={imageURL} /> : ''}
                     </Stack>
                 </Box>
                 <Box

@@ -1,4 +1,5 @@
 import { ChangeEvent, useState, useEffect } from 'react';
+import Image from 'next/image';
 
 import { uploadFileToIPFS, uploadJSONToIPFS } from '../pinata';
 
@@ -46,7 +47,7 @@ export default function NewRentingDialog(props: any) {
                 }
             }
         })();
-    }, []);
+    }, [chain, provider]);
 
     const handleClose = (data: IRenting | boolean) => {
         onClose(data);
@@ -205,8 +206,12 @@ export default function NewRentingDialog(props: any) {
                 >
                     <Stack>
                         {imageURL ? (
-                            <Box display="flex" justifyContent="center" sx={{ marginBottom: '20px' }}>
-                                <img height="200px" style={{ maxWidth: '100%', objectFit: 'contain' }} src={imageURL} />{' '}
+                            <Box
+                                display="flex"
+                                justifyContent="center"
+                                sx={{ marginBottom: '20px', height: '200px', position: 'relative' }}
+                            >
+                                <Image fill style={{ objectFit: 'contain' }} alt="Renting image" src={imageURL}></Image>
                             </Box>
                         ) : (
                             ''

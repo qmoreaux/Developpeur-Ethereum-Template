@@ -38,7 +38,7 @@ export default function Booking() {
                 }
             }
         })();
-    }, [address]);
+    }, [provider, chain, address]);
 
     useEffect(() => {
         (async () => {
@@ -55,13 +55,13 @@ export default function Booking() {
                 }
             }
         })();
-    }, [address]);
+    }, [provider, chain, address]);
 
     useEffect(() => {
         if (!isConnected) {
             router.push('/');
         }
-    }, []);
+    }, [isConnected, router]);
 
     return (
         <>
