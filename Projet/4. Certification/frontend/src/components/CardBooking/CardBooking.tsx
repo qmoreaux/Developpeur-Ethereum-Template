@@ -364,14 +364,6 @@ export default function CardBooking({ _booking, type }: any) {
                             ) : booking.status === 1 ? (
                                 <>
                                     {type === 'owner' ? (
-                                        <Typography>You rejected this booking</Typography>
-                                    ) : (
-                                        <Typography>The owner rejected this booking</Typography>
-                                    )}
-                                </>
-                            ) : booking.status === 2 ? (
-                                <>
-                                    {type === 'owner' ? (
                                         <Typography>Waiting for payment</Typography>
                                     ) : (
                                         <LoadingButton
@@ -383,7 +375,7 @@ export default function CardBooking({ _booking, type }: any) {
                                         </LoadingButton>
                                     )}
                                 </>
-                            ) : booking.status === 3 ? (
+                            ) : booking.status === 2 ? (
                                 <>
                                     {type === 'owner' ? (
                                         <>
@@ -431,7 +423,7 @@ export default function CardBooking({ _booking, type }: any) {
                                         </>
                                     )}
                                 </>
-                            ) : booking.status === 4 ? (
+                            ) : booking.status === 3 ? (
                                 <>
                                     {type === 'owner' ? (
                                         <Stack>
@@ -483,11 +475,21 @@ export default function CardBooking({ _booking, type }: any) {
                                         </Stack>
                                     )}
                                 </>
-                            ) : (
+                            ) : booking.status === 4 ? (
                                 <Typography>This booking is completed</Typography>
+                            ) : booking.status === 5 ? (
+                                <>
+                                    {type === 'owner' ? (
+                                        <Typography>You rejected this booking</Typography>
+                                    ) : (
+                                        <Typography>The owner rejected this booking</Typography>
+                                    )}
+                                </>
+                            ) : (
+                                ''
                             )}
                         </Box>
-                        {type === 'recipient' && !booking.NFTRedeemed && booking.status >= 3 ? (
+                        {type === 'recipient' && !booking.NFTRedeemed && booking.status >= 2 && booking.status <= 4 ? (
                             <Box
                                 display="flex"
                                 justifyContent={booking.status === 0 && type === 'owner' ? 'space-between' : 'center'}

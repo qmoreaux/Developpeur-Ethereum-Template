@@ -43,8 +43,8 @@ contract SmartStay {
     event RentingUpdated(Renting renting);
     event RentingDeleted(uint rentingIndex);
 
-    event BookingCreated();
-    event BookingValidated();
+    event BookingCreated(Booking booking);
+    event BookingUpdated(Booking booking);
 
     // Modifiers
 
@@ -123,11 +123,12 @@ contract SmartStay {
 
     enum BookingStatus {
         CREATED,
-        REJECTED,
         WAITING_FOR_PAYMENT,
         ONGOING,
         VALIDATED,
-        COMPLETED
+        COMPLETED,
+        REJECTED,
+        CANCELLED
     }
 
     // Constructor
@@ -145,14 +146,6 @@ contract SmartStay {
         Booking memory _booking;
         bookings.push(_booking);
         indexBooking.increment();
-    }
-
-    function getNFTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
-        return NFTCollection.getUserNFT(_address);
-    }
-
-    function getSBTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
-        return SBTCollection.getUserSBT(_address);
     }
 
     // Renting
@@ -337,6 +330,8 @@ contract SmartStay {
         bookingRecipient[msg.sender].push(indexBooking.current());
 
         indexBooking.increment();
+
+        emit BookingCreated(_booking);
     }
 
     /**
@@ -375,6 +370,8 @@ contract SmartStay {
         require(bookings[_bookingID].status == BookingStatus.CREATED, 'SmartStay : Wrong booking status');
 
         bookings[_bookingID].status = BookingStatus.WAITING_FOR_PAYMENT;
+
+        emit BookingUpdated(bookings[_bookingID]);
     }
 
     /**
@@ -385,6 +382,8 @@ contract SmartStay {
         require(bookings[_bookingID].status == BookingStatus.CREATED, 'SmartStay : Wrong booking status');
 
         bookings[_bookingID].status = BookingStatus.REJECTED;
+
+        emit BookingUpdated(bookings[_bookingID]);
     }
 
     /**
@@ -402,13 +401,10 @@ contract SmartStay {
         SBTCollection.mint(msg.sender, _recipientMetadataURI);
 
         bookings[_bookingID].status = BookingStatus.ONGOING;
+
+        emit BookingUpdated(bookings[_bookingID]);
     }
 
-    function redeemNFT(uint256 _bookingID, string calldata _metadataURI) external isBookingRecipient(_bookingID) {
-        require (!bookings[_bookingID].NFTRedeemed, 'SmartStay: NFT already redeemed');
-
-        NFTCollection.mint(msg.sender, _metadataURI);
-    }
 
     function validateBookingAsRecipient(uint256 _bookingID) external isBookingRecipient(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
@@ -418,6 +414,8 @@ contract SmartStay {
         if (bookings[_bookingID].validatedOwner == true) {
             bookings[_bookingID].status = BookingStatus.VALIDATED;
         }
+
+        emit BookingUpdated(bookings[_bookingID]);
     }
 
         function validateBookingAsOwner(uint256 _bookingID) external isBookingOwner(_bookingID) {
@@ -428,6 +426,8 @@ contract SmartStay {
         if (bookings[_bookingID].validatedRecipient == true) {
             bookings[_bookingID].status = BookingStatus.VALIDATED;
         }
+
+        emit BookingUpdated(bookings[_bookingID]);
     }
 
     /**
@@ -445,6 +445,8 @@ contract SmartStay {
         if (bookings[_bookingID].amountLocked == 0) {
             bookings[_bookingID].status = BookingStatus.COMPLETED;
         }
+
+        emit BookingUpdated(bookings[_bookingID]);
     }
 
     /**
@@ -462,8 +464,25 @@ contract SmartStay {
         if (bookings[_bookingID].cautionLocked == 0) {
             bookings[_bookingID].status = BookingStatus.COMPLETED;
         }
+
+        emit BookingUpdated(bookings[_bookingID]);
     }
 
+    // NFT & SBT
+
+    function getNFTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
+        return NFTCollection.getUserNFT(_address);
+    }
+
+    function getSBTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
+        return SBTCollection.getUserSBT(_address);
+    }
+
+    function redeemNFT(uint256 _bookingID, string calldata _metadataURI) external isBookingRecipient(_bookingID) {
+        require (!bookings[_bookingID].NFTRedeemed, 'SmartStay: NFT already redeemed');
+
+        NFTCollection.mint(msg.sender, _metadataURI);
+    }
 
     // Utils
 
