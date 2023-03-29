@@ -8,6 +8,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 import './libraries/Tokens.sol';
+
+import 'hardhat/console.sol';
  
 contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
@@ -46,12 +48,15 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
     }
     
     function burn(uint256 _tokenID) public onlyOwner {
+        console.log(_tokenID);
+        console.log(ownerOf(_tokenID));
         _burn(_tokenID);
-        for (uint i; i < tokenOwner[ownerOf(_tokenID)].length; i++) {
-            if (tokenOwner[ownerOf(_tokenID)][i].tokenID == _tokenID) {
-                delete tokenOwner[ownerOf(_tokenID)][i];
-            }
-        }
+        // console.log(ownerOf(_tokenID));
+        // for (uint i; i < tokenOwner[ownerOf(_tokenID)].length; i++) {
+            // if (tokenOwner[ownerOf(_tokenID)][i].tokenID == _tokenID) {
+                // delete tokenOwner[ownerOf(_tokenID)][i];
+            // }
+        // }
     }
 
    function _beforeTokenTransfer(address from, address to, uint256) pure internal {

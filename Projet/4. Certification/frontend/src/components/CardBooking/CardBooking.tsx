@@ -24,6 +24,7 @@ export default function CardBooking({ _booking, type }: any) {
     const [loadingAccept, setLoadingAccept] = useState(false);
     const [loadingRefuse, setLoadingRefuse] = useState(false);
     const [loadingPay, setLoadingPay] = useState(false);
+    const [loadingCancel, setLoadingCancel] = useState(false);
     const [loadingValidate, setLoadingValidate] = useState(false);
     const [loadingRetrieve, setLoadingRetrieve] = useState(false);
     const [loadingRedeem, setLoadingRedeem] = useState(false);
@@ -142,6 +143,27 @@ export default function CardBooking({ _booking, type }: any) {
             } catch (e) {
                 console.error(e);
                 setLoadingPay(false);
+            }
+        }
+    };
+
+    const handleCancelBooking = async () => {
+        if (signer && chain && chain.id) {
+            setLoadingCancel(true);
+            try {
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
+                const transaction = await contract.cancelBooking(booking.id, { from: address });
+                await transaction.wait();
+
+                setBooking({ ...booking, status: 6 });
+                setLoadingCancel(false);
+            } catch (e) {
+                console.error(e);
+                setLoadingCancel(false);
             }
         }
     };
@@ -283,6 +305,10 @@ export default function CardBooking({ _booking, type }: any) {
         }
     };
 
+    const isBookingStarted = (): boolean => {
+        return new Date().getTime() / 1000 > booking.timestampStart.toNumber();
+    };
+
     const isBookingEnded = (): boolean => {
         return new Date().getTime() / 1000 > booking.timestampEnd.toNumber();
     };
@@ -401,6 +427,17 @@ export default function CardBooking({ _booking, type }: any) {
                                         </>
                                     ) : (
                                         <>
+                                            {isBookingStarted() ? (
+                                                ''
+                                            ) : (
+                                                <LoadingButton
+                                                    loading={loadingCancel}
+                                                    variant="contained"
+                                                    onClick={handleCancelBooking}
+                                                >
+                                                    Cancel booking
+                                                </LoadingButton>
+                                            )}
                                             {isBookingEnded() ? (
                                                 <>
                                                     {booking.validatedRecipient ? (

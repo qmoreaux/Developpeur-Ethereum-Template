@@ -482,7 +482,9 @@ contract SmartStay {
         (bool success, ) = msg.sender.call{value: amountToSend}("");
         require(success, 'SmartStay: Amount retrieve failed');
 
-        NFTCollection.burn(bookings[_bookingID].NFTRecipientID);
+        if (bookings[_bookingID].NFTRecipientID != 0) {
+            NFTCollection.burn(bookings[_bookingID].NFTRecipientID);
+        }
         SBTCollection.burn(bookings[_bookingID].SBTRecipientID);
         SBTCollection.burn(bookings[_bookingID].SBTOwnerID);
 

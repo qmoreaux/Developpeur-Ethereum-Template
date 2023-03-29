@@ -8,6 +8,7 @@
 
 * Add snackbar
 * Check update and burn NFT/SBT
+* Update name in pinata script
 
 ## Used for dev
 
