@@ -1,7 +1,8 @@
-import { Box } from "@mui/material";
+import { Box } from '@mui/material';
 
-import Header from "../Header/Header";
-import Footer from "../Footer/Footer";
+import Header from '../Header/Header';
+import Footer from '../Footer/Footer';
+import AlertComponent from '../Alert/Alert';
 
 const Layout = ({ children }: any) => {
     return (
@@ -11,9 +12,10 @@ const Layout = ({ children }: any) => {
             justifyContent="space-between"
             alignItems="center"
             flexDirection="column"
-            sx={{ backgroundColor: "white" }}
+            sx={{ backgroundColor: 'white' }}
         >
             <Header />
+            <AlertComponent />
             {children}
             <Footer />
         </Box>

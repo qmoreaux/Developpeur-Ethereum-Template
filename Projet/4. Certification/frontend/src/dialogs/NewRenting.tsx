@@ -6,7 +6,9 @@ import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, I
 import { AttachMoney } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 
-import { ethers } from 'ethers';
+import { useAlertContext } from '@/context';
+
+import { ethers, Event } from 'ethers';
 import { useNetwork, useSigner, useProvider } from 'wagmi';
 
 import { uploadFileToIPFS, updateFileName } from '../pinata';
@@ -20,6 +22,8 @@ export default function NewRentingDialog(props: any) {
     const { chain } = useNetwork();
     const provider = useProvider();
     const { data: signer } = useSigner();
+
+    const { setAlert } = useAlertContext();
 
     const [unitPrice, setUnitPrice] = useState(0);
     const [caution, setCaution] = useState(0);
@@ -116,14 +120,19 @@ export default function NewRentingDialog(props: any) {
                     imageURL
                 });
                 const receipt = await transaction.wait();
+                setAlert({ message: 'The renting was successfully created', severity: 'success' });
                 setLoadingCreate(false);
                 await updateFileName(
                     imageURL.slice(34),
                     'image_renting_' + receipt.events[0].args['renting'].id.toNumber()
                 );
                 handleClose(receipt.events[0].args['renting']);
-            } catch (e) {
-                console.error(e);
+            } catch (e: any) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                setLoadingCreate(false);
             }
         }
     };

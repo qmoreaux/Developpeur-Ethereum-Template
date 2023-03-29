@@ -5,8 +5,8 @@
 ## Normal
 
 * Add snackbar
-* Update name in pinata script
 * Check update renting
+* Manage unpin in pinata
 
 ## Used for dev
 
@@ -17,9 +17,9 @@
 
 * Check any type
 * Check int type on input
+* Check eth low value
 * Gérer un tableau de tableau de tags
 * Utiliser le theme pour le style
-* Check eth low value
 * Vérifier couleur texte avec theme clair
 
 ## Question
