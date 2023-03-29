@@ -81,7 +81,7 @@ export default function Profile() {
             </Head>
             <Layout>
                 <Container>
-                    <Typography variant="h6">My NFT Collection</Typography>
+                    <Typography variant="h6">My SmartStay Collection</Typography>
                     <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                         {NFTCollection.map((NFTItem: any) => (
                             <Card key={NFTItem.tokenID.toString()}>
@@ -100,7 +100,7 @@ export default function Profile() {
                     </Box>
                 </Container>
                 <Container>
-                    <Typography variant="h6">My SBT Collection</Typography>
+                    <Typography variant="h6">My SmartStay receipts</Typography>
                     <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                         {SBTCollection.map((SBTItem: any) => (
                             <Card key={SBTItem.tokenID.toString()}>

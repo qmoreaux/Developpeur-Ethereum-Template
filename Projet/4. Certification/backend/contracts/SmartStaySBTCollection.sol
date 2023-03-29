@@ -38,25 +38,24 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
     }
 
     function update(uint256 _tokenID, string memory _tokenURI) public onlyOwner {
-        _setTokenURI(_tokenID, _tokenURI);
-
         for (uint i; i < tokenOwner[ownerOf(_tokenID)].length; i++) {
             if (tokenOwner[ownerOf(_tokenID)][i].tokenID == _tokenID) {
                 tokenOwner[ownerOf(_tokenID)][i].tokenURI = _tokenURI;
             }
         }
+
+        _setTokenURI(_tokenID, _tokenURI);
     }
     
     function burn(uint256 _tokenID) public onlyOwner {
-        console.log(_tokenID);
-        console.log(ownerOf(_tokenID));
+        for (uint i; i < tokenOwner[ownerOf(_tokenID)].length; i++) {
+            if (tokenOwner[ownerOf(_tokenID)][i].tokenID == _tokenID) {
+                tokenOwner[ownerOf(_tokenID)][i] = tokenOwner[ownerOf(_tokenID)][tokenOwner[ownerOf(_tokenID)].length - 1];
+                tokenOwner[ownerOf(_tokenID)].pop();
+            }
+        }
+
         _burn(_tokenID);
-        // console.log(ownerOf(_tokenID));
-        // for (uint i; i < tokenOwner[ownerOf(_tokenID)].length; i++) {
-            // if (tokenOwner[ownerOf(_tokenID)][i].tokenID == _tokenID) {
-                // delete tokenOwner[ownerOf(_tokenID)][i];
-            // }
-        // }
     }
 
    function _beforeTokenTransfer(address from, address to, uint256) pure internal {

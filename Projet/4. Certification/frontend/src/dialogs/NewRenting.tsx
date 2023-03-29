@@ -54,6 +54,13 @@ export default function NewRentingDialog(props: any) {
     }, [chain, provider]);
 
     const handleClose = (data: IRenting | boolean) => {
+        setUnitPrice(0);
+        setCaution(0);
+        setPersonCount(0);
+        setLocation('');
+        setTags([]);
+        setDescription('');
+        setImageURL('');
         onClose(data);
     };
 

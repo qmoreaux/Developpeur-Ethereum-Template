@@ -2,13 +2,11 @@
 
 ## Urgent
 
-* Ajouter la possibilité de cancel la réservation entre le payement et la date de début
-
 ## Normal
 
 * Add snackbar
-* Check update and burn NFT/SBT
 * Update name in pinata script
+* Check update renting
 
 ## Used for dev
 
@@ -23,3 +21,13 @@
 * Utiliser le theme pour le style
 * Check eth low value
 * Vérifier couleur texte avec theme clair
+
+## Question
+
+* Metadata NFT
+* Que faire si pas de payement avant date de début de la réservation
+
+## Image
+
+* SBT => Logo SmartStay
+* NFT  => Random parmi une collection
