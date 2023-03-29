@@ -409,17 +409,6 @@ export default function CardBooking({ _booking, type }: any) {
                                         </>
                                     ) : (
                                         <>
-                                            {booking.NFTRedeemed ? (
-                                                ''
-                                            ) : (
-                                                <LoadingButton
-                                                    loading={loadingRedeem}
-                                                    variant="contained"
-                                                    onClick={handleRedeemNFT}
-                                                >
-                                                    Redeem NFT
-                                                </LoadingButton>
-                                            )}
                                             {isBookingEnded() ? (
                                                 <>
                                                     {booking.validatedRecipient ? (
@@ -470,17 +459,6 @@ export default function CardBooking({ _booking, type }: any) {
                                         </Stack>
                                     ) : (
                                         <Stack>
-                                            {booking.NFTRedeemed ? (
-                                                ''
-                                            ) : (
-                                                <LoadingButton
-                                                    loading={loadingRedeem}
-                                                    variant="contained"
-                                                    onClick={handleRedeemNFT}
-                                                >
-                                                    Redeem NFT
-                                                </LoadingButton>
-                                            )}
                                             <Typography>
                                                 Amount to get :
                                                 <b> {ethers.utils.formatEther(booking.cautionLocked)} ETH</b>
@@ -506,28 +484,22 @@ export default function CardBooking({ _booking, type }: any) {
                                     )}
                                 </>
                             ) : (
-                                <>
-                                    {type === 'owner' ? (
-                                        ''
-                                    ) : (
-                                        <>
-                                            {booking.NFTRedeemed ? (
-                                                ''
-                                            ) : (
-                                                <LoadingButton
-                                                    loading={loadingRedeem}
-                                                    variant="contained"
-                                                    onClick={handleRedeemNFT}
-                                                >
-                                                    Redeem NFT
-                                                </LoadingButton>
-                                            )}
-                                        </>
-                                    )}
-                                    <Typography>This booking is completed</Typography>
-                                </>
+                                <Typography>This booking is completed</Typography>
                             )}
                         </Box>
+                        {type === 'recipient' && !booking.NFTRedeemed && booking.status >= 3 ? (
+                            <Box
+                                display="flex"
+                                justifyContent={booking.status === 0 && type === 'owner' ? 'space-between' : 'center'}
+                                mt="1rem"
+                            >
+                                <LoadingButton loading={loadingRedeem} variant="contained" onClick={handleRedeemNFT}>
+                                    Redeem NFT
+                                </LoadingButton>
+                            </Box>
+                        ) : (
+                            ''
+                        )}
                     </CardContent>
                 </Card>
             ) : (

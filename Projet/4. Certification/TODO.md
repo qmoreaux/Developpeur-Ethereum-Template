@@ -2,12 +2,12 @@
 
 ## Urgent
 
+* Ajouter la possibilité de cancel la réservation entre le payement et la date de début
 
 ## Normal
 
 * Add snackbar
 * Check update and burn NFT/SBT
-* Ajouter la possibilité de cancel la réservation entre le payement et la date de début
 
 ## Used for dev
 
