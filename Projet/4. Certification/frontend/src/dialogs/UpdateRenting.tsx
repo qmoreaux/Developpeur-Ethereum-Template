@@ -80,7 +80,7 @@ export default function UpdateRentingDialog(props: any) {
                 setImageURL(response.pinataURL);
             }
         } catch (e) {
-            console.log('Error during file upload', e);
+            console.error('Error during file upload', e);
         }
     };
 

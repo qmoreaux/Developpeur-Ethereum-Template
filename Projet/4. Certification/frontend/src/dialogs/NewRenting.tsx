@@ -66,11 +66,10 @@ export default function NewRentingDialog(props: any) {
         try {
             const response = await uploadFileToIPFS(file);
             if (response.success === true) {
-                console.log('Uploaded image to Pinata: ', response.pinataURL);
                 setImageURL(response.pinataURL);
             }
         } catch (e) {
-            console.log('Error during file upload', e);
+            console.error('Error during file upload', e);
         }
     };
 

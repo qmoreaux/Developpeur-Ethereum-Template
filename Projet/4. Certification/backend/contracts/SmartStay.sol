@@ -320,14 +320,16 @@ contract SmartStay {
      */
     function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
         // require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
+        // require (block.timestamp > _timestampStart, 'SmartStay : Can not create a booking in the past');
         // TODO DO NOT FORGET TO UNCOMMENT
+        require (rentings[_rentingID].personCount >= _personCount, 'SmartStay : Too many persons for this renting');
 
         Booking memory _booking;
         _booking.id = indexBooking.current();
         _booking.rentingID = _rentingID;
         _booking.timestampStart = _timestampStart;
         _booking.duration = _duration;
-        _booking.timestampEnd = _timestampStart + _duration * 1 days;
+        _booking.timestampEnd = _timestampStart + _duration * 1 days - 1;
         _booking.personCount = _personCount;
 
         bookings.push(_booking);

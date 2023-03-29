@@ -41,16 +41,16 @@ export default function Renting() {
     const [availableTags, setAvailableTags] = useState<Array<string>>([]);
 
     const [openBooking, setOpenBooking] = useState(false);
-    const [bookingRentingID, setBookingRentingID] = useState(0);
+    const [bookingRenting, setBookingRenting] = useState({});
 
     const handleStartBooking = (data?: any) => {
         setOpenBooking(true);
-        setBookingRentingID(data);
+        setBookingRenting(data);
     };
 
     const handleCloseBooking = (data: any) => {
         setOpenBooking(false);
-        setBookingRentingID(0);
+        setBookingRenting({});
 
         if (data) {
             router.push('/booking');
@@ -253,7 +253,7 @@ export default function Renting() {
                                         <Box display="flex" justifyContent="space-between" mt="1rem">
                                             <Button
                                                 variant="contained"
-                                                onClick={() => handleStartBooking(renting.id.toNumber())}
+                                                onClick={() => handleStartBooking(renting)}
                                                 startIcon={<BookOnline />}
                                             >
                                                 <Typography>Book</Typography>
@@ -272,7 +272,7 @@ export default function Renting() {
                 </Box>
                 <BookRentingDialog
                     open={openBooking}
-                    _rentingID={bookingRentingID}
+                    _renting={bookingRenting}
                     onClose={(status: boolean) => handleCloseBooking(status)}
                 />
             </Layout>

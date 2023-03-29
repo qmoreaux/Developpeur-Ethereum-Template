@@ -37,7 +37,6 @@ export default function Renter() {
                         artifacts.abi,
                         provider
                     );
-                    console.log(await contract.getUserRenting({ from: address }));
                     setUserRentings(await contract.getUserRenting({ from: address }));
                 } catch (e) {
                     console.error(e);

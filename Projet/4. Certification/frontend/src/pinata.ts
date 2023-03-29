@@ -21,7 +21,7 @@ export const uploadJSONToIPFS = async (JSONBody: any) => {
             };
         })
         .catch(function (error: any) {
-            console.log(error);
+            console.error(error);
             return {
                 success: false,
                 message: error.message
@@ -60,7 +60,7 @@ export const uploadFileToIPFS = async (file: any) => {
             };
         })
         .catch(function (error: any) {
-            console.log(error);
+            console.error(error);
             return {
                 success: false,
                 message: error.message
