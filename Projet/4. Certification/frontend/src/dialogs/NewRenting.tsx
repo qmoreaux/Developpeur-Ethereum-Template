@@ -1,19 +1,20 @@
-import { ChangeEvent, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-
-import { uploadFileToIPFS, uploadJSONToIPFS } from '../pinata';
-
 import PropTypes from 'prop-types';
 
 import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from '@mui/material';
-import { ethers, BigNumber } from 'ethers';
-import { useNetwork, useSigner, useProvider, useAccount } from 'wagmi';
+import { AttachMoney } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
+
+import { ethers } from 'ethers';
+import { useNetwork, useSigner, useProvider } from 'wagmi';
+
+import { uploadFileToIPFS } from '../pinata';
 
 import artifacts from '../../contracts/SmartStay.json';
 
 import INetworks from '../interfaces/Networks';
 import IRenting from '../interfaces/Renting';
-import { AttachMoney } from '@mui/icons-material';
 
 export default function NewRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -27,6 +28,9 @@ export default function NewRentingDialog(props: any) {
     const [tags, setTags] = useState<Array<string>>([]);
     const [description, setDescription] = useState('');
     const [imageURL, setImageURL] = useState('');
+
+    const [loadingImage, setLoadingImage] = useState(false);
+    const [loadingCreate, setLoadingCreate] = useState(false);
 
     const [availableTags, setAvailableTags] = useState([]);
 
@@ -63,13 +67,16 @@ export default function NewRentingDialog(props: any) {
 
     const handleChangeFile = async (e: any) => {
         var file = e.target.files[0];
+        setLoadingImage(true);
         try {
             const response = await uploadFileToIPFS(file);
             if (response.success === true) {
                 setImageURL(response.pinataURL);
             }
+            setLoadingImage(false);
         } catch (e) {
             console.error('Error during file upload', e);
+            setLoadingImage(false);
         }
     };
 
@@ -84,6 +91,7 @@ export default function NewRentingDialog(props: any) {
     const createRenting = async () => {
         if (signer && chain && chain.id) {
             try {
+                setLoadingCreate(true);
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
                     artifacts.abi,
@@ -101,6 +109,7 @@ export default function NewRentingDialog(props: any) {
                     imageURL
                 });
                 const receipt = await transaction.wait();
+                setLoadingCreate(false);
                 handleClose(receipt.events[0].args['renting']);
             } catch (e) {
                 console.error(e);
@@ -228,10 +237,10 @@ export default function NewRentingDialog(props: any) {
                             ''
                         )}
 
-                        <Button variant="contained" component="label">
+                        <LoadingButton loading={loadingImage} variant="contained" component="label">
                             Upload
                             <input hidden accept="image/*" type="file" onChange={handleChangeFile} />
-                        </Button>
+                        </LoadingButton>
                     </Stack>
                 </Box>
                 <Box
@@ -239,14 +248,15 @@ export default function NewRentingDialog(props: any) {
                         width: '300px'
                     }}
                 >
-                    <Button
+                    <LoadingButton
+                        loading={loadingCreate}
                         sx={{ marginBottom: '1rem', width: '100%' }}
                         variant="contained"
                         onClick={createRenting}
                         disabled={!canCreate()}
                     >
                         Create
-                    </Button>
+                    </LoadingButton>
                 </Box>
             </Stack>
         </Dialog>

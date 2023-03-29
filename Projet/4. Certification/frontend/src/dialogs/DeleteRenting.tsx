@@ -1,8 +1,11 @@
+import { useState } from 'react';
+
 import PropTypes from 'prop-types';
 
 import { ethers } from 'ethers';
 import { useNetwork, useSigner } from 'wagmi';
 import { Dialog, DialogTitle, Box, Typography, Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 import artifacts from '../../contracts/SmartStay.json';
 
@@ -14,12 +17,15 @@ export default function DeleteRentingDialog(props: any) {
 
     const { onClose, id, open } = props;
 
+    const [loadingDelete, setLoadingDelete] = useState(false);
+
     const handleClose = (status: boolean) => {
         onClose(status);
     };
 
     const deleteRenting = async () => {
         if (signer && chain && chain.id) {
+            setLoadingDelete(true);
             try {
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
@@ -28,9 +34,11 @@ export default function DeleteRentingDialog(props: any) {
                 );
                 const transaction = await contract.deleteRenting(id);
                 await transaction.wait();
+                setLoadingDelete(false);
                 handleClose(true);
             } catch (e) {
                 console.error(e);
+                setLoadingDelete(false);
             }
         }
     };
@@ -41,9 +49,9 @@ export default function DeleteRentingDialog(props: any) {
             <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
                 <Typography>Are you sure you want to delete this renting ?</Typography>
                 <Box m="1rem" width="80%" display="flex" justifyContent="space-evenly">
-                    <Button variant="contained" onClick={deleteRenting}>
+                    <LoadingButton loading={loadingDelete} variant="contained" onClick={deleteRenting}>
                         Confirm
-                    </Button>
+                    </LoadingButton>
                     <Button variant="contained" color="error" onClick={() => handleClose(false)}>
                         Cancel
                     </Button>

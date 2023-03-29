@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-import { uploadFileToIPFS, uploadJSONToIPFS } from '../pinata';
+import { uploadFileToIPFS } from '../pinata';
 
 import PropTypes from 'prop-types';
 
-import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from '@mui/material';
+import { Dialog, DialogTitle, Chip, Stack, Box, Typography, TextField, InputAdornment } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+
 import { ethers } from 'ethers';
 import { useNetwork, useProvider, useSigner } from 'wagmi';
 
@@ -28,6 +30,9 @@ export default function UpdateRentingDialog(props: any) {
     const [tags, setTags] = useState<Array<string>>([]);
     const [description, setDescription] = useState<string>('');
     const [imageURL, setImageURL] = useState<string>('');
+
+    const [loadingImage, setLoadingImage] = useState(false);
+    const [loadingUpdate, setLoadingUpdate] = useState(false);
 
     const [availableTags, setAvailableTags] = useState([]);
 
@@ -73,14 +78,17 @@ export default function UpdateRentingDialog(props: any) {
     };
 
     const handleChangeFile = async (e: any) => {
+        setLoadingImage(true);
         var file = e.target.files[0];
         try {
             const response = await uploadFileToIPFS(file);
             if (response.success === true) {
                 setImageURL(response.pinataURL);
             }
+            setLoadingImage(false);
         } catch (e) {
             console.error('Error during file upload', e);
+            setLoadingImage(false);
         }
     };
 
@@ -96,6 +104,7 @@ export default function UpdateRentingDialog(props: any) {
 
     const updateRenting = async () => {
         if (signer && chain && chain.id) {
+            setLoadingUpdate(true);
             try {
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
@@ -114,9 +123,11 @@ export default function UpdateRentingDialog(props: any) {
                     imageURL
                 });
                 const receipt = await transaction.wait();
+                setLoadingUpdate(false);
                 handleClose(receipt.events[0].args['renting']);
             } catch (e) {
                 console.error(e);
+                setLoadingUpdate(false);
             }
         }
     };
@@ -217,19 +228,31 @@ export default function UpdateRentingDialog(props: any) {
                         />
                     ))}
                 </Box>
-                <Box>
+                <Box
+                    sx={{
+                        width: '300px',
+                        border: '1px solid rgba(0, 0, 0, 0.23)',
+                        borderRadius: '4px',
+                        padding: '16.5px 14px'
+                    }}
+                >
                     <Stack>
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            sx={{ marginBottom: '20px', height: '200px', position: 'relative' }}
-                        >
-                            <Image fill style={{ objectFit: 'contain' }} alt="Renting image" src={imageURL}></Image>
-                        </Box>
-                        <Button variant="contained" component="label">
+                        {imageURL ? (
+                            <Box
+                                display="flex"
+                                justifyContent="center"
+                                sx={{ marginBottom: '20px', height: '200px', position: 'relative' }}
+                            >
+                                <Image fill style={{ objectFit: 'contain' }} alt="Renting image" src={imageURL}></Image>
+                            </Box>
+                        ) : (
+                            ''
+                        )}
+
+                        <LoadingButton loading={loadingImage} variant="contained" component="label">
                             Upload
                             <input hidden accept="image/*" type="file" onChange={handleChangeFile} />
-                        </Button>
+                        </LoadingButton>
                     </Stack>
                 </Box>
                 <Box
@@ -237,14 +260,15 @@ export default function UpdateRentingDialog(props: any) {
                         width: '300px'
                     }}
                 >
-                    <Button
+                    <LoadingButton
+                        loading={loadingUpdate}
                         sx={{ marginBottom: '1rem', width: '100%' }}
                         variant="contained"
                         onClick={updateRenting}
                         disabled={!canUpdate()}
                     >
                         Update
-                    </Button>
+                    </LoadingButton>
                 </Box>
             </Stack>
         </Dialog>

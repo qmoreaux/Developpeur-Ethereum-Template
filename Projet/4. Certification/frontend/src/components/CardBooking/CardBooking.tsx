@@ -1,8 +1,10 @@
 import { useState } from 'react';
 
-import { ethers, BigNumber, ContractInterface } from 'ethers';
-import { useNetwork, useProvider, useSigner, useAccount } from 'wagmi';
 import { Button, Typography, Box, Card, CardContent, Stack } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+
+import { ethers, BigNumber } from 'ethers';
+import { useNetwork, useProvider, useSigner, useAccount } from 'wagmi';
 
 import artifacts from '../../../contracts/SmartStay.json';
 
@@ -18,6 +20,13 @@ export default function CardBooking({ _booking, type }: any) {
     const { data: signer } = useSigner();
 
     const [booking, setBooking] = useState<IBooking>(_booking);
+
+    const [loadingAccept, setLoadingAccept] = useState(false);
+    const [loadingRefuse, setLoadingRefuse] = useState(false);
+    const [loadingPay, setLoadingPay] = useState(false);
+    const [loadingValidate, setLoadingValidate] = useState(false);
+    const [loadingRetrieve, setLoadingRetrieve] = useState(false);
+    const [loadingRedeem, setLoadingRedeem] = useState(false);
 
     const getRenting = async (bookingID: number) => {
         if (provider && chain && chain.id) {
@@ -35,26 +44,9 @@ export default function CardBooking({ _booking, type }: any) {
         }
     };
 
-    const handleRejectBooking = async () => {
-        if (signer && chain && chain.id) {
-            try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.rejectBooking(booking.id);
-                await transaction.wait();
-
-                setBooking({ ...booking, status: 1 });
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    };
-
     const handleAcceptBooking = async () => {
         if (signer && chain && chain.id) {
+            setLoadingAccept(true);
             try {
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
@@ -65,14 +57,38 @@ export default function CardBooking({ _booking, type }: any) {
                 await transaction.wait();
 
                 setBooking({ ...booking, status: 2 });
+                setLoadingAccept(false);
             } catch (e) {
                 console.error(e);
+                setLoadingAccept(false);
+            }
+        }
+    };
+
+    const handleRejectBooking = async () => {
+        if (signer && chain && chain.id) {
+            setLoadingRefuse(true);
+            try {
+                const contract = new ethers.Contract(
+                    (artifacts.networks as INetworks)[chain.id].address,
+                    artifacts.abi,
+                    signer
+                );
+                const transaction = await contract.rejectBooking(booking.id);
+                await transaction.wait();
+
+                setBooking({ ...booking, status: 1 });
+                setLoadingRefuse(false);
+            } catch (e) {
+                console.error(e);
+                setLoadingRefuse(false);
             }
         }
     };
 
     const handlePayBooking = async () => {
         if (signer && chain && chain.id) {
+            setLoadingPay(true);
             try {
                 const SBTMetadata = {
                     image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U?_gl=1*1nminnk*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY4MDA4ODQ2Ny4xNi4xLjE2ODAwODg1MjkuNTguMC4w',
@@ -121,15 +137,18 @@ export default function CardBooking({ _booking, type }: any) {
                     await transaction.wait();
 
                     setBooking({ ...booking, status: 3 });
+                    setLoadingPay(false);
                 }
             } catch (e) {
                 console.error(e);
+                setLoadingPay(false);
             }
         }
     };
 
     const handleRedeemNFT = async () => {
         if (signer && chain && chain.id) {
+            setLoadingRedeem(true);
             try {
                 const NFTMetadata = {
                     image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U?_gl=1*1nminnk*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY4MDA4ODQ2Ny4xNi4xLjE2ODAwODg1MjkuNTguMC4w',
@@ -159,8 +178,10 @@ export default function CardBooking({ _booking, type }: any) {
                     await transaction.wait();
 
                     setBooking({ ...booking, NFTRedeemed: true });
+                    setLoadingRedeem(false);
                 }
             } catch (e) {
+                setLoadingRedeem(false);
                 console.error(e);
             }
         }
@@ -168,6 +189,7 @@ export default function CardBooking({ _booking, type }: any) {
 
     const handleValidateBookingAsOwner = async () => {
         if (signer && chain && chain.id) {
+            setLoadingValidate(true);
             try {
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
@@ -181,14 +203,17 @@ export default function CardBooking({ _booking, type }: any) {
                     validatedOwner: true,
                     status: booking.validatedRecipient ? 4 : 3
                 });
+                setLoadingValidate(false);
             } catch (e) {
                 console.error(e);
+                setLoadingValidate(false);
             }
         }
     };
 
     const handleValidateBookingAsRecipient = async () => {
         if (signer && chain && chain.id) {
+            setLoadingValidate(true);
             try {
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
@@ -202,14 +227,17 @@ export default function CardBooking({ _booking, type }: any) {
                     validatedRecipient: true,
                     status: booking.validatedOwner ? 4 : 3
                 });
+                setLoadingValidate(false);
             } catch (e) {
                 console.error(e);
+                setLoadingValidate(false);
             }
         }
     };
 
     const handleRetrieveCaution = async () => {
         if (signer && chain && chain.id) {
+            setLoadingRetrieve(true);
             try {
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
@@ -223,14 +251,17 @@ export default function CardBooking({ _booking, type }: any) {
                     cautionLocked: BigNumber.from(0),
                     status: booking.amountLocked.toString() === '0' ? 5 : 4
                 });
+                setLoadingRetrieve(false);
             } catch (e) {
                 console.error(e);
+                setLoadingRetrieve(false);
             }
         }
     };
 
     const handleRetrieveAmount = async () => {
         if (signer && chain && chain.id) {
+            setLoadingRetrieve(true);
             try {
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
@@ -244,8 +275,10 @@ export default function CardBooking({ _booking, type }: any) {
                     amountLocked: BigNumber.from(0),
                     status: booking.cautionLocked.toString() === '0' ? 5 : 4
                 });
+                setLoadingRetrieve(false);
             } catch (e) {
                 console.error(e);
+                setLoadingRetrieve(false);
             }
         }
     };
@@ -299,21 +332,30 @@ export default function CardBooking({ _booking, type }: any) {
                         </Typography>
                         <Typography>Person count: {booking.personCount.toString()}</Typography>
                         <Typography>Duration : {booking.duration.toString()} days</Typography>
-                        <Box display="flex" justifyContent="center" mt="1rem">
+                        <Box
+                            display="flex"
+                            justifyContent={booking.status === 0 && type === 'owner' ? 'space-between' : 'center'}
+                            mt="1rem"
+                        >
                             {booking.status === 0 ? (
                                 <>
                                     {type === 'owner' ? (
                                         <>
-                                            <Button variant="contained" onClick={() => handleAcceptBooking()}>
+                                            <LoadingButton
+                                                loading={loadingAccept}
+                                                variant="contained"
+                                                onClick={() => handleAcceptBooking()}
+                                            >
                                                 Accept booking
-                                            </Button>
-                                            <Button
+                                            </LoadingButton>
+                                            <LoadingButton
+                                                loading={loadingRefuse}
                                                 variant="contained"
                                                 onClick={() => handleRejectBooking()}
                                                 color="error"
                                             >
                                                 Refuse booking
-                                            </Button>
+                                            </LoadingButton>
                                         </>
                                     ) : (
                                         <Typography>Waiting for approval from owner</Typography>
@@ -332,9 +374,13 @@ export default function CardBooking({ _booking, type }: any) {
                                     {type === 'owner' ? (
                                         <Typography>Waiting for payment</Typography>
                                     ) : (
-                                        <Button variant="contained" onClick={() => handlePayBooking()}>
+                                        <LoadingButton
+                                            loading={loadingPay}
+                                            variant="contained"
+                                            onClick={() => handlePayBooking()}
+                                        >
                                             Pay booking
-                                        </Button>
+                                        </LoadingButton>
                                     )}
                                 </>
                             ) : booking.status === 3 ? (
@@ -348,12 +394,13 @@ export default function CardBooking({ _booking, type }: any) {
                                                             Please wait for the recipient to validate the booking
                                                         </Typography>
                                                     ) : (
-                                                        <Button
+                                                        <LoadingButton
+                                                            loading={loadingValidate}
                                                             variant="contained"
                                                             onClick={() => handleValidateBookingAsOwner()}
                                                         >
                                                             Validate booking
-                                                        </Button>
+                                                        </LoadingButton>
                                                     )}
                                                 </>
                                             ) : (
@@ -365,9 +412,13 @@ export default function CardBooking({ _booking, type }: any) {
                                             {booking.NFTRedeemed ? (
                                                 ''
                                             ) : (
-                                                <Button variant="contained" onClick={handleRedeemNFT}>
+                                                <LoadingButton
+                                                    loading={loadingRedeem}
+                                                    variant="contained"
+                                                    onClick={handleRedeemNFT}
+                                                >
                                                     Redeem NFT
-                                                </Button>
+                                                </LoadingButton>
                                             )}
                                             {isBookingEnded() ? (
                                                 <>
@@ -376,12 +427,13 @@ export default function CardBooking({ _booking, type }: any) {
                                                             Please wait for the owner to validate the booking
                                                         </Typography>
                                                     ) : (
-                                                        <Button
+                                                        <LoadingButton
+                                                            loading={loadingValidate}
                                                             variant="contained"
-                                                            onClick={() => handleValidateBookingAsRecipient()}
+                                                            onClick={handleValidateBookingAsRecipient}
                                                         >
                                                             Validate booking
-                                                        </Button>
+                                                        </LoadingButton>
                                                     )}
                                                 </>
                                             ) : (
@@ -401,12 +453,13 @@ export default function CardBooking({ _booking, type }: any) {
                                             {isBookingEnded() ? (
                                                 <>
                                                     {booking.amountLocked.toString() !== '0' ? (
-                                                        <Button
+                                                        <LoadingButton
+                                                            loading={loadingRetrieve}
                                                             variant="contained"
                                                             onClick={() => handleRetrieveAmount()}
                                                         >
                                                             Retrieve amount
-                                                        </Button>
+                                                        </LoadingButton>
                                                     ) : (
                                                         <Typography>Already retrieved</Typography>
                                                     )}
@@ -420,9 +473,13 @@ export default function CardBooking({ _booking, type }: any) {
                                             {booking.NFTRedeemed ? (
                                                 ''
                                             ) : (
-                                                <Button variant="contained" onClick={handleRedeemNFT}>
+                                                <LoadingButton
+                                                    loading={loadingRedeem}
+                                                    variant="contained"
+                                                    onClick={handleRedeemNFT}
+                                                >
                                                     Redeem NFT
-                                                </Button>
+                                                </LoadingButton>
                                             )}
                                             <Typography>
                                                 Amount to get :
@@ -431,12 +488,13 @@ export default function CardBooking({ _booking, type }: any) {
                                             {isBookingEnded() ? (
                                                 <>
                                                     {booking.cautionLocked.toString() !== '0' ? (
-                                                        <Button
+                                                        <LoadingButton
+                                                            loading={loadingRetrieve}
                                                             variant="contained"
                                                             onClick={() => handleRetrieveCaution()}
                                                         >
                                                             Retrieve caution
-                                                        </Button>
+                                                        </LoadingButton>
                                                     ) : (
                                                         <Typography>Already retrieved</Typography>
                                                     )}
@@ -456,9 +514,13 @@ export default function CardBooking({ _booking, type }: any) {
                                             {booking.NFTRedeemed ? (
                                                 ''
                                             ) : (
-                                                <Button variant="contained" onClick={handleRedeemNFT}>
+                                                <LoadingButton
+                                                    loading={loadingRedeem}
+                                                    variant="contained"
+                                                    onClick={handleRedeemNFT}
+                                                >
                                                     Redeem NFT
-                                                </Button>
+                                                </LoadingButton>
                                             )}
                                         </>
                                     )}

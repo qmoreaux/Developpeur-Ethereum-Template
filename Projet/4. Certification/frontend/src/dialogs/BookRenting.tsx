@@ -1,16 +1,16 @@
-import { ChangeEvent, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
-import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from '@mui/material';
+import { Dialog, DialogTitle, Stack, Box, TextField } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+
 import { ethers } from 'ethers';
-import { useNetwork, useProvider, useSigner } from 'wagmi';
+import { useNetwork, useSigner } from 'wagmi';
 
 import artifacts from '../../contracts/SmartStay.json';
 
 import INetworks from '../interfaces/Networks';
-
-const emails = ['username@gmail.com', 'user02@gmail.com'];
 
 export default function BookRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -24,6 +24,8 @@ export default function BookRentingDialog(props: any) {
     );
     const [duration, setDuration] = useState(0);
     const [personCount, setPersonCount] = useState(0);
+
+    const [loadingCreate, setLoadingCreate] = useState(false);
 
     useEffect(() => {
         if (_renting) {
@@ -41,6 +43,7 @@ export default function BookRentingDialog(props: any) {
 
     const createBooking = async () => {
         if (signer && chain && chain.id) {
+            setLoadingCreate(true);
             try {
                 const contract = new ethers.Contract(
                     (artifacts.networks as INetworks)[chain.id].address,
@@ -54,9 +57,11 @@ export default function BookRentingDialog(props: any) {
                     personCount
                 );
                 await transaction.wait();
+                setLoadingCreate(false);
                 handleClose(true);
             } catch (e) {
                 console.error(e);
+                setLoadingCreate(false);
             }
         }
     };
@@ -123,14 +128,15 @@ export default function BookRentingDialog(props: any) {
                             width: '300px'
                         }}
                     >
-                        <Button
+                        <LoadingButton
+                            loading={loadingCreate}
                             sx={{ marginBottom: '1rem', width: '100%' }}
                             variant="contained"
                             onClick={createBooking}
                             disabled={!canCreate()}
                         >
                             Create
-                        </Button>
+                        </LoadingButton>
                     </Box>
                 </Stack>
             ) : (

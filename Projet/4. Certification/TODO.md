@@ -2,10 +2,10 @@
 
 ## Urgent
 
-* Add loading durant le transaction.wait()
 
 ## Normal
 
+* Add snackbar
 * Check update and burn NFT/SBT
 * Ajouter la possibilité de cancel la réservation entre le payement et la date de début
 
