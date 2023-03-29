@@ -115,6 +115,9 @@ contract SmartStay {
         uint64 timestampEnd;
         uint64 duration;
         uint64 personCount;
+        uint256 SBTOwnerID;
+        uint256 SBTRecipientID;
+        uint256 NFTRecipientID;
         bool validatedOwner;
         bool validatedRecipient;
         bool NFTRedeemed;
@@ -397,8 +400,8 @@ contract SmartStay {
         bookings[_bookingID].amountLocked = uint128(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration);
         bookings[_bookingID].cautionLocked = uint128(rentings[bookings[_bookingID].rentingID].caution);
 
-        SBTCollection.mint(rentings[bookings[_bookingID].rentingID].owner, _ownerMetadataURI);
-        SBTCollection.mint(msg.sender, _recipientMetadataURI);
+        bookings[_bookingID].SBTOwnerID = SBTCollection.mint(rentings[bookings[_bookingID].rentingID].owner, _ownerMetadataURI);
+        bookings[_bookingID].SBTRecipientID = SBTCollection.mint(msg.sender, _recipientMetadataURI);
 
         bookings[_bookingID].status = BookingStatus.ONGOING;
 
@@ -468,6 +471,26 @@ contract SmartStay {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
+    function cancelBooking(uint256 _bookingID) external isBookingRecipient(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
+        require(block.timestamp < bookings[_bookingID].timestampStart, 'SmartStay : Can not cancel booking already started');
+
+        uint256 amountToSend = bookings[_bookingID].amountLocked + bookings[_bookingID].cautionLocked;
+        bookings[_bookingID].amountLocked = 0;
+        bookings[_bookingID].cautionLocked = 0;
+
+        (bool success, ) = msg.sender.call{value: amountToSend}("");
+        require(success, 'SmartStay: Amount retrieve failed');
+
+        NFTCollection.burn(bookings[_bookingID].NFTRecipientID);
+        SBTCollection.burn(bookings[_bookingID].SBTRecipientID);
+        SBTCollection.burn(bookings[_bookingID].SBTOwnerID);
+
+        bookings[_bookingID].status = BookingStatus.CANCELLED;
+
+        emit BookingUpdated(bookings[_bookingID]);
+    }
+
     // NFT & SBT
 
     function getNFTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
@@ -481,7 +504,7 @@ contract SmartStay {
     function redeemNFT(uint256 _bookingID, string calldata _metadataURI) external isBookingRecipient(_bookingID) {
         require (!bookings[_bookingID].NFTRedeemed, 'SmartStay: NFT already redeemed');
 
-        NFTCollection.mint(msg.sender, _metadataURI);
+        bookings[_bookingID].NFTRecipientID = NFTCollection.mint(msg.sender, _metadataURI);
     }
 
     // Utils

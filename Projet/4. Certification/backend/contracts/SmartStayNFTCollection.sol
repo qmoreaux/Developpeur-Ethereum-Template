@@ -23,17 +23,19 @@ contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
         return tokenOwner[_address];
     }
  
-    function mint(address to, string memory _tokenURI) public onlyOwner {
+    function mint(address to, string memory _tokenURI) public onlyOwner returns (uint256) {
         tokenID.increment();
-        uint256 newItemId = tokenID.current();
-        _mint(to, newItemId);
-        _setTokenURI(newItemId, _tokenURI);
+        uint256 newTokenID = tokenID.current();
+        _mint(to, newTokenID);
+        _setTokenURI(newTokenID, _tokenURI);
 
 
         Tokens.SmartStay memory _token;
-        _token.tokenID = newItemId;
+        _token.tokenID = newTokenID;
         _token.tokenURI = _tokenURI;
         tokenOwner[to].push(_token);
+
+        return newTokenID;
     }
 
     function update(uint256 _tokenID, string memory _tokenURI) public onlyOwner {
