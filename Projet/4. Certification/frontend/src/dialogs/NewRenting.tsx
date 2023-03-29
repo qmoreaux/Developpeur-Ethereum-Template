@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
 
@@ -9,7 +9,7 @@ import { LoadingButton } from '@mui/lab';
 import { ethers } from 'ethers';
 import { useNetwork, useSigner, useProvider } from 'wagmi';
 
-import { uploadFileToIPFS } from '../pinata';
+import { uploadFileToIPFS, updateFileName } from '../pinata';
 
 import artifacts from '../../contracts/SmartStay.json';
 
@@ -76,7 +76,7 @@ export default function NewRentingDialog(props: any) {
         var file = e.target.files[0];
         setLoadingImage(true);
         try {
-            const response = await uploadFileToIPFS(file);
+            const response = await uploadFileToIPFS(file, 'image_renting_new');
             if (response.success === true) {
                 setImageURL(response.pinataURL);
             }
@@ -117,6 +117,10 @@ export default function NewRentingDialog(props: any) {
                 });
                 const receipt = await transaction.wait();
                 setLoadingCreate(false);
+                await updateFileName(
+                    imageURL.slice(34),
+                    'image_renting_' + receipt.events[0].args['renting'].id.toNumber()
+                );
                 handleClose(receipt.events[0].args['renting']);
             } catch (e) {
                 console.error(e);

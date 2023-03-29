@@ -41,7 +41,7 @@ export default function WaitingForPayement({ booking, setBooking, type }: any) {
             setLoadingPay(true);
             try {
                 const SBTMetadata = {
-                    image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U?_gl=1*1nminnk*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY4MDA4ODQ2Ny4xNi4xLjE2ODAwODg1MjkuNTguMC4w',
+                    image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U',
                     name: 'Wawa',
                     description: 'dada',
                     attributes: [
@@ -66,8 +66,14 @@ export default function WaitingForPayement({ booking, setBooking, type }: any) {
                     attributes: [...SBTMetadata.attributes, { trait_type: 'owner', value: false }]
                 };
 
-                const metadataOwner = await uploadJSONToIPFS(SBTMetadataOwner);
-                const metadataRecipient = await uploadJSONToIPFS(SBTMetadataRecipient);
+                const metadataOwner = await uploadJSONToIPFS(
+                    SBTMetadataOwner,
+                    'metadata_sbt_owner_booking_' + booking.id
+                );
+                const metadataRecipient = await uploadJSONToIPFS(
+                    SBTMetadataRecipient,
+                    'metadata_sbt_recipient_booking_' + booking.id
+                );
 
                 if (metadataOwner.success === true && metadataRecipient.success) {
                     const contract = new ethers.Contract(

@@ -5,22 +5,31 @@ const secret = process.env.NEXT_PUBLIC_PINATA_SECRET;
 const axios = require('axios');
 const FormData = require('form-data');
 
-export const uploadJSONToIPFS = async (JSONBody: any) => {
+export const uploadJSONToIPFS = async (JSONBody: any, pinataName: string) => {
     const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
     return axios
-        .post(url, JSONBody, {
-            headers: {
-                pinata_api_key: key,
-                pinata_secret_api_key: secret
+        .post(
+            url,
+            {
+                pinataMetadata: {
+                    name: pinataName
+                },
+                pinataContent: JSONBody
+            },
+            {
+                headers: {
+                    pinata_api_key: key,
+                    pinata_secret_api_key: secret
+                }
             }
-        })
-        .then(function (response: any) {
+        )
+        .then((response: any) => {
             return {
                 success: true,
                 pinataURL: 'https://gateway.pinata.cloud/ipfs/' + response.data.IpfsHash
             };
         })
-        .catch(function (error: any) {
+        .catch((error: any) => {
             console.error(error);
             return {
                 success: false,
@@ -29,13 +38,13 @@ export const uploadJSONToIPFS = async (JSONBody: any) => {
         });
 };
 
-export const uploadFileToIPFS = async (file: any) => {
+export const uploadFileToIPFS = async (file: any, pinataName: string) => {
     const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
     let data = new FormData();
     data.append('file', file);
 
     const metadata = JSON.stringify({
-        name: file.name
+        name: pinataName
     });
     data.append('pinataMetadata', metadata);
 
@@ -53,13 +62,67 @@ export const uploadFileToIPFS = async (file: any) => {
                 pinata_secret_api_key: secret
             }
         })
-        .then(function (response: any) {
+        .then((response: any) => {
             return {
                 success: true,
                 pinataURL: 'https://gateway.pinata.cloud/ipfs/' + response.data.IpfsHash
             };
         })
-        .catch(function (error: any) {
+        .catch((error: any) => {
+            console.error(error);
+            return {
+                success: false,
+                message: error.message
+            };
+        });
+};
+
+export const updateFileName = async (ipfsHash: any, pinataName: string) => {
+    const url = `https://api.pinata.cloud/pinning/hashMetadata`;
+    return axios
+        .put(
+            url,
+            {
+                ipfsPinHash: ipfsHash,
+                name: pinataName
+            },
+            {
+                headers: {
+                    pinata_api_key: key,
+                    pinata_secret_api_key: secret
+                }
+            }
+        )
+        .then((response: any) => {
+            return {
+                success: true,
+                pinataURL: 'https://gateway.pinata.cloud/ipfs/' + response.data.IpfsHash
+            };
+        })
+        .catch((error: any) => {
+            console.error(error);
+            return {
+                success: false,
+                message: error.message
+            };
+        });
+};
+
+export const unpinFile = async (ipfsHash: any) => {
+    const url = `https://api.pinata.cloud/pinning/unpin/${ipfsHash}`;
+    return axios
+        .delete(url, {
+            headers: {
+                pinata_api_key: key,
+                pinata_secret_api_key: secret
+            }
+        })
+        .then(() => {
+            return {
+                success: true
+            };
+        })
+        .catch((error: any) => {
             console.error(error);
             return {
                 success: false,

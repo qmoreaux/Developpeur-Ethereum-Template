@@ -34,7 +34,7 @@ export default function CardBooking({ _booking, type }: any) {
             setLoadingRedeem(true);
             try {
                 const NFTMetadata = {
-                    image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U?_gl=1*1nminnk*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY4MDA4ODQ2Ny4xNi4xLjE2ODAwODg1MjkuNTguMC4w',
+                    image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U',
                     name: 'Dada',
                     description: 'Didi',
                     attributes: [
@@ -49,7 +49,7 @@ export default function CardBooking({ _booking, type }: any) {
                     ]
                 };
 
-                const response = await uploadJSONToIPFS(NFTMetadata);
+                const response = await uploadJSONToIPFS(NFTMetadata, 'metadata_nft_booking_' + booking.id);
 
                 if (response.success === true) {
                     const contract = new ethers.Contract(
