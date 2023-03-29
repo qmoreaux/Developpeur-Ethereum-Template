@@ -6,7 +6,7 @@ import { uploadFileToIPFS, uploadJSONToIPFS } from '../pinata';
 import PropTypes from 'prop-types';
 
 import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from '@mui/material';
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import { useNetwork, useSigner, useProvider, useAccount } from 'wagmi';
 
 import artifacts from '../../contracts/SmartStay.json';
@@ -119,6 +119,9 @@ export default function NewRentingDialog(props: any) {
                         type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
+                            inputProps: {
+                                min: 0
+                            },
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <AttachMoney />
@@ -136,6 +139,9 @@ export default function NewRentingDialog(props: any) {
                         type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
+                            inputProps: {
+                                min: 0
+                            },
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <AttachMoney />
@@ -149,8 +155,14 @@ export default function NewRentingDialog(props: any) {
                 </Box>
                 <Box>
                     <TextField
-                        type="number"
                         label="Person count"
+                        type="number"
+                        InputProps={{
+                            inputProps: {
+                                min: 0,
+                                step: 1
+                            }
+                        }}
                         sx={{ width: '300px' }}
                         onChange={(event) => {
                             setPersonCount(+event.target.value);

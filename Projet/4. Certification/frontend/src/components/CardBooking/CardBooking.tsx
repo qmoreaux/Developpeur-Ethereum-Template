@@ -9,6 +9,8 @@ import artifacts from '../../../contracts/SmartStay.json';
 import IBooking from '../../interfaces/Booking';
 import INetworks from '../../interfaces/Networks';
 
+import { uploadJSONToIPFS } from '../../pinata';
+
 export default function CardBooking({ _booking, type }: any) {
     const { address } = useAccount();
     const { chain } = useNetwork();
@@ -72,18 +74,92 @@ export default function CardBooking({ _booking, type }: any) {
     const handlePayBooking = async () => {
         if (signer && chain && chain.id) {
             try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                let renting = await getRenting(booking.id.toNumber());
-                const transaction = await contract.confirmBooking(booking.id.toNumber(), {
-                    value: renting.unitPrice.mul(booking.duration).add(renting.caution)
-                });
-                await transaction.wait();
+                const SBTMetadata = {
+                    image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U?_gl=1*1nminnk*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY4MDA4ODQ2Ny4xNi4xLjE2ODAwODg1MjkuNTguMC4w',
+                    name: 'Wawa',
+                    description: 'dada',
+                    attributes: [
+                        {
+                            trait_type: 'Booking',
+                            value: booking.id
+                        },
+                        {
+                            trait_type: 'Toto',
+                            value: 10
+                        }
+                    ]
+                };
 
-                setBooking({ ...booking, status: 3 });
+                const SBTMetadataOwner = {
+                    ...SBTMetadata,
+                    attributes: [...SBTMetadata.attributes, { trait_type: 'owner', value: true }]
+                };
+
+                const SBTMetadataRecipient = {
+                    ...SBTMetadata,
+                    attributes: [...SBTMetadata.attributes, { trait_type: 'owner', value: false }]
+                };
+
+                const metadataOwner = await uploadJSONToIPFS(SBTMetadataOwner);
+                const metadataRecipient = await uploadJSONToIPFS(SBTMetadataRecipient);
+
+                if (metadataOwner.success === true && metadataRecipient.success) {
+                    const contract = new ethers.Contract(
+                        (artifacts.networks as INetworks)[chain.id].address,
+                        artifacts.abi,
+                        signer
+                    );
+                    let renting = await getRenting(booking.id.toNumber());
+                    const transaction = await contract.confirmBooking(
+                        booking.id.toNumber(),
+                        metadataOwner.pinataURL,
+                        metadataRecipient.pinataURL,
+                        {
+                            value: renting.unitPrice.mul(booking.duration).add(renting.caution)
+                        }
+                    );
+                    await transaction.wait();
+
+                    setBooking({ ...booking, status: 3 });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    };
+
+    const handleRedeemNFT = async () => {
+        if (signer && chain && chain.id) {
+            try {
+                const NFTMetadata = {
+                    image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U?_gl=1*1nminnk*_ga*MmIzMjNlOWMtZjM2Zi00MDhhLWEwZjctNGFjNTNkNjliOTUw*_ga_5RMPXG14TE*MTY4MDA4ODQ2Ny4xNi4xLjE2ODAwODg1MjkuNTguMC4w',
+                    name: 'Dada',
+                    description: 'Didi',
+                    attributes: [
+                        {
+                            trait_type: 'Booking',
+                            value: booking.id
+                        },
+                        {
+                            trait_type: 'Toto',
+                            value: 10
+                        }
+                    ]
+                };
+
+                const response = await uploadJSONToIPFS(NFTMetadata);
+
+                if (response.success === true) {
+                    const contract = new ethers.Contract(
+                        (artifacts.networks as INetworks)[chain.id].address,
+                        artifacts.abi,
+                        signer
+                    );
+                    const transaction = await contract.redeemNFT(booking.id.toNumber(), response.pinataURL);
+                    await transaction.wait();
+
+                    setBooking({ ...booking, NFTRedeemed: true });
+                }
             } catch (e) {
                 console.error(e);
             }
@@ -286,6 +362,13 @@ export default function CardBooking({ _booking, type }: any) {
                                         </>
                                     ) : (
                                         <>
+                                            {booking.NFTRedeemed ? (
+                                                ''
+                                            ) : (
+                                                <Button variant="contained" onClick={handleRedeemNFT}>
+                                                    Redeem NFT
+                                                </Button>
+                                            )}
                                             {isBookingEnded() ? (
                                                 <>
                                                     {booking.validatedRecipient ? (
@@ -334,6 +417,13 @@ export default function CardBooking({ _booking, type }: any) {
                                         </Stack>
                                     ) : (
                                         <Stack>
+                                            {booking.NFTRedeemed ? (
+                                                ''
+                                            ) : (
+                                                <Button variant="contained" onClick={handleRedeemNFT}>
+                                                    Redeem NFT
+                                                </Button>
+                                            )}
                                             <Typography>
                                                 Amount to get :
                                                 <b> {ethers.utils.formatEther(booking.cautionLocked)} ETH</b>
@@ -358,7 +448,22 @@ export default function CardBooking({ _booking, type }: any) {
                                     )}
                                 </>
                             ) : (
-                                <Typography>This booking is completed</Typography>
+                                <>
+                                    {type === 'owner' ? (
+                                        ''
+                                    ) : (
+                                        <>
+                                            {booking.NFTRedeemed ? (
+                                                ''
+                                            ) : (
+                                                <Button variant="contained" onClick={handleRedeemNFT}>
+                                                    Redeem NFT
+                                                </Button>
+                                            )}
+                                        </>
+                                    )}
+                                    <Typography>This booking is completed</Typography>
+                                </>
                             )}
                         </Box>
                     </CardContent>

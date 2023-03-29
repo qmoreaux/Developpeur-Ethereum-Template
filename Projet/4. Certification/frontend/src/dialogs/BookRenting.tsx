@@ -67,6 +67,11 @@ export default function BookRentingDialog(props: any) {
                     <TextField
                         label="Renting ID"
                         type="number"
+                        InputProps={{
+                            inputProps: {
+                                min: 0
+                            }
+                        }}
                         sx={{ width: '300px' }}
                         value={rentingID || 0}
                         disabled
@@ -74,8 +79,13 @@ export default function BookRentingDialog(props: any) {
                 </Box>
                 <Box>
                     <TextField
-                        type="number"
                         label="Person count"
+                        type="number"
+                        InputProps={{
+                            inputProps: {
+                                min: 0
+                            }
+                        }}
                         sx={{ width: '300px' }}
                         value={personCount || 0}
                         onChange={(event) => {

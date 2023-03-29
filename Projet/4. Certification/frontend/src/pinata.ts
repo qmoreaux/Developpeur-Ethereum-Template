@@ -35,27 +35,12 @@ export const uploadFileToIPFS = async (file: any) => {
     data.append('file', file);
 
     const metadata = JSON.stringify({
-        name: 'testname',
-        keyvalues: {
-            exampleKey: 'exampleValue'
-        }
+        name: file.name
     });
     data.append('pinataMetadata', metadata);
 
     const pinataOptions = JSON.stringify({
-        cidVersion: 0,
-        customPinPolicy: {
-            regions: [
-                {
-                    id: 'FRA1',
-                    desiredReplicationCount: 1
-                },
-                {
-                    id: 'NYC1',
-                    desiredReplicationCount: 2
-                }
-            ]
-        }
+        cidVersion: 0
     });
     data.append('pinataOptions', pinataOptions);
 

@@ -3,12 +3,22 @@ pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+import "./SmartStayNFTCollection.sol";
+import "./SmartStaySBTCollection.sol";
+
+import "./libraries/Tokens.sol";
+
+import "hardhat/console.sol";
+
 /** 
  * @title Voting
  * @author Quentin Moreaux
  * @dev Implements functionnalities for SmartStay Dapp
  */
 contract SmartStay {
+
+    SmartStayNFTCollection NFTCollection;
+    SmartStaySBTCollection SBTCollection;
         
     using Counters for Counters.Counter;
 
@@ -107,6 +117,7 @@ contract SmartStay {
         uint64 personCount;
         bool validatedOwner;
         bool validatedRecipient;
+        bool NFTRedeemed;
         BookingStatus status;
     }
 
@@ -122,6 +133,10 @@ contract SmartStay {
     // Constructor
 
     constructor() {
+
+        NFTCollection = new SmartStayNFTCollection();
+        SBTCollection = new SmartStaySBTCollection();
+
         // Create empty renting and booking to avoid issue with index 0
         Renting memory _renting;
         rentings.push(_renting);
@@ -130,6 +145,14 @@ contract SmartStay {
         Booking memory _booking;
         bookings.push(_booking);
         indexBooking.increment();
+    }
+
+    function getNFTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
+        return NFTCollection.getUserNFT(_address);
+    }
+
+    function getSBTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
+        return SBTCollection.getUserSBT(_address);
     }
 
     // Renting
@@ -366,14 +389,23 @@ contract SmartStay {
      * @dev Confirm a booking by locking (renting price * duration + caution) amount ETH for the duration of the booking
      * @param _bookingID Id of booking to confirm
      */
-    function confirmBooking(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
+    function confirmBooking(uint256 _bookingID, string calldata _ownerMetadataURI, string calldata _recipientMetadataURI) external payable isBookingRecipient(_bookingID) {
         require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution), 'SmartStay: Not enought send');
         require(bookings[_bookingID].status == BookingStatus.WAITING_FOR_PAYMENT, 'SmartStay : Wrong booking status');
         
         bookings[_bookingID].amountLocked = uint128(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration);
         bookings[_bookingID].cautionLocked = uint128(rentings[bookings[_bookingID].rentingID].caution);
 
+        SBTCollection.mint(rentings[bookings[_bookingID].rentingID].owner, _ownerMetadataURI);
+        SBTCollection.mint(msg.sender, _recipientMetadataURI);
+
         bookings[_bookingID].status = BookingStatus.ONGOING;
+    }
+
+    function redeemNFT(uint256 _bookingID, string calldata _metadataURI) external isBookingRecipient(_bookingID) {
+        require (!bookings[_bookingID].NFTRedeemed, 'SmartStay: NFT already redeemed');
+
+        NFTCollection.mint(msg.sender, _metadataURI);
     }
 
     function validateBookingAsRecipient(uint256 _bookingID) external isBookingRecipient(_bookingID) {

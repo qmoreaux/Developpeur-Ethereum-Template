@@ -11,5 +11,6 @@ export default interface IBooking {
     timestampEnd: BigNumber;
     validatedOwner: boolean;
     validatedRecipient: boolean;
+    NFTRedeemed: boolean;
     status: number;
 }

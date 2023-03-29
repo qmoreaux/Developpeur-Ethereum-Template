@@ -105,8 +105,8 @@ export default function UpdateRentingDialog(props: any) {
                 const transaction = await contract.updateRenting(data.id, {
                     id: 0,
                     owner: '0x0000000000000000000000000000000000000000',
-                    unitPrice: ethers.utils.parseUnits(unitPrice.toString(), 'ether'),
-                    caution: ethers.utils.parseUnits(caution.toString(), 'ether'),
+                    unitPrice: ethers.utils.parseUnits(unitPrice.toFixed(), 'ether'),
+                    caution: ethers.utils.parseUnits(caution.toFixed(), 'ether'),
                     personCount,
                     location,
                     tags,
@@ -131,6 +131,9 @@ export default function UpdateRentingDialog(props: any) {
                         type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
+                            inputProps: {
+                                min: 0
+                            },
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
                         value={unitPrice || 0}
@@ -145,6 +148,9 @@ export default function UpdateRentingDialog(props: any) {
                         type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
+                            inputProps: {
+                                min: 0
+                            },
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
                         value={caution || 0}
@@ -157,6 +163,12 @@ export default function UpdateRentingDialog(props: any) {
                     <TextField
                         type="number"
                         label="Person count"
+                        InputProps={{
+                            inputProps: {
+                                min: 0,
+                                step: 1
+                            }
+                        }}
                         sx={{ width: '300px' }}
                         value={personCount || 0}
                         onChange={(event) => {

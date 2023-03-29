@@ -146,6 +146,9 @@ export default function Renting() {
                                         variant="standard"
                                         type="number"
                                         InputProps={{
+                                            inputProps: {
+                                                min: 0
+                                            },
                                             endAdornment: (
                                                 <InputAdornment position="start">
                                                     <AttachMoney />
@@ -164,6 +167,9 @@ export default function Renting() {
                                         variant="standard"
                                         type="number"
                                         InputProps={{
+                                            inputProps: {
+                                                min: 0
+                                            },
                                             endAdornment: (
                                                 <InputAdornment position="start">
                                                     <Person />
