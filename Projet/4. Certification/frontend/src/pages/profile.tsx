@@ -38,7 +38,7 @@ export default function Profile() {
                     const NFTtransaction = await contract.getNFTCollection(address, { from: address });
                     setNFTCollection(
                         await Promise.all<INFTItem[]>(
-                            NFTtransaction.map(async (NFTItem: any) => {
+                            NFTtransaction.map(async (NFTItem: INFTItem) => {
                                 let meta = await Axios.get(NFTItem.tokenURI);
                                 meta = meta.data;
                                 return {
@@ -52,7 +52,7 @@ export default function Profile() {
                     const SBTtransaction = await contract.getSBTCollection(address, { from: address });
                     setSBTCollection(
                         await Promise.all<INFTItem[]>(
-                            SBTtransaction.map(async (NFTItem: any) => {
+                            SBTtransaction.map(async (NFTItem: INFTItem) => {
                                 let meta = await Axios.get(NFTItem.tokenURI);
                                 meta = meta.data;
                                 return {

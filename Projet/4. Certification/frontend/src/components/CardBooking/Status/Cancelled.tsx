@@ -1,6 +1,8 @@
 import { Typography } from '@mui/material';
 
-export default function Cancelled({ booking, setBooking, type }: any) {
+import ICardBookingStatus from '@/interfaces/CardBookingStatus';
+
+export default function Cancelled({ booking, setBooking, type }: ICardBookingStatus) {
     return (
         <>
             {type === 'owner' ? (

@@ -11,10 +11,11 @@ import { useAlertContext } from '@/context';
 import artifacts from '../../../../contracts/SmartStay.json';
 
 import INetworks from '../../../interfaces/Networks';
+import ICardBookingStatus from '@/interfaces/CardBookingStatus';
 
 import { uploadJSONToIPFS } from '../../../pinata';
 
-export default function WaitingForPayement({ booking, setBooking, type }: any) {
+export default function WaitingForPayement({ booking, setBooking, type }: ICardBookingStatus) {
     const { address } = useAccount();
     const { chain } = useNetwork();
     const provider = useProvider();

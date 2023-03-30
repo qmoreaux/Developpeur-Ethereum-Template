@@ -29,8 +29,8 @@ export default function Renter() {
 
     const [userRentings, setUserRentings] = useState<Array<IRenting>>([]);
     const [open, setOpen] = useState({ NewRenting: false, UpdateRenting: false, DeleteRenting: false });
-    const [updateRenting, setUpdateRenting] = useState({});
-    const [deleteRenting, setDeleteRenting] = useState<number>(0);
+    const [updateRenting, setUpdateRenting] = useState<IRenting>({} as IRenting);
+    const [deleteRenting, setDeleteRenting] = useState<IRenting>({} as IRenting);
 
     useEffect(() => {
         (async () => {
@@ -60,7 +60,7 @@ export default function Renter() {
         }
     }, [isConnected, router]);
 
-    const handleClickOpen = (dialog: any, data?: any) => {
+    const handleClickOpen = (dialog: string, data: IRenting) => {
         setOpen({ ...open, [dialog]: true });
         switch (dialog) {
             case 'UpdateRenting': {
@@ -74,7 +74,7 @@ export default function Renter() {
         }
     };
 
-    const handleClose = (dialog: any, data: any) => {
+    const handleClose = (dialog: string, data: IRenting) => {
         setOpen({ ...open, [dialog]: false });
 
         switch (dialog) {
@@ -95,21 +95,21 @@ export default function Renter() {
                         })
                     );
                 }
-                setUpdateRenting({});
+                setUpdateRenting({} as IRenting);
                 break;
             }
             case 'DeleteRenting': {
                 if (data) {
                     setUserRentings(
                         userRentings.filter((userRenting: IRenting) => {
-                            if (userRenting.id.toNumber() === deleteRenting) {
+                            if (userRenting.id.toNumber() === deleteRenting.id.toNumber()) {
                                 return false;
                             }
                             return true;
                         })
                     );
                 }
-                setDeleteRenting(0);
+                setDeleteRenting({} as IRenting);
                 break;
             }
         }
@@ -178,9 +178,7 @@ export default function Renter() {
                                             <Button
                                                 variant="contained"
                                                 color="error"
-                                                onClick={() =>
-                                                    handleClickOpen('DeleteRenting', userRenting.id.toNumber())
-                                                }
+                                                onClick={() => handleClickOpen('DeleteRenting', userRenting)}
                                                 startIcon={<Delete />}
                                             >
                                                 <Typography>Delete</Typography>
@@ -212,7 +210,7 @@ export default function Renter() {
                                     borderRadius: '50px',
                                     padding: '0'
                                 }}
-                                onClick={() => handleClickOpen('NewRenting')}
+                                onClick={() => handleClickOpen('NewRenting', {} as IRenting)}
                             >
                                 <Add sx={{ fontSize: 35 }}></Add>
                             </Button>
@@ -229,7 +227,7 @@ export default function Renter() {
                 />
                 <DeleteRentingDialog
                     open={open.DeleteRenting}
-                    id={deleteRenting}
+                    renting={deleteRenting}
                     onClose={(status) => handleClose('DeleteRenting', status)}
                 />
             </Layout>

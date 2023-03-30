@@ -10,10 +10,10 @@ import { useAlertContext } from '@/context';
 
 import artifacts from '../../../../contracts/SmartStay.json';
 
-import IBooking from '../../../interfaces/Booking';
 import INetworks from '../../../interfaces/Networks';
+import ICardBookingStatus from '@/interfaces/CardBookingStatus';
 
-export default function Validated({ booking, setBooking, type }: any) {
+export default function Validated({ booking, setBooking, type }: ICardBookingStatus) {
     const { address } = useAccount();
     const { chain } = useNetwork();
     const { data: signer } = useSigner();

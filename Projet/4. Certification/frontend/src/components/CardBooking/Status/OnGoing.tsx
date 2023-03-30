@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Button, Typography, Stack } from '@mui/material';
+import { Button, Typography, Stack, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 import { ethers } from 'ethers';
@@ -11,9 +11,9 @@ import { useAlertContext } from '@/context';
 import artifacts from '../../../../contracts/SmartStay.json';
 
 import INetworks from '../../../interfaces/Networks';
-import { Box } from '@mui/system';
+import ICardBookingStatus from '@/interfaces/CardBookingStatus';
 
-export default function OnGoing({ booking, setBooking, type }: any) {
+export default function OnGoing({ booking, setBooking, type }: ICardBookingStatus) {
     const { address } = useAccount();
     const { chain } = useNetwork();
     const { data: signer } = useSigner();

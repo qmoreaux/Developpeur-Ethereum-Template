@@ -12,6 +12,7 @@ import artifacts from '../../../contracts/SmartStay.json';
 
 import IBooking from '../../interfaces/Booking';
 import INetworks from '../../interfaces/Networks';
+import ICardBooking from '../../interfaces/CardBooking';
 
 import { uploadJSONToIPFS } from '../../pinata';
 
@@ -23,7 +24,7 @@ import Completed from './Status/Completed';
 import Rejected from './Status/Rejected';
 import Cancelled from './Status/Cancelled';
 
-export default function CardBooking({ _booking, type }: any) {
+export default function CardBooking({ _booking, type }: ICardBooking) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
 
@@ -128,7 +129,7 @@ export default function CardBooking({ _booking, type }: any) {
                         {type === 'recipient' && !booking.NFTRedeemed && booking.status >= 2 && booking.status <= 4 ? (
                             <Box
                                 display="flex"
-                                justifyContent={booking.status === 0 && type === 'owner' ? 'space-between' : 'center'}
+                                justifyContent={booking.status === 0 ? 'space-between' : 'center'}
                                 mt="1rem"
                             >
                                 <LoadingButton loading={loadingRedeem} variant="contained" onClick={handleRedeemNFT}>

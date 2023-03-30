@@ -1,20 +1,14 @@
-import React, { ReactNode, useState } from 'react';
+import React, { useState } from 'react';
 
-interface IAlertContextProps {
-    alert: any;
-    setAlert: (alert: any) => void;
-}
-
-interface Props {
-    children: ReactNode;
-}
+import ILayout from '@/interfaces/Layout';
+import { IAlertContextProps } from '@/interfaces/Alert';
 
 export const AlertContext = React.createContext<IAlertContextProps>({
     alert: {},
     setAlert: () => {}
 });
 
-export const AlertContextProvider = ({ children }: Props) => {
+export const AlertContextProvider = ({ children }: ILayout) => {
     const [currentAlert, setCurrentAlert] = useState(undefined);
 
     return (

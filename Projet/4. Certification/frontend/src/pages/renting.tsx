@@ -47,12 +47,12 @@ export default function Renting() {
     const [openBooking, setOpenBooking] = useState(false);
     const [bookingRenting, setBookingRenting] = useState({});
 
-    const handleStartBooking = (data?: any) => {
+    const handleStartBooking = (data: IRenting) => {
         setOpenBooking(true);
         setBookingRenting(data);
     };
 
-    const handleCloseBooking = (data: any) => {
+    const handleCloseBooking = (data: boolean) => {
         setOpenBooking(false);
         setBookingRenting({});
 
@@ -218,7 +218,7 @@ export default function Renting() {
                                         multiple
                                         limitTags={2}
                                         options={availableTags}
-                                        onChange={(event: any, newValue: Array<string>) => {
+                                        onChange={(event: React.SyntheticEvent, newValue: Array<string>) => {
                                             handleTagsChange(newValue);
                                         }}
                                         renderInput={(params) => (

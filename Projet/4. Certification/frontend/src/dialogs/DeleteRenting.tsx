@@ -12,6 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import artifacts from '../../contracts/SmartStay.json';
 
 import INetworks from '../interfaces/Networks';
+import IRenting from '../interfaces/Renting';
 
 export default function DeleteRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -19,7 +20,7 @@ export default function DeleteRentingDialog(props: any) {
 
     const { setAlert } = useAlertContext();
 
-    const { onClose, id, open } = props;
+    const { onClose, renting, open } = props;
 
     const [loadingDelete, setLoadingDelete] = useState(false);
 
@@ -36,7 +37,7 @@ export default function DeleteRentingDialog(props: any) {
                     artifacts.abi,
                     signer
                 );
-                const transaction = await contract.deleteRenting(id);
+                const transaction = await contract.deleteRenting(renting.id.toNumber());
                 await transaction.wait();
 
                 setAlert({ message: 'Your renting has been successfully deleted', severity: 'success' });
@@ -75,5 +76,5 @@ export default function DeleteRentingDialog(props: any) {
 DeleteRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    id: PropTypes.number.isRequired
+    renting: PropTypes.object.isRequired
 };

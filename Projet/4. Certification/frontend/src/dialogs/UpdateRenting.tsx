@@ -328,5 +328,5 @@ export default function UpdateRentingDialog(props: any) {
 UpdateRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    data: PropTypes.any.isRequired
+    data: PropTypes.object.isRequired
 };

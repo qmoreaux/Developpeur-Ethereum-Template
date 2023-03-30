@@ -13,6 +13,7 @@ import { useAlertContext } from '@/context';
 import artifacts from '../../contracts/SmartStay.json';
 
 import INetworks from '../interfaces/Networks';
+import IRenting from '@/interfaces/Renting';
 
 export default function BookRentingDialog(props: any) {
     const { chain } = useNetwork();
@@ -22,7 +23,7 @@ export default function BookRentingDialog(props: any) {
 
     const { onClose, open, _renting } = props;
 
-    const [renting, setRenting] = useState<any>({});
+    const [renting, setRenting] = useState<IRenting>({} as IRenting);
     const [startDate, setStartDate] = useState(
         new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
     );
@@ -103,7 +104,7 @@ export default function BookRentingDialog(props: any) {
                             InputProps={{
                                 inputProps: {
                                     min: 0,
-                                    max: renting.personCount.toNumber()
+                                    max: renting.personCount
                                 }
                             }}
                             sx={{ width: '300px' }}
@@ -160,5 +161,5 @@ export default function BookRentingDialog(props: any) {
 BookRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    _renting: PropTypes.any.isRequired
+    _renting: PropTypes.object.isRequired
 };
