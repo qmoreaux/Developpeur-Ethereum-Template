@@ -8,8 +8,6 @@ import "./SmartStaySBTCollection.sol";
 
 import "./libraries/Tokens.sol";
 
-import "hardhat/console.sol";
-
 /** 
  * @title Voting
  * @author Quentin Moreaux
@@ -294,15 +292,14 @@ contract SmartStay {
     /**
      * @dev Get index in userRenting for an id
      * @param _id Id of a renting
-     * @return Index of the renting in userRenting
+     * @return index Index of the renting in userRenting
      */
-    function getUserRentingIndex(uint256 _id) private view returns (uint) {
+    function getUserRentingIndex(uint256 _id) private view returns (uint index) {
         for (uint i = 0; i < userRentings[msg.sender].length; i++) {
             if (userRentings[msg.sender][i].id == _id) {
                 return i;
             }
         }
-        return 0; // Will never happen since we always check that the caller is owner of the renting
     }
 
     // Booking 
@@ -315,9 +312,9 @@ contract SmartStay {
      * @param _personCount Number of person
      */
     function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
-        // require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
-        // require (block.timestamp > _timestampStart, 'SmartStay : Can not create a booking in the past');
         // TODO DO NOT FORGET TO UNCOMMENT
+        require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
+        require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
         require (rentings[_rentingID].personCount >= _personCount, 'SmartStay : Too many persons for this renting');
 
         Booking memory _booking;
@@ -363,6 +360,10 @@ contract SmartStay {
         }
 
         return _bookings;
+    }
+
+    function getBooking(uint256 _bookingID) external view returns (Booking memory) {
+        return bookings[_bookingID];
     }
 
     /**
