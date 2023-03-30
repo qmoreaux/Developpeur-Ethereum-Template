@@ -8,6 +8,8 @@ import { LoadingButton } from '@mui/lab';
 import { ethers } from 'ethers';
 import { useNetwork, useSigner } from 'wagmi';
 
+import { useAlertContext } from '@/context';
+
 import artifacts from '../../contracts/SmartStay.json';
 
 import INetworks from '../interfaces/Networks';
@@ -15,6 +17,8 @@ import INetworks from '../interfaces/Networks';
 export default function BookRentingDialog(props: any) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
+
+    const { setAlert } = useAlertContext();
 
     const { onClose, open, _renting } = props;
 
@@ -57,11 +61,18 @@ export default function BookRentingDialog(props: any) {
                     personCount
                 );
                 await transaction.wait();
+
+                setAlert({ message: 'Your booking request has been set to the owner', severity: 'success' });
+
                 setLoadingCreate(false);
                 handleClose(true);
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingCreate(false);
+                console.error(e);
             }
         }
     };

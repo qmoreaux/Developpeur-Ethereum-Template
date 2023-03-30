@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 
 import { ethers } from 'ethers';
 import { useNetwork, useSigner } from 'wagmi';
+import { useAlertContext } from '@/context';
+
 import { Dialog, DialogTitle, Box, Typography, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -14,6 +16,8 @@ import INetworks from '../interfaces/Networks';
 export default function DeleteRentingDialog(props: any) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
+
+    const { setAlert } = useAlertContext();
 
     const { onClose, id, open } = props;
 
@@ -34,11 +38,18 @@ export default function DeleteRentingDialog(props: any) {
                 );
                 const transaction = await contract.deleteRenting(id);
                 await transaction.wait();
+
+                setAlert({ message: 'Your renting has been successfully deleted', severity: 'success' });
+
                 setLoadingDelete(false);
                 handleClose(true);
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingDelete(false);
+                console.error(e);
             }
         }
     };

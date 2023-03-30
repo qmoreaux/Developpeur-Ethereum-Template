@@ -5,11 +5,12 @@ import { uploadFileToIPFS } from '../pinata';
 
 import PropTypes from 'prop-types';
 
-import { Dialog, DialogTitle, Chip, Stack, Box, Typography, TextField, InputAdornment } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-
 import { ethers } from 'ethers';
 import { useNetwork, useProvider, useSigner } from 'wagmi';
+import { useAlertContext } from '@/context';
+
+import { Dialog, DialogTitle, Chip, Stack, Box, Typography, TextField, InputAdornment } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 import artifacts from '../../contracts/SmartStay.json';
 
@@ -20,6 +21,8 @@ export default function UpdateRentingDialog(props: any) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
     const provider = useProvider();
+
+    const { setAlert } = useAlertContext();
 
     const { onClose, open, data } = props;
 
@@ -47,6 +50,10 @@ export default function UpdateRentingDialog(props: any) {
                     );
                     setAvailableTags(await contract.getTags());
                 } catch (e) {
+                    setAlert({
+                        message: 'An error has occurred. Check the developer console for more information',
+                        severity: 'error'
+                    });
                     console.error(e);
                 }
             }
@@ -94,8 +101,12 @@ export default function UpdateRentingDialog(props: any) {
             }
             setLoadingImage(false);
         } catch (e) {
-            console.error('Error during file upload', e);
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
             setLoadingImage(false);
+            console.error('Error during file upload', e);
         }
     };
 
@@ -130,11 +141,18 @@ export default function UpdateRentingDialog(props: any) {
                     imageURL
                 });
                 const receipt = await transaction.wait();
+
+                setAlert({ message: 'Your renting has been successfully updated', severity: 'success' });
+
                 setLoadingUpdate(false);
                 handleClose(receipt.events[0].args['renting']);
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingUpdate(false);
+                console.error(e);
             }
         }
     };

@@ -1,22 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 
 import Axios from 'axios';
 
 import Head from 'next/head';
 import Layout from '@/components/Layout/Layout';
-import NewRentingDialog from '@/dialogs/NewRenting';
-import UpdateRentingDialog from '@/dialogs/UpdateRenting';
-import DeleteRentingDialog from '@/dialogs/DeleteRenting';
 
-import { ethers, BigNumber } from 'ethers';
+import { useAlertContext } from '@/context';
+
+import { ethers } from 'ethers';
 import { useNetwork, useProvider, useAccount } from 'wagmi';
 import { Container, Typography, Box, Card, CardContent, CardMedia } from '@mui/material';
-import { Add, Update, Delete } from '@mui/icons-material';
 
 import artifacts from '../../contracts/SmartStay.json';
 
-import IRenting from '../interfaces/Renting';
 import INetworks from '../interfaces/Networks';
 import INFTItem from '../interfaces/NFTItem';
 
@@ -24,6 +20,8 @@ export default function Profile() {
     const { address, isConnected } = useAccount();
     const { chain } = useNetwork();
     const provider = useProvider();
+
+    const { setAlert } = useAlertContext();
 
     const [NFTCollection, setNFTCollection] = useState<INFTItem[]>([]);
     const [SBTCollection, setSBTCollection] = useState<INFTItem[]>([]);
@@ -65,6 +63,10 @@ export default function Profile() {
                         )
                     );
                 } catch (e) {
+                    setAlert({
+                        message: 'An error has occurred. Check the developer console for more information',
+                        severity: 'error'
+                    });
                     console.error(e);
                 }
             }

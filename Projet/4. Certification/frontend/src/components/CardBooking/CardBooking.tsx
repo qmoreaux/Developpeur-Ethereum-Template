@@ -6,6 +6,8 @@ import { LoadingButton } from '@mui/lab';
 import { ethers } from 'ethers';
 import { useNetwork, useSigner } from 'wagmi';
 
+import { useAlertContext } from '@/context';
+
 import artifacts from '../../../contracts/SmartStay.json';
 
 import IBooking from '../../interfaces/Booking';
@@ -24,6 +26,8 @@ import Cancelled from './Status/Cancelled';
 export default function CardBooking({ _booking, type }: any) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
+
+    const { setAlert } = useAlertContext();
 
     const [booking, setBooking] = useState<IBooking>(_booking);
 
@@ -60,10 +64,15 @@ export default function CardBooking({ _booking, type }: any) {
                     const transaction = await contract.redeemNFT(booking.id.toNumber(), response.pinataURL);
                     await transaction.wait();
 
+                    setAlert({ message: 'Your NFT was successfully minted', severity: 'success' });
                     setBooking({ ...booking, NFTRedeemed: true });
                     setLoadingRedeem(false);
                 }
             } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingRedeem(false);
                 console.error(e);
             }

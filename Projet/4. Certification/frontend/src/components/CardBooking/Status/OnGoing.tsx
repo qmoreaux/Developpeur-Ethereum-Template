@@ -6,6 +6,8 @@ import { LoadingButton } from '@mui/lab';
 import { ethers } from 'ethers';
 import { useNetwork, useSigner, useAccount } from 'wagmi';
 
+import { useAlertContext } from '@/context';
+
 import artifacts from '../../../../contracts/SmartStay.json';
 
 import INetworks from '../../../interfaces/Networks';
@@ -15,6 +17,8 @@ export default function OnGoing({ booking, setBooking, type }: any) {
     const { address } = useAccount();
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
+
+    const { setAlert } = useAlertContext();
 
     const [loadingCancel, setLoadingCancel] = useState(false);
     const [loadingValidate, setLoadingValidate] = useState(false);
@@ -31,11 +35,17 @@ export default function OnGoing({ booking, setBooking, type }: any) {
                 const transaction = await contract.cancelBooking(booking.id, { from: address });
                 await transaction.wait();
 
+                setAlert({ message: 'You have successfully canceled the booking', severity: 'success' });
+
                 setBooking({ ...booking, status: 6 });
                 setLoadingCancel(false);
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingCancel(false);
+                console.error(e);
             }
         }
     };
@@ -51,6 +61,9 @@ export default function OnGoing({ booking, setBooking, type }: any) {
                 );
                 const transaction = await contract.validateBookingAsOwner(booking.id.toNumber(), { from: address });
                 await transaction.wait();
+
+                setAlert({ message: 'You have successfully validated the booking', severity: 'success' });
+
                 setBooking({
                     ...booking,
                     validatedOwner: true,
@@ -58,8 +71,12 @@ export default function OnGoing({ booking, setBooking, type }: any) {
                 });
                 setLoadingValidate(false);
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingValidate(false);
+                console.error(e);
             }
         }
     };
@@ -75,6 +92,9 @@ export default function OnGoing({ booking, setBooking, type }: any) {
                 );
                 const transaction = await contract.validateBookingAsRecipient(booking.id.toNumber(), { from: address });
                 await transaction.wait();
+
+                setAlert({ message: 'You have successfully validated the booking', severity: 'success' });
+
                 setBooking({
                     ...booking,
                     validatedRecipient: true,
@@ -82,8 +102,12 @@ export default function OnGoing({ booking, setBooking, type }: any) {
                 });
                 setLoadingValidate(false);
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingValidate(false);
+                console.error(e);
             }
         }
     };

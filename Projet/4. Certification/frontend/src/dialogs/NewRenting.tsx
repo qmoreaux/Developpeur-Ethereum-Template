@@ -51,6 +51,10 @@ export default function NewRentingDialog(props: any) {
                     );
                     setAvailableTags(await contract.getTags());
                 } catch (e) {
+                    setAlert({
+                        message: 'An error has occurred. Check the developer console for more information',
+                        severity: 'error'
+                    });
                     console.error(e);
                 }
             }
@@ -86,6 +90,10 @@ export default function NewRentingDialog(props: any) {
             }
             setLoadingImage(false);
         } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
             console.error('Error during file upload', e);
             setLoadingImage(false);
         }

@@ -7,6 +7,8 @@ import BookRentingDialog from '@/dialogs/BookRenting';
 
 import { useNetwork, useProvider, useAccount } from 'wagmi';
 import { ethers } from 'ethers';
+import { useAlertContext } from '@/context';
+
 import {
     Button,
     Typography,
@@ -32,6 +34,8 @@ export default function Renting() {
     const { chain } = useNetwork();
     const provider = useProvider();
     const router = useRouter();
+
+    const { setAlert } = useAlertContext();
 
     const [rentings, setRentings] = useState<Array<IRenting>>([]);
     const [maxUnitPrice, setMaxUnitPrice] = useState<number>(0);
@@ -84,6 +88,10 @@ export default function Renting() {
                     )
                 );
             } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 console.error(e);
             }
         }
@@ -101,10 +109,15 @@ export default function Renting() {
                     );
                     setAvailableTags(await contract.getTags());
                 } catch (e) {
+                    setAlert({
+                        message: 'An error has occurred. Check the developer console for more information',
+                        severity: 'error'
+                    });
                     console.error(e);
                 }
             }
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [provider, chain]);
 
     useEffect(() => {

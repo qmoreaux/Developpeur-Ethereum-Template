@@ -6,6 +6,8 @@ import { LoadingButton } from '@mui/lab';
 import { ethers, BigNumber } from 'ethers';
 import { useNetwork, useSigner, useAccount } from 'wagmi';
 
+import { useAlertContext } from '@/context';
+
 import artifacts from '../../../../contracts/SmartStay.json';
 
 import IBooking from '../../../interfaces/Booking';
@@ -15,6 +17,8 @@ export default function Validated({ booking, setBooking, type }: any) {
     const { address } = useAccount();
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
+
+    const { setAlert } = useAlertContext();
 
     const [loadingRetrieve, setLoadingRetrieve] = useState(false);
 
@@ -29,6 +33,9 @@ export default function Validated({ booking, setBooking, type }: any) {
                 );
                 const transaction = await contract.retrieveCaution(booking.id.toNumber(), { from: address });
                 await transaction.wait();
+
+                setAlert({ message: 'You have successfully retrieved your deposit', severity: 'success' });
+
                 setBooking({
                     ...booking,
                     cautionLocked: BigNumber.from(0),
@@ -36,8 +43,12 @@ export default function Validated({ booking, setBooking, type }: any) {
                 });
                 setLoadingRetrieve(false);
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingRetrieve(false);
+                console.error(e);
             }
         }
     };
@@ -53,6 +64,9 @@ export default function Validated({ booking, setBooking, type }: any) {
                 );
                 const transaction = await contract.retrieveAmount(booking.id.toNumber(), { from: address });
                 await transaction.wait();
+
+                setAlert({ message: 'You have successfully retrieved your amount', severity: 'success' });
+
                 setBooking({
                     ...booking,
                     amountLocked: BigNumber.from(0),
@@ -60,8 +74,12 @@ export default function Validated({ booking, setBooking, type }: any) {
                 });
                 setLoadingRetrieve(false);
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingRetrieve(false);
+                console.error(e);
             }
         }
     };

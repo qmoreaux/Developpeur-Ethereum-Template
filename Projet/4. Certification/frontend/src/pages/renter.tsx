@@ -9,6 +9,8 @@ import DeleteRentingDialog from '@/dialogs/DeleteRenting';
 
 import { ethers } from 'ethers';
 import { useNetwork, useProvider, useAccount } from 'wagmi';
+import { useAlertContext } from '@/context';
+
 import { Button, Typography, Box, Card, CardContent, CardMedia } from '@mui/material';
 import { Add, Update, Delete } from '@mui/icons-material';
 
@@ -22,6 +24,8 @@ export default function Renter() {
     const { chain } = useNetwork();
     const provider = useProvider();
     const router = useRouter();
+
+    const { setAlert } = useAlertContext();
 
     const [userRentings, setUserRentings] = useState<Array<IRenting>>([]);
     const [open, setOpen] = useState({ NewRenting: false, UpdateRenting: false, DeleteRenting: false });
@@ -39,6 +43,10 @@ export default function Renter() {
                     );
                     setUserRentings(await contract.getUserRenting({ from: address }));
                 } catch (e) {
+                    setAlert({
+                        message: 'An error has occurred. Check the developer console for more information',
+                        severity: 'error'
+                    });
                     console.error(e);
                 }
             }

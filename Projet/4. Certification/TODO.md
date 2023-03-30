@@ -4,9 +4,11 @@
 
 ## Normal
 
-* Add snackbar
 * Check update renting
 * Manage unpin in pinata
+* Check any type
+* Check int type on input
+* Check eth low value
 
 ## Used for dev
 
@@ -15,9 +17,7 @@
 
 ## Later
 
-* Check any type
-* Check int type on input
-* Check eth low value
+
 * Gérer un tableau de tableau de tags
 * Utiliser le theme pour le style
 * Vérifier couleur texte avec theme clair

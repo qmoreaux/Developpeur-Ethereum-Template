@@ -7,6 +7,8 @@ import CardBooking from '@/components/CardBooking/CardBooking';
 
 import { ethers } from 'ethers';
 import { useNetwork, useProvider, useAccount } from 'wagmi';
+import { useAlertContext } from '@/context';
+
 import { Typography, Box } from '@mui/material';
 
 import artifacts from '../../contracts/SmartStay.json';
@@ -19,6 +21,8 @@ export default function Booking() {
     const { chain } = useNetwork();
     const provider = useProvider();
     const router = useRouter();
+
+    const { setAlert } = useAlertContext();
 
     const [bookingOwner, setBookingOwner] = useState<Array<IBooking>>([]);
     const [bookingRecipient, setBookingRecipient] = useState<Array<IBooking>>([]);
@@ -34,6 +38,10 @@ export default function Booking() {
                     );
                     setBookingOwner(await contract.getBookingOwner({ from: address }));
                 } catch (e) {
+                    setAlert({
+                        message: 'An error has occurred. Check the developer console for more information',
+                        severity: 'error'
+                    });
                     console.error(e);
                 }
             }
@@ -51,6 +59,10 @@ export default function Booking() {
                     );
                     setBookingRecipient(await contract.getBookingRecipient({ from: address }));
                 } catch (e) {
+                    setAlert({
+                        message: 'An error has occurred. Check the developer console for more information',
+                        severity: 'error'
+                    });
                     console.error(e);
                 }
             }

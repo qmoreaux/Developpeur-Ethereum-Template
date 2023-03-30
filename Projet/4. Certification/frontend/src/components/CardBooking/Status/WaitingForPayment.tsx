@@ -6,6 +6,8 @@ import { LoadingButton } from '@mui/lab';
 import { ethers } from 'ethers';
 import { useNetwork, useProvider, useSigner, useAccount } from 'wagmi';
 
+import { useAlertContext } from '@/context';
+
 import artifacts from '../../../../contracts/SmartStay.json';
 
 import INetworks from '../../../interfaces/Networks';
@@ -17,6 +19,8 @@ export default function WaitingForPayement({ booking, setBooking, type }: any) {
     const { chain } = useNetwork();
     const provider = useProvider();
     const { data: signer } = useSigner();
+
+    const { setAlert } = useAlertContext();
 
     const [loadingPay, setLoadingPay] = useState(false);
 
@@ -31,6 +35,10 @@ export default function WaitingForPayement({ booking, setBooking, type }: any) {
                 const renting = await contract.getRentingFromBookingID(bookingID, { from: address });
                 return renting;
             } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 console.error(e);
             }
         }
@@ -93,12 +101,18 @@ export default function WaitingForPayement({ booking, setBooking, type }: any) {
                     );
                     await transaction.wait();
 
+                    setAlert({ message: 'You have successfully payed the booking', severity: 'success' });
+
                     setBooking({ ...booking, status: 2 });
                     setLoadingPay(false);
                 }
             } catch (e) {
-                console.error(e);
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
                 setLoadingPay(false);
+                console.error(e);
             }
         }
     };
