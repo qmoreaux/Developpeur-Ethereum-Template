@@ -39,7 +39,9 @@ export default function CardBooking({ _booking, type }: ICardBooking) {
             setLoadingRedeem(true);
             try {
                 const NFTMetadata = {
-                    image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U',
+                    image: `https://gateway.pinata.cloud/ipfs/QmP5xTq4AwNnSLj6r3hX44UBxsZcvMKxPucX4AY8MqUBya/${
+                        Math.floor(Math.random() * 10) + 1
+                    }.png`,
                     name: 'Dada',
                     description: 'Didi',
                     attributes: [

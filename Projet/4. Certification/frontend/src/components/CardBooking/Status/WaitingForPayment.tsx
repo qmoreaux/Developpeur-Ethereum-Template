@@ -50,7 +50,7 @@ export default function WaitingForPayement({ booking, setBooking, type }: ICardB
             setLoadingPay(true);
             try {
                 const SBTMetadata = {
-                    image: 'https://gateway.pinata.cloud/ipfs/QmVYCK5rjSUPV19bGG1LDsD9hbCtyZ12Z7XLYqqceH6V7U',
+                    image: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs',
                     name: 'Wawa',
                     description: 'dada',
                     attributes: [

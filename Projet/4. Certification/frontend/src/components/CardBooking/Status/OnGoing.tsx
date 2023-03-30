@@ -164,7 +164,7 @@ export default function OnGoing({ booking, setBooking, type }: ICardBookingStatu
                                         Validate booking
                                     </LoadingButton>
                                     <Button variant="contained" color="error">
-                                        Kleros
+                                        Express reservations
                                     </Button>
                                 </Box>
                             )}
@@ -184,7 +184,7 @@ export default function OnGoing({ booking, setBooking, type }: ICardBookingStatu
                                             Validate booking
                                         </LoadingButton>
                                         <Button variant="contained" color="error">
-                                            Kleros
+                                            Express reservations
                                         </Button>
                                     </Box>
                                 )}

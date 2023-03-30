@@ -507,6 +507,9 @@ contract SmartStay {
         require (!bookings[_bookingID].NFTRedeemed, 'SmartStay: NFT already redeemed');
 
         bookings[_bookingID].NFTRecipientID = NFTCollection.mint(msg.sender, _metadataURI);
+        bookings[_bookingID].NFTRedeemed = true;
+
+        emit BookingUpdated(bookings[_bookingID]);
     }
 
     // Utils
