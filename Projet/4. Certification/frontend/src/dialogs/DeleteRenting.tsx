@@ -9,6 +9,8 @@ import { useAlertContext } from '@/context';
 import { Dialog, DialogTitle, Box, Typography, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
+import { unpinFileFromIPFS } from '../pinata';
+
 import artifacts from '../../contracts/SmartStay.json';
 
 import INetworks from '../interfaces/Networks';
@@ -45,6 +47,7 @@ export default function DeleteRentingDialog(props: IRentingDialog) {
                 );
                 const transaction = await contract.deleteRenting(renting.id.toNumber());
                 await transaction.wait();
+                await unpinFileFromIPFS(renting.imageURL.slice(34));
 
                 setAlert({ message: 'Your renting has been successfully deleted', severity: 'success' });
 

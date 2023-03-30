@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-import { uploadFileToIPFS } from '../pinata';
-
 import PropTypes from 'prop-types';
 
 import { ethers } from 'ethers';
@@ -11,6 +9,8 @@ import { useAlertContext } from '@/context';
 
 import { Dialog, DialogTitle, Chip, Stack, Box, Typography, TextField, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+
+import { uploadFileToIPFS, unpinFileFromIPFS } from '../pinata';
 
 import artifacts from '../../contracts/SmartStay.json';
 
@@ -114,6 +114,7 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
         setLoadingImage(true);
         var file = e.target.files[0];
         try {
+            await unpinFileFromIPFS(imageURL.slice(34));
             const response = await uploadFileToIPFS(file, 'image_renting_' + renting.id.toNumber());
             if (response.success === true) {
                 setImageURL(response.pinataURL);

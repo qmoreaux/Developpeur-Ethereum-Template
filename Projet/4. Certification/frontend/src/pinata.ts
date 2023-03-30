@@ -108,7 +108,7 @@ export const updateFileName = async (ipfsHash: any, pinataName: string) => {
         });
 };
 
-export const unpinFile = async (ipfsHash: any) => {
+export const unpinFileFromIPFS = async (ipfsHash: any) => {
     const url = `https://api.pinata.cloud/pinning/unpin/${ipfsHash}`;
     return axios
         .delete(url, {
