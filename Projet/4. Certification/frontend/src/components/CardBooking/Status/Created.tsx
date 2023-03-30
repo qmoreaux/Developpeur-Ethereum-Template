@@ -81,13 +81,13 @@ export default function Created({ booking, setBooking, type }: ICardBookingStatu
         <>
             {type === 'owner' ? (
                 <>
-                    <LoadingButton loading={loadingAccept} variant="contained" onClick={() => handleAcceptBooking()}>
+                    <LoadingButton loading={loadingAccept} variant="contained" onClick={handleAcceptBooking}>
                         Accept booking
                     </LoadingButton>
                     <LoadingButton
                         loading={loadingRefuse}
                         variant="contained"
-                        onClick={() => handleRejectBooking()}
+                        onClick={handleRejectBooking}
                         color="error"
                     >
                         Refuse booking

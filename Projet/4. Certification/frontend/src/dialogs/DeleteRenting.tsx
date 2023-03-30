@@ -14,7 +14,13 @@ import artifacts from '../../contracts/SmartStay.json';
 import INetworks from '../interfaces/Networks';
 import IRenting from '../interfaces/Renting';
 
-export default function DeleteRentingDialog(props: any) {
+interface IRentingDialog {
+    open: boolean;
+    renting: IRenting;
+    onClose: (status: boolean) => void;
+}
+
+export default function DeleteRentingDialog(props: IRentingDialog) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
 

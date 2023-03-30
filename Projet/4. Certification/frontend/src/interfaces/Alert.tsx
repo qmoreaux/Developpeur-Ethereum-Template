@@ -4,6 +4,6 @@ export interface IAlert {
 }
 
 export interface IAlertContextProps {
-    alert: any;
-    setAlert: (alert: any) => void;
+    alert: IAlert;
+    setAlert: (alert: IAlert) => void;
 }

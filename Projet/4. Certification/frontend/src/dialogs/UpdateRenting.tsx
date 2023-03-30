@@ -17,14 +17,20 @@ import artifacts from '../../contracts/SmartStay.json';
 import INetworks from '../interfaces/Networks';
 import IRenting from '../interfaces/Renting';
 
-export default function UpdateRentingDialog(props: any) {
+interface IRentingDialog {
+    open: boolean;
+    renting: IRenting;
+    onClose: (status: boolean | IRenting) => void;
+}
+
+export default function UpdateRentingDialog(props: IRentingDialog) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
     const provider = useProvider();
 
     const { setAlert } = useAlertContext();
 
-    const { onClose, open, data } = props;
+    const { onClose, open, renting } = props;
 
     const [unitPrice, setUnitPrice] = useState<string>('');
     const [deposit, setDeposit] = useState<string>('');
@@ -62,16 +68,16 @@ export default function UpdateRentingDialog(props: any) {
     }, [provider, chain]);
 
     useEffect(() => {
-        if (Object.keys(data).length) {
-            setUnitPrice(ethers.utils.formatEther(data.unitPrice));
-            setDeposit(ethers.utils.formatEther(data.deposit));
-            setPersonCount(data.personCount);
-            setLocation(data.location);
-            setDescription(data.description);
-            setTags(data.tags);
-            setImageURL(data.imageURL);
+        if (Object.keys(renting).length) {
+            setUnitPrice(ethers.utils.formatEther(renting.unitPrice));
+            setDeposit(ethers.utils.formatEther(renting.deposit));
+            setPersonCount(renting.personCount.toString());
+            setLocation(renting.location);
+            setDescription(renting.description);
+            setTags(renting.tags);
+            setImageURL(renting.imageURL);
         }
-    }, [data]);
+    }, [renting]);
 
     const handleClose = (data: IRenting | boolean) => {
         setUnitPrice('');
@@ -108,7 +114,7 @@ export default function UpdateRentingDialog(props: any) {
         setLoadingImage(true);
         var file = e.target.files[0];
         try {
-            const response = await uploadFileToIPFS(file, 'image_renting_' + data.id);
+            const response = await uploadFileToIPFS(file, 'image_renting_' + renting.id.toNumber());
             if (response.success === true) {
                 setImageURL(response.pinataURL);
             }
@@ -150,7 +156,7 @@ export default function UpdateRentingDialog(props: any) {
                     artifacts.abi,
                     signer
                 );
-                const transaction = await contract.updateRenting(data.id, {
+                const transaction = await contract.updateRenting(renting.id.toNumber(), {
                     id: 0,
                     owner: '0x0000000000000000000000000000000000000000',
                     unitPrice: ethers.utils.parseUnits(unitPrice, 'ether'),
@@ -328,5 +334,5 @@ export default function UpdateRentingDialog(props: any) {
 UpdateRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    data: PropTypes.object.isRequired
+    renting: PropTypes.object.isRequired
 };

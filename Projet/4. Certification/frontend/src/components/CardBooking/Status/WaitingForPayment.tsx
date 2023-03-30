@@ -123,7 +123,7 @@ export default function WaitingForPayement({ booking, setBooking, type }: ICardB
             {type === 'owner' ? (
                 <Typography>Waiting for payment</Typography>
             ) : (
-                <LoadingButton loading={loadingPay} variant="contained" onClick={() => handlePayBooking()}>
+                <LoadingButton loading={loadingPay} variant="contained" onClick={handlePayBooking}>
                     Pay booking
                 </LoadingButton>
             )}

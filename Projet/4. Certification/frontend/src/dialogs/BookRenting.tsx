@@ -15,7 +15,13 @@ import artifacts from '../../contracts/SmartStay.json';
 import INetworks from '../interfaces/Networks';
 import IRenting from '@/interfaces/Renting';
 
-export default function BookRentingDialog(props: any) {
+interface IBookingDialog {
+    open: boolean;
+    _renting: IRenting;
+    onClose: (status: boolean) => void;
+}
+
+export default function BookRentingDialog(props: IBookingDialog) {
     const { chain } = useNetwork();
     const { data: signer } = useSigner();
 
@@ -63,8 +69,7 @@ export default function BookRentingDialog(props: any) {
                 );
                 await transaction.wait();
 
-                setAlert({ message: 'Your booking request has been set to the owner', severity: 'success' });
-
+                setAlert({ message: 'Your booking request has been sent to the owner', severity: 'success' });
                 setLoadingCreate(false);
                 handleClose(true);
             } catch (e) {

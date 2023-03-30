@@ -86,7 +86,7 @@ export default function Profile() {
                 <Container>
                     <Typography variant="h6">My SmartStay Collection</Typography>
                     <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
-                        {NFTCollection.map((NFTItem: any) => (
+                        {NFTCollection.map((NFTItem: INFTItem) => (
                             <Card key={NFTItem.tokenID.toString()}>
                                 <CardMedia
                                     component="img"
@@ -105,7 +105,7 @@ export default function Profile() {
                 <Container>
                     <Typography variant="h6">My SmartStay receipts</Typography>
                     <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
-                        {SBTCollection.map((SBTItem: any) => (
+                        {SBTCollection.map((SBTItem: INFTItem) => (
                             <Card key={SBTItem.tokenID.toString()}>
                                 <CardMedia
                                     component="img"

@@ -5,7 +5,6 @@
 ## Normal
 
 * Manage unpin in pinata
-* Check any type
 
 ## Used for dev
 

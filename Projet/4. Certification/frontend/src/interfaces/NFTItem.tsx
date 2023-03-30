@@ -9,6 +9,7 @@ export default interface INFTItem {
     tokenID: BigNumber;
     tokenURI: string;
     name: string;
+    image: string;
     description: string;
     attributes: Array<Attributes>;
 }

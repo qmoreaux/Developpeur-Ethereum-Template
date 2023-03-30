@@ -18,7 +18,12 @@ import artifacts from '../../contracts/SmartStay.json';
 import INetworks from '../interfaces/Networks';
 import IRenting from '../interfaces/Renting';
 
-export default function NewRentingDialog(props: any) {
+interface IRentingDialog {
+    open: boolean;
+    onClose: (status: boolean | IRenting) => void;
+}
+
+export default function NewRentingDialog(props: IRentingDialog) {
     const { chain } = useNetwork();
     const provider = useProvider();
     const { data: signer } = useSigner();
@@ -156,12 +161,13 @@ export default function NewRentingDialog(props: any) {
                     'image_renting_' + receipt.events[0].args['renting'].id.toNumber()
                 );
                 handleClose(receipt.events[0].args['renting']);
-            } catch (e: any) {
+            } catch (e) {
                 setAlert({
                     message: 'An error has occurred. Check the developer console for more information',
                     severity: 'error'
                 });
                 setLoadingCreate(false);
+                console.error(e);
             }
         }
     };

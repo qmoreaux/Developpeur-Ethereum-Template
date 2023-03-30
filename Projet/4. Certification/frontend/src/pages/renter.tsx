@@ -74,7 +74,7 @@ export default function Renter() {
         }
     };
 
-    const handleClose = (dialog: string, data: IRenting) => {
+    const handleClose = (dialog: string, data: any) => {
         setOpen({ ...open, [dialog]: false });
 
         switch (dialog) {
@@ -222,7 +222,7 @@ export default function Renter() {
                 <NewRentingDialog open={open.NewRenting} onClose={(status) => handleClose('NewRenting', status)} />
                 <UpdateRentingDialog
                     open={open.UpdateRenting}
-                    data={updateRenting}
+                    renting={updateRenting}
                     onClose={(status) => handleClose('UpdateRenting', status)}
                 />
                 <DeleteRentingDialog

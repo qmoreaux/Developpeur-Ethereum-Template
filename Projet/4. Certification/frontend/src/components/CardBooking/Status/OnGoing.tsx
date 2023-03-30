@@ -159,7 +159,7 @@ export default function OnGoing({ booking, setBooking, type }: ICardBookingStatu
                                     <LoadingButton
                                         loading={loadingValidate}
                                         variant="contained"
-                                        onClick={() => handleValidateBookingAsOwner()}
+                                        onClick={handleValidateBookingAsOwner}
                                     >
                                         Validate booking
                                     </LoadingButton>

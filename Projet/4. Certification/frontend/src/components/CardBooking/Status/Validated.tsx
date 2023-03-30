@@ -131,7 +131,7 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
                                 <LoadingButton
                                     loading={loadingRetrieve}
                                     variant="contained"
-                                    onClick={() => handleRetrieveAmount()}
+                                    onClick={handleRetrieveAmount}
                                 >
                                     Retrieve amount
                                 </LoadingButton>
@@ -163,7 +163,7 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
                                 <LoadingButton
                                     loading={loadingRetrieve}
                                     variant="contained"
-                                    onClick={() => handleRetrieveDeposit()}
+                                    onClick={handleRetrieveDeposit}
                                 >
                                     Retrieve deposit
                                 </LoadingButton>
