@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers';
 export default interface IRenting {
     id: BigNumber;
     unitPrice: BigNumber;
-    caution: BigNumber;
+    deposit: BigNumber;
     owner: string;
     personCount: number;
     location: string;

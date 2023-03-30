@@ -22,7 +22,7 @@ export default function Validated({ booking, setBooking, type }: any) {
 
     const [loadingRetrieve, setLoadingRetrieve] = useState(false);
 
-    const handleRetrieveCaution = async () => {
+    const handleRetrieveDeposit = async () => {
         if (signer && chain && chain.id) {
             setLoadingRetrieve(true);
             try {
@@ -31,14 +31,14 @@ export default function Validated({ booking, setBooking, type }: any) {
                     artifacts.abi,
                     signer
                 );
-                const transaction = await contract.retrieveCaution(booking.id.toNumber(), { from: address });
+                const transaction = await contract.retrieveDeposit(booking.id.toNumber(), { from: address });
                 await transaction.wait();
 
                 setAlert({ message: 'You have successfully retrieved your deposit', severity: 'success' });
 
                 setBooking({
                     ...booking,
-                    cautionLocked: BigNumber.from(0),
+                    depositLocked: BigNumber.from(0),
                     status: booking.amountLocked.toString() === '0' ? 4 : 3
                 });
                 setLoadingRetrieve(false);
@@ -70,7 +70,7 @@ export default function Validated({ booking, setBooking, type }: any) {
                 setBooking({
                     ...booking,
                     amountLocked: BigNumber.from(0),
-                    status: booking.cautionLocked.toString() === '0' ? 4 : 3
+                    status: booking.depositLocked.toString() === '0' ? 4 : 3
                 });
                 setLoadingRetrieve(false);
             } catch (e) {
@@ -155,17 +155,17 @@ export default function Validated({ booking, setBooking, type }: any) {
             ) : (
                 <Stack>
                     <Typography>
-                        Amount to get :<b> {ethers.utils.formatEther(booking.cautionLocked)} ETH</b>
+                        Amount to get :<b> {ethers.utils.formatEther(booking.depositLocked)} ETH</b>
                     </Typography>
                     {isBookingEnded() ? (
                         <>
-                            {booking.cautionLocked.toString() !== '0' ? (
+                            {booking.depositLocked.toString() !== '0' ? (
                                 <LoadingButton
                                     loading={loadingRetrieve}
                                     variant="contained"
-                                    onClick={() => handleRetrieveCaution()}
+                                    onClick={() => handleRetrieveDeposit()}
                                 >
-                                    Retrieve caution
+                                    Retrieve deposit
                                 </LoadingButton>
                             ) : (
                                 <Typography>Already retrieved</Typography>

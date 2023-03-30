@@ -4,7 +4,7 @@ export default interface IBooking {
     id: BigNumber;
     rentingID: BigNumber;
     amountLocked: BigNumber;
-    cautionLocked: BigNumber;
+    depositLocked: BigNumber;
     personCount: BigNumber;
     duration: BigNumber;
     timestampStart: BigNumber;

@@ -26,7 +26,7 @@ export default function NewRentingDialog(props: any) {
     const { setAlert } = useAlertContext();
 
     const [unitPrice, setUnitPrice] = useState(0);
-    const [caution, setCaution] = useState(0);
+    const [deposit, setDeposit] = useState(0);
     const [personCount, setPersonCount] = useState(0);
     const [location, setLocation] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
@@ -64,7 +64,7 @@ export default function NewRentingDialog(props: any) {
 
     const handleClose = (data: IRenting | boolean) => {
         setUnitPrice(0);
-        setCaution(0);
+        setDeposit(0);
         setPersonCount(0);
         setLocation('');
         setTags([]);
@@ -105,7 +105,7 @@ export default function NewRentingDialog(props: any) {
     };
 
     const canCreate = () => {
-        return unitPrice && caution && personCount && location && tags.length && description && imageURL;
+        return unitPrice && deposit && personCount && location && tags.length && description && imageURL;
     };
 
     const createRenting = async () => {
@@ -121,7 +121,7 @@ export default function NewRentingDialog(props: any) {
                     id: 0,
                     owner: '0x0000000000000000000000000000000000000000',
                     unitPrice: ethers.utils.parseUnits(unitPrice.toString(), 'ether'),
-                    caution: ethers.utils.parseUnits(caution.toString(), 'ether'),
+                    deposit: ethers.utils.parseUnits(deposit.toString(), 'ether'),
                     personCount,
                     location,
                     tags,
@@ -172,7 +172,7 @@ export default function NewRentingDialog(props: any) {
                 </Box>
                 <Box>
                     <TextField
-                        label="Caution (ETH)"
+                        label="Deposit (ETH)"
                         type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
@@ -186,7 +186,7 @@ export default function NewRentingDialog(props: any) {
                             )
                         }}
                         onChange={(event) => {
-                            setCaution(+event.target.value);
+                            setDeposit(+event.target.value);
                         }}
                     />
                 </Box>

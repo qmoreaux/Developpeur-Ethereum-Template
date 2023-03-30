@@ -160,7 +160,7 @@ export default function Renter() {
                                             Night price : {ethers.utils.formatEther(userRenting.unitPrice)} ETH
                                         </Typography>
                                         <Typography>
-                                            Caution : {ethers.utils.formatEther(userRenting.caution)} ETH
+                                            Deposit : {ethers.utils.formatEther(userRenting.deposit)} ETH
                                         </Typography>
                                         <Typography>Maximum persons: {userRenting.personCount.toString()}</Typography>
                                         <Typography>Location : {userRenting.location}</Typography>

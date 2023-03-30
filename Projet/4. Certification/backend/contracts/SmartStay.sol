@@ -97,7 +97,7 @@ contract SmartStay {
     struct Renting {
         uint256 id;
         uint128 unitPrice;
-        uint128 caution;
+        uint128 deposit;
         address owner;
         uint64 personCount;
         string location;
@@ -110,7 +110,7 @@ contract SmartStay {
         uint256 id;
         uint256 rentingID;
         uint128 amountLocked;
-        uint128 cautionLocked;
+        uint128 depositLocked;
         uint64 timestampStart;
         uint64 timestampEnd;
         uint64 duration;
@@ -210,7 +210,7 @@ contract SmartStay {
         tempRenting.id = indexRenting.current();
         tempRenting.owner = msg.sender;
         tempRenting.unitPrice = _renting.unitPrice;
-        tempRenting.caution = _renting.caution;
+        tempRenting.deposit = _renting.deposit;
         tempRenting.personCount = _renting.personCount;
         tempRenting.location = _renting.location;
         tempRenting.tags = _renting.tags;
@@ -238,7 +238,7 @@ contract SmartStay {
         tempRenting.id = _rentingID;
         tempRenting.owner = msg.sender;
         tempRenting.unitPrice = _renting.unitPrice;
-        tempRenting.caution = _renting.caution;
+        tempRenting.deposit = _renting.deposit;
         tempRenting.personCount = _renting.personCount;
         tempRenting.location = _renting.location;
         tempRenting.tags = _renting.tags;
@@ -390,15 +390,15 @@ contract SmartStay {
     }
 
     /**
-     * @dev Confirm a booking by locking (renting price * duration + caution) amount ETH for the duration of the booking
+     * @dev Confirm a booking by locking (renting price * duration + deposit) amount ETH for the duration of the booking
      * @param _bookingID Id of booking to confirm
      */
     function confirmBooking(uint256 _bookingID, string calldata _ownerMetadataURI, string calldata _recipientMetadataURI) external payable isBookingRecipient(_bookingID) {
-        require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].caution), 'SmartStay: Not enought send');
+        require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].deposit), 'SmartStay: Not enought send');
         require(bookings[_bookingID].status == BookingStatus.WAITING_FOR_PAYMENT, 'SmartStay : Wrong booking status');
         
         bookings[_bookingID].amountLocked = uint128(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration);
-        bookings[_bookingID].cautionLocked = uint128(rentings[bookings[_bookingID].rentingID].caution);
+        bookings[_bookingID].depositLocked = uint128(rentings[bookings[_bookingID].rentingID].deposit);
 
         bookings[_bookingID].SBTOwnerID = SBTCollection.mint(rentings[bookings[_bookingID].rentingID].owner, _ownerMetadataURI);
         bookings[_bookingID].SBTRecipientID = SBTCollection.mint(msg.sender, _recipientMetadataURI);
@@ -434,17 +434,17 @@ contract SmartStay {
     }
 
     /**
-     * Retrieve caution as recipient of a booking
-     * @param _bookingID Od of booking to retrieve caution
+     * Retrieve deposit as recipient of a booking
+     * @param _bookingID Od of booking to retrieve deposit
      */
-    function retrieveCaution(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
+    function retrieveDeposit(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.VALIDATED, 'SmartStay : Wrong booking status');
 
-        uint256 cautionToSend = bookings[_bookingID].cautionLocked;
-        bookings[_bookingID].cautionLocked = 0;
+        uint256 depositToSend = bookings[_bookingID].depositLocked;
+        bookings[_bookingID].depositLocked = 0;
 
-        (bool success, ) = msg.sender.call{value: cautionToSend}("");
-        require(success, 'SmartStay: Caution retrieve failed');
+        (bool success, ) = msg.sender.call{value: depositToSend}("");
+        require(success, 'SmartStay: Deposit retrieve failed');
         if (bookings[_bookingID].amountLocked == 0) {
             bookings[_bookingID].status = BookingStatus.COMPLETED;
         }
@@ -454,7 +454,7 @@ contract SmartStay {
 
     /**
      * Retrieve amount as owner of a booking
-     * @param _bookingID Od of booking to retrieve caution
+     * @param _bookingID Od of booking to retrieve deposit
      */
     function retrieveAmount(uint256 _bookingID) external payable isBookingOwner(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.VALIDATED, 'SmartStay : Wrong booking status');
@@ -464,7 +464,7 @@ contract SmartStay {
 
         (bool success, ) = msg.sender.call{value: amountToSend}("");
         require(success, 'SmartStay: Amount retrieve failed');
-        if (bookings[_bookingID].cautionLocked == 0) {
+        if (bookings[_bookingID].depositLocked == 0) {
             bookings[_bookingID].status = BookingStatus.COMPLETED;
         }
 
@@ -475,9 +475,9 @@ contract SmartStay {
         require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
         require(block.timestamp < bookings[_bookingID].timestampStart, 'SmartStay : Can not cancel booking already started');
 
-        uint256 amountToSend = bookings[_bookingID].amountLocked + bookings[_bookingID].cautionLocked;
+        uint256 amountToSend = bookings[_bookingID].amountLocked + bookings[_bookingID].depositLocked;
         bookings[_bookingID].amountLocked = 0;
-        bookings[_bookingID].cautionLocked = 0;
+        bookings[_bookingID].depositLocked = 0;
 
         (bool success, ) = msg.sender.call{value: amountToSend}("");
         require(success, 'SmartStay: Amount retrieve failed');

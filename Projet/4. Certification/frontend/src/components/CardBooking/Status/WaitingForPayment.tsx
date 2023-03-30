@@ -95,7 +95,7 @@ export default function WaitingForPayement({ booking, setBooking, type }: any) {
                         metadataOwner.pinataURL,
                         metadataRecipient.pinataURL,
                         {
-                            value: renting.unitPrice.mul(booking.duration).add(renting.caution),
+                            value: renting.unitPrice.mul(booking.duration).add(renting.deposit),
                             from: address
                         }
                     );

@@ -27,7 +27,7 @@ export default function UpdateRentingDialog(props: any) {
     const { onClose, open, data } = props;
 
     const [unitPrice, setUnitPrice] = useState<number>(0);
-    const [caution, setCaution] = useState<number>(0);
+    const [deposit, setDeposit] = useState<number>(0);
     const [personCount, setPersonCount] = useState<number>(0);
     const [location, setLocation] = useState<string>('');
     const [tags, setTags] = useState<Array<string>>([]);
@@ -64,7 +64,7 @@ export default function UpdateRentingDialog(props: any) {
     useEffect(() => {
         if (Object.keys(data).length) {
             setUnitPrice(+ethers.utils.formatEther(data.unitPrice));
-            setCaution(+ethers.utils.formatEther(data.caution));
+            setDeposit(+ethers.utils.formatEther(data.deposit));
             setPersonCount(data.personCount);
             setLocation(data.location);
             setDescription(data.description);
@@ -75,7 +75,7 @@ export default function UpdateRentingDialog(props: any) {
 
     const handleClose = (data: IRenting | boolean) => {
         setUnitPrice(0);
-        setCaution(0);
+        setDeposit(0);
         setPersonCount(0);
         setLocation('');
         setTags([]);
@@ -134,7 +134,7 @@ export default function UpdateRentingDialog(props: any) {
                     id: 0,
                     owner: '0x0000000000000000000000000000000000000000',
                     unitPrice: ethers.utils.parseUnits(unitPrice.toFixed(), 'ether'),
-                    caution: ethers.utils.parseUnits(caution.toFixed(), 'ether'),
+                    deposit: ethers.utils.parseUnits(deposit.toFixed(), 'ether'),
                     personCount,
                     location,
                     tags,
@@ -181,7 +181,7 @@ export default function UpdateRentingDialog(props: any) {
                 </Box>
                 <Box>
                     <TextField
-                        label="Caution (ETH)"
+                        label="Deposit (ETH)"
                         type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
@@ -190,9 +190,9 @@ export default function UpdateRentingDialog(props: any) {
                             },
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
-                        value={caution || 0}
+                        value={deposit || 0}
                         onChange={(event) => {
-                            setCaution(+event.target.value);
+                            setDeposit(+event.target.value);
                         }}
                     />
                 </Box>
