@@ -25,7 +25,7 @@ const AlertComponent = () => {
 
     return (
         <>
-            {alert ? (
+            {alert.message ? (
                 <Snackbar
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                     open={open}

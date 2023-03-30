@@ -45,7 +45,7 @@ export default function Renting() {
     const [availableTags, setAvailableTags] = useState<Array<string>>([]);
 
     const [openBooking, setOpenBooking] = useState(false);
-    const [bookingRenting, setBookingRenting] = useState({});
+    const [bookingRenting, setBookingRenting] = useState({} as IRenting);
 
     const handleStartBooking = (data: IRenting) => {
         setOpenBooking(true);
@@ -54,7 +54,7 @@ export default function Renting() {
 
     const handleCloseBooking = (data: boolean) => {
         setOpenBooking(false);
-        setBookingRenting({});
+        setBookingRenting({} as IRenting);
 
         if (data) {
             router.push('/booking');
