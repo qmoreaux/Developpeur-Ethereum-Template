@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import Head from "next/head";
-import Layout from "@/components/Layout/Layout";
-import { useAccount } from "wagmi";
-import { Typography } from "@mui/material";
+import { useEffect, useState } from 'react';
+import Head from 'next/head';
+import Layout from '@/components/Layout/Layout';
+import { useAccount } from 'wagmi';
+import { Typography } from '@mui/material';
 
 export default function Home() {
     const { isConnected } = useAccount();

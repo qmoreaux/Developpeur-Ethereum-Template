@@ -58,6 +58,7 @@ export default function UpdateRentingDialog(props: any) {
                 }
             }
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [provider, chain]);
 
     useEffect(() => {

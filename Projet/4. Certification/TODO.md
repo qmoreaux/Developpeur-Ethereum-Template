@@ -17,7 +17,6 @@
 
 ## Later
 
-
 * Gérer un tableau de tableau de tags
 * Utiliser le theme pour le style
 * Vérifier couleur texte avec theme clair

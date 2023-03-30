@@ -51,6 +51,7 @@ export default function Renter() {
                 }
             }
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [provider, chain, address]);
 
     useEffect(() => {

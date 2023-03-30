@@ -59,6 +59,7 @@ export default function NewRentingDialog(props: any) {
                 }
             }
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chain, provider]);
 
     const handleClose = (data: IRenting | boolean) => {

@@ -46,6 +46,7 @@ export default function Booking() {
                 }
             }
         })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [provider, chain, address]);
 
     useEffect(() => {
@@ -67,6 +68,7 @@ export default function Booking() {
                 }
             }
         })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [provider, chain, address]);
 
     useEffect(() => {
