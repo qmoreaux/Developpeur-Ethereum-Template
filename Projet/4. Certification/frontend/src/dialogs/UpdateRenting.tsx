@@ -26,9 +26,9 @@ export default function UpdateRentingDialog(props: any) {
 
     const { onClose, open, data } = props;
 
-    const [unitPrice, setUnitPrice] = useState<number>(0);
-    const [deposit, setDeposit] = useState<number>(0);
-    const [personCount, setPersonCount] = useState<number>(0);
+    const [unitPrice, setUnitPrice] = useState<string>('');
+    const [deposit, setDeposit] = useState<string>('');
+    const [personCount, setPersonCount] = useState<string>('');
     const [location, setLocation] = useState<string>('');
     const [tags, setTags] = useState<Array<string>>([]);
     const [description, setDescription] = useState<string>('');
@@ -63,8 +63,8 @@ export default function UpdateRentingDialog(props: any) {
 
     useEffect(() => {
         if (Object.keys(data).length) {
-            setUnitPrice(+ethers.utils.formatEther(data.unitPrice));
-            setDeposit(+ethers.utils.formatEther(data.deposit));
+            setUnitPrice(ethers.utils.formatEther(data.unitPrice));
+            setDeposit(ethers.utils.formatEther(data.deposit));
             setPersonCount(data.personCount);
             setLocation(data.location);
             setDescription(data.description);
@@ -74,14 +74,26 @@ export default function UpdateRentingDialog(props: any) {
     }, [data]);
 
     const handleClose = (data: IRenting | boolean) => {
-        setUnitPrice(0);
-        setDeposit(0);
-        setPersonCount(0);
+        setUnitPrice('');
+        setDeposit('');
+        setPersonCount('');
         setLocation('');
         setTags([]);
         setDescription('');
         setImageURL('');
         onClose(data);
+    };
+
+    const isValidUnitPrice = () => {
+        return /^\d{0,3}(\.\d{0,18})?$/.test(unitPrice);
+    };
+
+    const isValidDeposit = () => {
+        return /^\d{0,3}(\.\d{0,18})?$/.test(deposit);
+    };
+
+    const isValidPersonCount = () => {
+        return /^[0-9]{0,3}$/.test(personCount);
     };
 
     const handleTagClick = (event: any) => {
@@ -118,7 +130,15 @@ export default function UpdateRentingDialog(props: any) {
     };
 
     const canUpdate = () => {
-        return unitPrice && personCount && location && tags.length && description && imageURL;
+        return (
+            isValidUnitPrice() &&
+            isValidDeposit() &&
+            isValidPersonCount() &&
+            location &&
+            tags.length &&
+            description &&
+            imageURL
+        );
     };
 
     const updateRenting = async () => {
@@ -133,8 +153,8 @@ export default function UpdateRentingDialog(props: any) {
                 const transaction = await contract.updateRenting(data.id, {
                     id: 0,
                     owner: '0x0000000000000000000000000000000000000000',
-                    unitPrice: ethers.utils.parseUnits(unitPrice.toFixed(), 'ether'),
-                    deposit: ethers.utils.parseUnits(deposit.toFixed(), 'ether'),
+                    unitPrice: ethers.utils.parseUnits(unitPrice, 'ether'),
+                    deposit: ethers.utils.parseUnits(deposit, 'ether'),
                     personCount,
                     location,
                     tags,
@@ -165,7 +185,6 @@ export default function UpdateRentingDialog(props: any) {
                 <Box>
                     <TextField
                         label="Night price (ETH)"
-                        type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
                             inputProps: {
@@ -173,16 +192,17 @@ export default function UpdateRentingDialog(props: any) {
                             },
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
-                        value={unitPrice || 0}
+                        value={unitPrice || ''}
+                        error={!isValidUnitPrice()}
+                        helperText={isValidUnitPrice() ? '' : 'Wrong format'}
                         onChange={(event) => {
-                            setUnitPrice(+event.target.value);
+                            setUnitPrice(event.target.value);
                         }}
                     />
                 </Box>
                 <Box>
                     <TextField
                         label="Deposit (ETH)"
-                        type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
                             inputProps: {
@@ -190,9 +210,11 @@ export default function UpdateRentingDialog(props: any) {
                             },
                             endAdornment: <InputAdornment position="end">€</InputAdornment>
                         }}
-                        value={deposit || 0}
+                        value={deposit || ''}
+                        error={!isValidDeposit()}
+                        helperText={isValidDeposit() ? '' : 'Wrong format'}
                         onChange={(event) => {
-                            setDeposit(+event.target.value);
+                            setDeposit(event.target.value);
                         }}
                     />
                 </Box>
@@ -207,9 +229,11 @@ export default function UpdateRentingDialog(props: any) {
                             }
                         }}
                         sx={{ width: '300px' }}
-                        value={personCount || 0}
+                        value={personCount || ''}
+                        error={!isValidPersonCount()}
+                        helperText={isValidPersonCount() ? '' : 'Wrong format'}
                         onChange={(event) => {
-                            setPersonCount(+event.target.value);
+                            setPersonCount(event.target.value);
                         }}
                     />
                 </Box>

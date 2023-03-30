@@ -25,13 +25,13 @@ export default function NewRentingDialog(props: any) {
 
     const { setAlert } = useAlertContext();
 
-    const [unitPrice, setUnitPrice] = useState(0);
-    const [deposit, setDeposit] = useState(0);
-    const [personCount, setPersonCount] = useState(0);
-    const [location, setLocation] = useState('');
+    const [unitPrice, setUnitPrice] = useState<string>('');
+    const [deposit, setDeposit] = useState<string>('');
+    const [personCount, setPersonCount] = useState<string>('');
+    const [location, setLocation] = useState<string>('');
     const [tags, setTags] = useState<Array<string>>([]);
-    const [description, setDescription] = useState('');
-    const [imageURL, setImageURL] = useState('');
+    const [description, setDescription] = useState<string>('');
+    const [imageURL, setImageURL] = useState<string>('');
 
     const [loadingImage, setLoadingImage] = useState(false);
     const [loadingCreate, setLoadingCreate] = useState(false);
@@ -63,14 +63,26 @@ export default function NewRentingDialog(props: any) {
     }, [chain, provider]);
 
     const handleClose = (data: IRenting | boolean) => {
-        setUnitPrice(0);
-        setDeposit(0);
-        setPersonCount(0);
+        setUnitPrice('');
+        setDeposit('');
+        setPersonCount('');
         setLocation('');
         setTags([]);
         setDescription('');
         setImageURL('');
         onClose(data);
+    };
+
+    const isValidUnitPrice = () => {
+        return /^\d{0,3}(\.\d{0,18})?$/.test(unitPrice);
+    };
+
+    const isValidDeposit = () => {
+        return /^\d{0,3}(\.\d{0,18})?$/.test(deposit);
+    };
+
+    const isValidPersonCount = () => {
+        return /^[0-9]{0,3}$/.test(personCount);
     };
 
     const handleTagClick = (event: any) => {
@@ -105,7 +117,15 @@ export default function NewRentingDialog(props: any) {
     };
 
     const canCreate = () => {
-        return unitPrice && deposit && personCount && location && tags.length && description && imageURL;
+        return (
+            isValidUnitPrice() &&
+            isValidDeposit() &&
+            isValidPersonCount() &&
+            location &&
+            tags.length &&
+            description &&
+            imageURL
+        );
     };
 
     const createRenting = async () => {
@@ -153,7 +173,6 @@ export default function NewRentingDialog(props: any) {
                 <Box>
                     <TextField
                         label="Night price (ETH)"
-                        type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
                             inputProps: {
@@ -165,15 +184,16 @@ export default function NewRentingDialog(props: any) {
                                 </InputAdornment>
                             )
                         }}
+                        error={!isValidUnitPrice()}
+                        helperText={isValidUnitPrice() ? '' : 'Wrong format'}
                         onChange={(event) => {
-                            setUnitPrice(+event.target.value);
+                            setUnitPrice(event.target.value);
                         }}
                     />
                 </Box>
                 <Box>
                     <TextField
                         label="Deposit (ETH)"
-                        type="number"
                         sx={{ width: '300px' }}
                         InputProps={{
                             inputProps: {
@@ -185,24 +205,21 @@ export default function NewRentingDialog(props: any) {
                                 </InputAdornment>
                             )
                         }}
+                        error={!isValidDeposit()}
+                        helperText={isValidDeposit() ? '' : 'Wrong format'}
                         onChange={(event) => {
-                            setDeposit(+event.target.value);
+                            setDeposit(event.target.value);
                         }}
                     />
                 </Box>
                 <Box>
                     <TextField
                         label="Person count"
-                        type="number"
-                        InputProps={{
-                            inputProps: {
-                                min: 0,
-                                step: 1
-                            }
-                        }}
                         sx={{ width: '300px' }}
+                        error={!isValidPersonCount()}
+                        helperText={isValidPersonCount() ? '' : 'Wrong format'}
                         onChange={(event) => {
-                            setPersonCount(+event.target.value);
+                            setPersonCount(event.target.value);
                         }}
                     />
                 </Box>

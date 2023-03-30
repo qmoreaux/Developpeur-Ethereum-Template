@@ -96,7 +96,7 @@ export default function Renting() {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [provider, chain, address]);
+    }, [provider, chain, address, location, maxUnitPrice, personCount, tags]);
 
     useEffect(() => {
         (async () => {
@@ -122,7 +122,8 @@ export default function Renting() {
 
     useEffect(() => {
         searchRentings();
-    }, [address, searchRentings]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [address]);
 
     useEffect(() => {
         if (!isConnected) {

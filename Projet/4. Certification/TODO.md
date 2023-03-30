@@ -4,11 +4,8 @@
 
 ## Normal
 
-* Check update renting
 * Manage unpin in pinata
 * Check any type
-* Check int type on input
-* Check eth low value
 
 ## Used for dev
 
