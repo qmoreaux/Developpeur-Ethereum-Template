@@ -395,7 +395,7 @@ contract SmartStay {
      * @param _bookingID Id of booking to confirm
      */
     function confirmBooking(uint256 _bookingID, string calldata _ownerMetadataURI, string calldata _recipientMetadataURI) external payable isBookingRecipient(_bookingID) {
-        require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].deposit), 'SmartStay: Not enought send');
+        require(msg.value >= uint256(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration + rentings[bookings[_bookingID].rentingID].deposit), 'SmartStay: Not enough sent');
         require(bookings[_bookingID].status == BookingStatus.WAITING_FOR_PAYMENT, 'SmartStay : Wrong booking status');
         
         bookings[_bookingID].amountLocked = uint128(rentings[bookings[_bookingID].rentingID].unitPrice * bookings[_bookingID].duration);
@@ -409,25 +409,26 @@ contract SmartStay {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
-
-    function validateBookingAsRecipient(uint256 _bookingID) external isBookingRecipient(_bookingID) {
+    function validateBookingAsOwner(uint256 _bookingID) external isBookingOwner(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
         require(block.timestamp > bookings[_bookingID].timestampEnd, 'SmartStay : Booking is not finished yet');
+        require(!bookings[_bookingID].validatedOwner, 'SmartStay : Booking already validated by owner');
 
-        bookings[_bookingID].validatedRecipient = true;
-        if (bookings[_bookingID].validatedOwner == true) {
+        bookings[_bookingID].validatedOwner = true;
+        if (bookings[_bookingID].validatedRecipient == true) {
             bookings[_bookingID].status = BookingStatus.VALIDATED;
         }
 
         emit BookingUpdated(bookings[_bookingID]);
     }
 
-        function validateBookingAsOwner(uint256 _bookingID) external isBookingOwner(_bookingID) {
+    function validateBookingAsRecipient(uint256 _bookingID) external isBookingRecipient(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
         require(block.timestamp > bookings[_bookingID].timestampEnd, 'SmartStay : Booking is not finished yet');
+        require(!bookings[_bookingID].validatedRecipient, 'SmartStay : Booking already validated by recipient');
 
-        bookings[_bookingID].validatedOwner = true;
-        if (bookings[_bookingID].validatedRecipient == true) {
+        bookings[_bookingID].validatedRecipient = true;
+        if (bookings[_bookingID].validatedOwner == true) {
             bookings[_bookingID].status = BookingStatus.VALIDATED;
         }
 
@@ -485,9 +486,12 @@ contract SmartStay {
 
         if (bookings[_bookingID].NFTRecipientID != 0) {
             NFTCollection.burn(bookings[_bookingID].NFTRecipientID);
+            bookings[_bookingID].NFTRecipientID = 0;
         }
         SBTCollection.burn(bookings[_bookingID].SBTRecipientID);
         SBTCollection.burn(bookings[_bookingID].SBTOwnerID);
+        bookings[_bookingID].SBTRecipientID = 0;
+        bookings[_bookingID].SBTOwnerID = 0;
 
         bookings[_bookingID].status = BookingStatus.CANCELLED;
 
