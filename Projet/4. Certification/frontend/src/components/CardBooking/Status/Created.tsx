@@ -6,7 +6,7 @@ import { LoadingButton } from '@mui/lab';
 import { ethers } from 'ethers';
 import { useNetwork, useSigner, useAccount } from 'wagmi';
 
-import { useAlertContext } from '@/context';
+import { useAlertContext, useContractContext } from '@/context';
 
 import artifacts from '../../../../contracts/SmartStay.json';
 
@@ -19,61 +19,48 @@ export default function Created({ booking, setBooking, type }: ICardBookingStatu
     const { data: signer } = useSigner();
 
     const { setAlert } = useAlertContext();
+    const { writeContract } = useContractContext();
 
     const [loadingAccept, setLoadingAccept] = useState(false);
     const [loadingRefuse, setLoadingRefuse] = useState(false);
 
     const handleAcceptBooking = async () => {
-        if (signer && chain && chain.id) {
-            setLoadingAccept(true);
-            try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.approveBooking(booking.id, { from: address });
-                await transaction.wait();
+        setLoadingAccept(true);
+        try {
+            const transaction = await writeContract('approveBooking', [booking.id, { from: address }]);
+            await transaction.wait();
 
-                setAlert({ message: 'You have successfully accepted the booking', severity: 'success' });
+            setAlert({ message: 'You have successfully accepted the booking', severity: 'success' });
 
-                setBooking({ ...booking, status: 1 });
-                setLoadingAccept(false);
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                setLoadingAccept(false);
-                console.error(e);
-            }
+            setBooking({ ...booking, status: 1 });
+            setLoadingAccept(false);
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingAccept(false);
+            console.error(e);
         }
     };
 
     const handleRejectBooking = async () => {
-        if (signer && chain && chain.id) {
-            setLoadingRefuse(true);
-            try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.rejectBooking(booking.id, { from: address });
-                await transaction.wait();
+        setLoadingRefuse(true);
+        try {
+            const transaction = await writeContract('rejectBooking', [booking.id, { from: address }]);
+            await transaction.wait();
 
-                setAlert({ message: 'You have successfully rejected the booking', severity: 'success' });
+            setAlert({ message: 'You have successfully rejected the booking', severity: 'success' });
 
-                setBooking({ ...booking, status: 5 });
-                setLoadingRefuse(false);
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                setLoadingRefuse(false);
-                console.error(e);
-            }
+            setBooking({ ...booking, status: 5 });
+            setLoadingRefuse(false);
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingRefuse(false);
+            console.error(e);
         }
     };
 

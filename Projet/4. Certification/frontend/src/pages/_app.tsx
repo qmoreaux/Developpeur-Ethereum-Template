@@ -7,6 +7,7 @@ import { localhost, polygonMumbai, sepolia } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 
 import { AlertContextProvider } from '@/context/alert';
+import { ContractContextProvider } from '@/context/contract';
 
 const { chains, provider } = configureChains([localhost, goerli, sepolia, polygonMumbai], [publicProvider()]);
 
@@ -26,7 +27,9 @@ export default function App({ Component, pageProps }: any) {
         <WagmiConfig client={wagmiClient}>
             <RainbowKitProvider chains={chains}>
                 <AlertContextProvider>
-                    <Component {...pageProps} />
+                    <ContractContextProvider>
+                        <Component {...pageProps} />
+                    </ContractContextProvider>
                 </AlertContextProvider>
             </RainbowKitProvider>
         </WagmiConfig>

@@ -5,74 +5,64 @@ import Axios from 'axios';
 import Head from 'next/head';
 import Layout from '@/components/Layout/Layout';
 
-import { useAlertContext } from '@/context';
+import { useAlertContext, useContractContext } from '@/context';
 
-import { ethers } from 'ethers';
-import { useNetwork, useProvider, useAccount } from 'wagmi';
+import { useNetwork, useAccount } from 'wagmi';
 import { Container, Typography, Box, Card, CardContent, CardMedia } from '@mui/material';
 
-import artifacts from '../../contracts/SmartStay.json';
-
-import INetworks from '../interfaces/Networks';
 import INFTItem from '../interfaces/NFTItem';
 
 export default function Profile() {
-    const { address, isConnected } = useAccount();
+    const { address } = useAccount();
     const { chain } = useNetwork();
-    const provider = useProvider();
 
     const { setAlert } = useAlertContext();
+    const { readContract } = useContractContext();
 
     const [NFTCollection, setNFTCollection] = useState<INFTItem[]>([]);
     const [SBTCollection, setSBTCollection] = useState<INFTItem[]>([]);
 
     useEffect(() => {
         (async () => {
-            if (provider && chain && chain.id) {
-                try {
-                    const contract = new ethers.Contract(
-                        (artifacts.networks as INetworks)[chain.id].address,
-                        artifacts.abi,
-                        provider
-                    );
-                    const NFTtransaction = await contract.getNFTCollection(address, { from: address });
-                    setNFTCollection(
-                        await Promise.all<INFTItem[]>(
-                            NFTtransaction.map(async (NFTItem: INFTItem) => {
-                                let meta = await Axios.get(NFTItem.tokenURI);
-                                meta = meta.data;
-                                return {
-                                    ...meta,
-                                    tokenID: NFTItem.tokenID
-                                };
-                            })
-                        )
-                    );
+            try {
+                const NFTtransaction = readContract('getNFTCollection', [address, { from: address }]);
+                setNFTCollection(
+                    await Promise.all<INFTItem[]>(
+                        NFTtransaction.map(async (NFTItem: INFTItem) => {
+                            let meta = await Axios.get(NFTItem.tokenURI);
+                            meta = meta.data;
+                            return {
+                                ...meta,
+                                tokenID: NFTItem.tokenID
+                            };
+                        })
+                    )
+                );
 
-                    const SBTtransaction = await contract.getSBTCollection(address, { from: address });
-                    setSBTCollection(
-                        await Promise.all<INFTItem[]>(
-                            SBTtransaction.map(async (NFTItem: INFTItem) => {
-                                let meta = await Axios.get(NFTItem.tokenURI);
-                                meta = meta.data;
-                                return {
-                                    ...meta,
-                                    tokenID: NFTItem.tokenID
-                                };
-                            })
-                        )
-                    );
-                } catch (e) {
-                    setAlert({
-                        message: 'An error has occurred. Check the developer console for more information',
-                        severity: 'error'
-                    });
-                    console.error(e);
-                }
+                const SBTtransaction = readContract('getSBTCollection', [address, { from: address }]);
+
+                setSBTCollection(
+                    await Promise.all<INFTItem[]>(
+                        SBTtransaction.map(async (NFTItem: INFTItem) => {
+                            let meta = await Axios.get(NFTItem.tokenURI);
+                            meta = meta.data;
+                            return {
+                                ...meta,
+                                tokenID: NFTItem.tokenID
+                            };
+                        })
+                    )
+                );
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [provider, chain, address]);
+    }, [chain, address]);
 
     return (
         <>

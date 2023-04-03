@@ -2,17 +2,12 @@ import { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
+import { useAccount } from 'wagmi';
 import { Dialog, DialogTitle, Stack, Box, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
-import { ethers } from 'ethers';
-import { useNetwork, useSigner } from 'wagmi';
+import { useAlertContext, useContractContext } from '@/context';
 
-import { useAlertContext } from '@/context';
-
-import artifacts from '../../contracts/SmartStay.json';
-
-import INetworks from '../interfaces/Networks';
 import IRenting from '@/interfaces/Renting';
 
 interface IBookingDialog {
@@ -22,10 +17,10 @@ interface IBookingDialog {
 }
 
 export default function BookRentingDialog(props: IBookingDialog) {
-    const { chain } = useNetwork();
-    const { data: signer } = useSigner();
+    const { address } = useAccount();
 
     const { setAlert } = useAlertContext();
+    const { writeContract } = useContractContext();
 
     const { onClose, open, _renting } = props;
 
@@ -53,33 +48,28 @@ export default function BookRentingDialog(props: IBookingDialog) {
     };
 
     const createBooking = async () => {
-        if (signer && chain && chain.id) {
-            setLoadingCreate(true);
-            try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.createBooking(
-                    renting.id.toNumber(),
-                    new Date(new Date(startDate).setHours(0, 0, 0, 0)).getTime() / 1000,
-                    duration,
-                    personCount
-                );
-                await transaction.wait();
+        setLoadingCreate(true);
+        try {
+            const transaction = await writeContract('createBooking', [
+                renting.id.toNumber(),
+                new Date(new Date(startDate).setHours(0, 0, 0, 0)).getTime() / 1000,
+                duration,
+                personCount,
+                { from: address }
+            ]);
 
-                setAlert({ message: 'Your booking request has been sent to the owner', severity: 'success' });
-                setLoadingCreate(false);
-                handleClose(true);
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                setLoadingCreate(false);
-                console.error(e);
-            }
+            await transaction.wait();
+
+            setAlert({ message: 'Your booking request has been sent to the owner', severity: 'success' });
+            setLoadingCreate(false);
+            handleClose(true);
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingCreate(false);
+            console.error(e);
         }
     };
 

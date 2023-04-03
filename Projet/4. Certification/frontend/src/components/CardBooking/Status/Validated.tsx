@@ -4,83 +4,65 @@ import { Typography, Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 import { ethers, BigNumber } from 'ethers';
-import { useNetwork, useSigner, useAccount } from 'wagmi';
+import { useAccount } from 'wagmi';
 
-import { useAlertContext } from '@/context';
+import { useAlertContext, useContractContext } from '@/context';
 
-import artifacts from '../../../../contracts/SmartStay.json';
-
-import INetworks from '../../../interfaces/Networks';
 import ICardBookingStatus from '@/interfaces/CardBookingStatus';
 
 export default function Validated({ booking, setBooking, type }: ICardBookingStatus) {
     const { address } = useAccount();
-    const { chain } = useNetwork();
-    const { data: signer } = useSigner();
 
     const { setAlert } = useAlertContext();
+    const { writeContract } = useContractContext();
 
     const [loadingRetrieve, setLoadingRetrieve] = useState(false);
 
     const handleRetrieveDeposit = async () => {
-        if (signer && chain && chain.id) {
-            setLoadingRetrieve(true);
-            try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.retrieveDeposit(booking.id.toNumber(), { from: address });
-                await transaction.wait();
+        setLoadingRetrieve(true);
+        try {
+            const transaction = await writeContract('retrieveDeposit', [booking.id.toNumber(), { from: address }]);
+            await transaction.wait();
 
-                setAlert({ message: 'You have successfully retrieved your deposit', severity: 'success' });
+            setAlert({ message: 'You have successfully retrieved your deposit', severity: 'success' });
 
-                setBooking({
-                    ...booking,
-                    depositLocked: BigNumber.from(0),
-                    status: booking.amountLocked.toString() === '0' ? 4 : 3
-                });
-                setLoadingRetrieve(false);
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                setLoadingRetrieve(false);
-                console.error(e);
-            }
+            setBooking({
+                ...booking,
+                depositLocked: BigNumber.from(0),
+                status: booking.amountLocked.toString() === '0' ? 4 : 3
+            });
+            setLoadingRetrieve(false);
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingRetrieve(false);
+            console.error(e);
         }
     };
 
     const handleRetrieveAmount = async () => {
-        if (signer && chain && chain.id) {
-            setLoadingRetrieve(true);
-            try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.retrieveAmount(booking.id.toNumber(), { from: address });
-                await transaction.wait();
+        setLoadingRetrieve(true);
+        try {
+            const transaction = await writeContract('retrieveAmount', [booking.id.toNumber(), { from: address }]);
+            await transaction.wait();
 
-                setAlert({ message: 'You have successfully retrieved your amount', severity: 'success' });
+            setAlert({ message: 'You have successfully retrieved your amount', severity: 'success' });
 
-                setBooking({
-                    ...booking,
-                    amountLocked: BigNumber.from(0),
-                    status: booking.depositLocked.toString() === '0' ? 4 : 3
-                });
-                setLoadingRetrieve(false);
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                setLoadingRetrieve(false);
-                console.error(e);
-            }
+            setBooking({
+                ...booking,
+                amountLocked: BigNumber.from(0),
+                status: booking.depositLocked.toString() === '0' ? 4 : 3
+            });
+            setLoadingRetrieve(false);
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingRetrieve(false);
+            console.error(e);
         }
     };
 

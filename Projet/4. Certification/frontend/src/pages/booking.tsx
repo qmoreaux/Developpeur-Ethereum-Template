@@ -1,81 +1,55 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 
 import Head from 'next/head';
 import Layout from '@/components/Layout/Layout';
 import CardBooking from '@/components/CardBooking/CardBooking';
 
-import { ethers } from 'ethers';
-import { useNetwork, useProvider, useAccount } from 'wagmi';
-import { useAlertContext } from '@/context';
+import { useNetwork, useAccount } from 'wagmi';
+import { useAlertContext, useContractContext } from '@/context';
 
 import { Typography, Box } from '@mui/material';
 
-import artifacts from '../../contracts/SmartStay.json';
-
 import IBooking from '../interfaces/Booking';
-import INetworks from '../interfaces/Networks';
 
 export default function Booking() {
-    const { address, isConnected } = useAccount();
+    const { address } = useAccount();
     const { chain } = useNetwork();
-    const provider = useProvider();
-    const router = useRouter();
 
     const { setAlert } = useAlertContext();
+    const { readContract } = useContractContext();
 
     const [bookingOwner, setBookingOwner] = useState<Array<IBooking>>([]);
     const [bookingRecipient, setBookingRecipient] = useState<Array<IBooking>>([]);
 
     useEffect(() => {
         (async () => {
-            if (provider && chain && chain.id) {
-                try {
-                    const contract = new ethers.Contract(
-                        (artifacts.networks as INetworks)[chain.id].address,
-                        artifacts.abi,
-                        provider
-                    );
-                    setBookingOwner(await contract.getBookingOwner({ from: address }));
-                } catch (e) {
-                    setAlert({
-                        message: 'An error has occurred. Check the developer console for more information',
-                        severity: 'error'
-                    });
-                    console.error(e);
-                }
+            try {
+                setBookingOwner(await readContract('getBookingOwner', [{ from: address }]));
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
             }
         })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [provider, chain, address]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chain, address]);
 
     useEffect(() => {
         (async () => {
-            if (provider && chain && chain.id) {
-                try {
-                    const contract = new ethers.Contract(
-                        (artifacts.networks as INetworks)[chain.id].address,
-                        artifacts.abi,
-                        provider
-                    );
-                    setBookingRecipient(await contract.getBookingRecipient({ from: address }));
-                } catch (e) {
-                    setAlert({
-                        message: 'An error has occurred. Check the developer console for more information',
-                        severity: 'error'
-                    });
-                    console.error(e);
-                }
+            try {
+                setBookingRecipient(await readContract('getBookingRecipient', [{ from: address }]));
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
             }
         })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [provider, chain, address]);
-
-    useEffect(() => {
-        if (!isConnected) {
-            router.push('/');
-        }
-    }, [isConnected, router]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chain, address]);
 
     return (
         <>

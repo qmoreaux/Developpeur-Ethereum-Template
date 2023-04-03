@@ -2,18 +2,14 @@ import { useState } from 'react';
 
 import PropTypes from 'prop-types';
 
-import { ethers } from 'ethers';
-import { useNetwork, useSigner } from 'wagmi';
-import { useAlertContext } from '@/context';
+import { useAccount } from 'wagmi';
+import { useAlertContext, useContractContext } from '@/context';
 
 import { Dialog, DialogTitle, Box, Typography, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 import { unpinFileFromIPFS } from '../pinata';
 
-import artifacts from '../../contracts/SmartStay.json';
-
-import INetworks from '../interfaces/Networks';
 import IRenting from '../interfaces/Renting';
 
 interface IRentingDialog {
@@ -23,10 +19,9 @@ interface IRentingDialog {
 }
 
 export default function DeleteRentingDialog(props: IRentingDialog) {
-    const { chain } = useNetwork();
-    const { data: signer } = useSigner();
-
+    const { address } = useAccount();
     const { setAlert } = useAlertContext();
+    const { writeContract } = useContractContext();
 
     const { onClose, renting, open } = props;
 
@@ -37,30 +32,23 @@ export default function DeleteRentingDialog(props: IRentingDialog) {
     };
 
     const deleteRenting = async () => {
-        if (signer && chain && chain.id) {
-            setLoadingDelete(true);
-            try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.deleteRenting(renting.id.toNumber());
-                await transaction.wait();
-                await unpinFileFromIPFS(renting.imageURL.slice(34));
+        setLoadingDelete(true);
+        try {
+            const transaction = await writeContract('deleteRenting', [renting.id.toNumber(), { from: address }]);
+            await transaction.wait();
+            await unpinFileFromIPFS(renting.imageURL.slice(34));
 
-                setAlert({ message: 'Your renting has been successfully deleted', severity: 'success' });
+            setAlert({ message: 'Your renting has been successfully deleted', severity: 'success' });
 
-                setLoadingDelete(false);
-                handleClose(true);
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                setLoadingDelete(false);
-                console.error(e);
-            }
+            setLoadingDelete(false);
+            handleClose(true);
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingDelete(false);
+            console.error(e);
         }
     };
 

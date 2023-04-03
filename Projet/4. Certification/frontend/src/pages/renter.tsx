@@ -8,24 +8,21 @@ import UpdateRentingDialog from '@/dialogs/UpdateRenting';
 import DeleteRentingDialog from '@/dialogs/DeleteRenting';
 
 import { ethers } from 'ethers';
-import { useNetwork, useProvider, useAccount } from 'wagmi';
+import { useNetwork, useAccount } from 'wagmi';
 import { useAlertContext } from '@/context';
+import { useContractContext } from '@/context';
 
 import { Button, Typography, Box, Card, CardContent, CardMedia } from '@mui/material';
 import { Add, Update, Delete } from '@mui/icons-material';
 
-import artifacts from '../../contracts/SmartStay.json';
-
 import IRenting from '../interfaces/Renting';
-import INetworks from '../interfaces/Networks';
 
 export default function Renter() {
-    const { address, isConnected } = useAccount();
+    const { address } = useAccount();
     const { chain } = useNetwork();
-    const provider = useProvider();
-    const router = useRouter();
 
     const { setAlert } = useAlertContext();
+    const { readContract } = useContractContext();
 
     const [userRentings, setUserRentings] = useState<Array<IRenting>>([]);
     const [open, setOpen] = useState({ NewRenting: false, UpdateRenting: false, DeleteRenting: false });
@@ -34,31 +31,18 @@ export default function Renter() {
 
     useEffect(() => {
         (async () => {
-            if (provider && chain && chain.id) {
-                try {
-                    const contract = new ethers.Contract(
-                        (artifacts.networks as INetworks)[chain.id].address,
-                        artifacts.abi,
-                        provider
-                    );
-                    setUserRentings(await contract.getUserRenting({ from: address }));
-                } catch (e) {
-                    setAlert({
-                        message: 'An error has occurred. Check the developer console for more information',
-                        severity: 'error'
-                    });
-                    console.error(e);
-                }
+            try {
+                setUserRentings(await readContract('getUserRenting', [{ from: address }]));
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [provider, chain, address]);
-
-    useEffect(() => {
-        if (!isConnected) {
-            router.push('/');
-        }
-    }, [isConnected, router]);
+    }, [chain, address]);
 
     const handleClickOpen = (dialog: string, data: IRenting) => {
         setOpen({ ...open, [dialog]: true });

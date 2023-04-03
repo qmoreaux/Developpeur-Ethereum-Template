@@ -3,15 +3,11 @@ import { useState } from 'react';
 import { Typography, Box, Card, CardContent } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
-import { ethers } from 'ethers';
-import { useNetwork, useSigner } from 'wagmi';
+import { useAccount } from 'wagmi';
 
-import { useAlertContext } from '@/context';
-
-import artifacts from '../../../contracts/SmartStay.json';
+import { useAlertContext, useContractContext } from '@/context';
 
 import IBooking from '../../interfaces/Booking';
-import INetworks from '../../interfaces/Networks';
 import ICardBooking from '../../interfaces/CardBooking';
 
 import { uploadJSONToIPFS } from '../../pinata';
@@ -25,60 +21,57 @@ import Rejected from './Status/Rejected';
 import Cancelled from './Status/Cancelled';
 
 export default function CardBooking({ _booking, type }: ICardBooking) {
-    const { chain } = useNetwork();
-    const { data: signer } = useSigner();
+    const { address } = useAccount();
 
     const { setAlert } = useAlertContext();
+    const { writeContract } = useContractContext();
 
     const [booking, setBooking] = useState<IBooking>(_booking);
 
     const [loadingRedeem, setLoadingRedeem] = useState(false);
 
     const handleRedeemNFT = async () => {
-        if (signer && chain && chain.id) {
-            setLoadingRedeem(true);
-            try {
-                const NFTMetadata = {
-                    image: `https://gateway.pinata.cloud/ipfs/QmP5xTq4AwNnSLj6r3hX44UBxsZcvMKxPucX4AY8MqUBya/${
-                        Math.floor(Math.random() * 10) + 1
-                    }.png`,
-                    name: 'Dada',
-                    description: 'Didi',
-                    attributes: [
-                        {
-                            trait_type: 'Booking',
-                            value: booking.id
-                        },
-                        {
-                            trait_type: 'Toto',
-                            value: 10
-                        }
-                    ]
-                };
+        setLoadingRedeem(true);
+        try {
+            const NFTMetadata = {
+                image: `https://gateway.pinata.cloud/ipfs/QmP5xTq4AwNnSLj6r3hX44UBxsZcvMKxPucX4AY8MqUBya/${
+                    Math.floor(Math.random() * 10) + 1
+                }.png`,
+                name: 'Dada',
+                description: 'Didi',
+                attributes: [
+                    {
+                        trait_type: 'Booking',
+                        value: booking.id
+                    },
+                    {
+                        trait_type: 'Toto',
+                        value: 10
+                    }
+                ]
+            };
 
-                const response = await uploadJSONToIPFS(NFTMetadata, 'metadata_nft_booking_' + booking.id);
+            const response = await uploadJSONToIPFS(NFTMetadata, 'metadata_nft_booking_' + booking.id);
 
-                if (response.success === true) {
-                    const contract = new ethers.Contract(
-                        (artifacts.networks as INetworks)[chain.id].address,
-                        artifacts.abi,
-                        signer
-                    );
-                    const transaction = await contract.redeemNFT(booking.id.toNumber(), response.pinataURL);
-                    await transaction.wait();
+            if (response.success === true) {
+                const transaction = await writeContract('redeemNFT', [
+                    booking.id.toNumber(),
+                    response.pinataURL,
+                    { from: address }
+                ]);
+                await transaction.wait();
 
-                    setAlert({ message: 'Your NFT was successfully minted', severity: 'success' });
-                    setBooking({ ...booking, NFTRedeemed: true });
-                    setLoadingRedeem(false);
-                }
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
+                setAlert({ message: 'Your NFT was successfully minted', severity: 'success' });
+                setBooking({ ...booking, NFTRedeemed: true });
                 setLoadingRedeem(false);
-                console.error(e);
             }
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingRedeem(false);
+            console.error(e);
         }
     };
 

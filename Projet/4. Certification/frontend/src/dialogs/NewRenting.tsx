@@ -1,21 +1,18 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
 
-import { Dialog, DialogTitle, Chip, Stack, Box, Typography, Button, TextField, InputAdornment } from '@mui/material';
+import { Dialog, DialogTitle, Chip, Stack, Box, Typography, TextField, InputAdornment } from '@mui/material';
 import { AttachMoney } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 
-import { useAlertContext } from '@/context';
+import { useAlertContext, useContractContext } from '@/context';
 
-import { ethers, Event } from 'ethers';
-import { useNetwork, useSigner, useProvider } from 'wagmi';
+import { ethers } from 'ethers';
+import { useNetwork, useAccount } from 'wagmi';
 
 import { uploadFileToIPFS, updateFileName } from '../pinata';
 
-import artifacts from '../../contracts/SmartStay.json';
-
-import INetworks from '../interfaces/Networks';
 import IRenting from '../interfaces/Renting';
 
 interface IRentingDialog {
@@ -24,11 +21,11 @@ interface IRentingDialog {
 }
 
 export default function NewRentingDialog(props: IRentingDialog) {
+    const { address } = useAccount();
     const { chain } = useNetwork();
-    const provider = useProvider();
-    const { data: signer } = useSigner();
 
     const { setAlert } = useAlertContext();
+    const { readContract, writeContract } = useContractContext();
 
     const [unitPrice, setUnitPrice] = useState<string>('');
     const [deposit, setDeposit] = useState<string>('');
@@ -47,25 +44,18 @@ export default function NewRentingDialog(props: IRentingDialog) {
 
     useEffect(() => {
         (async () => {
-            if (provider && chain && chain.id) {
-                try {
-                    const contract = new ethers.Contract(
-                        (artifacts.networks as INetworks)[chain.id].address,
-                        artifacts.abi,
-                        provider
-                    );
-                    setAvailableTags(await contract.getTags());
-                } catch (e) {
-                    setAlert({
-                        message: 'An error has occurred. Check the developer console for more information',
-                        severity: 'error'
-                    });
-                    console.error(e);
-                }
+            try {
+                setAvailableTags(await readContract('getTags', [{ from: address }]));
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chain, provider]);
+    }, [chain, address]);
 
     const handleClose = (data: IRenting | boolean) => {
         setUnitPrice('');
@@ -134,15 +124,10 @@ export default function NewRentingDialog(props: IRentingDialog) {
     };
 
     const createRenting = async () => {
-        if (signer && chain && chain.id) {
-            try {
-                setLoadingCreate(true);
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.createRenting({
+        try {
+            setLoadingCreate(true);
+            const transaction = await writeContract('createRenting', [
+                {
                     id: 0,
                     owner: '0x0000000000000000000000000000000000000000',
                     unitPrice: ethers.utils.parseUnits(unitPrice.toString(), 'ether'),
@@ -152,23 +137,26 @@ export default function NewRentingDialog(props: IRentingDialog) {
                     tags,
                     description,
                     imageURL
-                });
-                const receipt = await transaction.wait();
-                setAlert({ message: 'The renting was successfully created', severity: 'success' });
-                setLoadingCreate(false);
-                await updateFileName(
-                    imageURL.slice(34),
-                    'image_renting_' + receipt.events[0].args['renting'].id.toNumber()
-                );
-                handleClose(receipt.events[0].args['renting']);
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                setLoadingCreate(false);
-                console.error(e);
-            }
+                },
+                {
+                    from: address
+                }
+            ]);
+            const receipt = await transaction.wait();
+            setAlert({ message: 'The renting was successfully created', severity: 'success' });
+            setLoadingCreate(false);
+            await updateFileName(
+                imageURL.slice(34),
+                'image_renting_' + receipt.events[0].args['renting'].id.toNumber()
+            );
+            handleClose(receipt.events[0].args['renting']);
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingCreate(false);
+            console.error(e);
         }
     };
 

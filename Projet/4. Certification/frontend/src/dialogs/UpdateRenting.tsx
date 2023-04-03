@@ -4,17 +4,15 @@ import Image from 'next/image';
 import PropTypes from 'prop-types';
 
 import { ethers } from 'ethers';
-import { useNetwork, useProvider, useSigner } from 'wagmi';
-import { useAlertContext } from '@/context';
+import { useNetwork, useAccount } from 'wagmi';
+
+import { useAlertContext, useContractContext } from '@/context';
 
 import { Dialog, DialogTitle, Chip, Stack, Box, Typography, TextField, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 import { uploadFileToIPFS, unpinFileFromIPFS } from '../pinata';
 
-import artifacts from '../../contracts/SmartStay.json';
-
-import INetworks from '../interfaces/Networks';
 import IRenting from '../interfaces/Renting';
 
 interface IRentingDialog {
@@ -25,10 +23,10 @@ interface IRentingDialog {
 
 export default function UpdateRentingDialog(props: IRentingDialog) {
     const { chain } = useNetwork();
-    const { data: signer } = useSigner();
-    const provider = useProvider();
+    const { address } = useAccount();
 
     const { setAlert } = useAlertContext();
+    const { readContract, writeContract } = useContractContext();
 
     const { onClose, open, renting } = props;
 
@@ -47,25 +45,18 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
 
     useEffect(() => {
         (async () => {
-            if (provider && chain && chain.id) {
-                try {
-                    const contract = new ethers.Contract(
-                        (artifacts.networks as INetworks)[chain.id].address,
-                        artifacts.abi,
-                        provider
-                    );
-                    setAvailableTags(await contract.getTags());
-                } catch (e) {
-                    setAlert({
-                        message: 'An error has occurred. Check the developer console for more information',
-                        severity: 'error'
-                    });
-                    console.error(e);
-                }
+            try {
+                setAvailableTags(await readContract('getTags', [{ from: address }]));
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [provider, chain]);
+    }, [chain, address]);
 
     useEffect(() => {
         if (Object.keys(renting).length) {
@@ -149,15 +140,11 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
     };
 
     const updateRenting = async () => {
-        if (signer && chain && chain.id) {
-            setLoadingUpdate(true);
-            try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    signer
-                );
-                const transaction = await contract.updateRenting(renting.id.toNumber(), {
+        setLoadingUpdate(true);
+        try {
+            const transaction = await writeContract('updateRenting', [
+                renting.id.toNumber(),
+                {
                     id: 0,
                     owner: '0x0000000000000000000000000000000000000000',
                     unitPrice: ethers.utils.parseUnits(unitPrice, 'ether'),
@@ -167,21 +154,24 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
                     tags,
                     description,
                     imageURL
-                });
-                const receipt = await transaction.wait();
+                },
+                {
+                    from: address
+                }
+            ]);
+            const receipt = await transaction.wait();
 
-                setAlert({ message: 'Your renting has been successfully updated', severity: 'success' });
+            setAlert({ message: 'Your renting has been successfully updated', severity: 'success' });
 
-                setLoadingUpdate(false);
-                handleClose(receipt.events[0].args['renting']);
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                setLoadingUpdate(false);
-                console.error(e);
-            }
+            setLoadingUpdate(false);
+            handleClose(receipt.events[0].args['renting']);
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            setLoadingUpdate(false);
+            console.error(e);
         }
     };
 

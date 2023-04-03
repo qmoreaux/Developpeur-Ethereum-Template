@@ -5,9 +5,9 @@ import Head from 'next/head';
 import Layout from '@/components/Layout/Layout';
 import BookRentingDialog from '@/dialogs/BookRenting';
 
-import { useNetwork, useProvider, useAccount } from 'wagmi';
+import { useNetwork, useAccount } from 'wagmi';
 import { ethers } from 'ethers';
-import { useAlertContext } from '@/context';
+import { useAlertContext, useContractContext } from '@/context';
 
 import {
     Button,
@@ -23,19 +23,16 @@ import {
 } from '@mui/material';
 import { BookOnline, Person, AttachMoney, LocationCity, Filter } from '@mui/icons-material';
 
-import artifacts from '../../contracts/SmartStay.json';
-
 import IRenting from '../interfaces/Renting';
-import INetworks from '../interfaces/Networks';
 
 export default function Renting() {
-    const { address, isConnected } = useAccount();
-
+    const { address } = useAccount();
     const { chain } = useNetwork();
-    const provider = useProvider();
+
     const router = useRouter();
 
     const { setAlert } = useAlertContext();
+    const { readContract } = useContractContext();
 
     const [rentings, setRentings] = useState<Array<IRenting>>([]);
     const [maxUnitPrice, setMaxUnitPrice] = useState<number>(0);
@@ -71,22 +68,30 @@ export default function Renting() {
         }
     };
     const searchRentings = useCallback(async () => {
-        if (provider && chain && chain.id) {
+        try {
+            setRentings(
+                await readContract('searchRenting', [
+                    ethers.utils.parseUnits(maxUnitPrice.toString(), 'ether'),
+                    personCount,
+                    location,
+                    tags,
+                    { from: address }
+                ])
+            );
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            console.error(e);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chain, address, location, maxUnitPrice, personCount, tags]);
+
+    useEffect(() => {
+        (async () => {
             try {
-                const contract = new ethers.Contract(
-                    (artifacts.networks as INetworks)[chain.id].address,
-                    artifacts.abi,
-                    provider
-                );
-                setRentings(
-                    await contract.searchRenting(
-                        ethers.utils.parseUnits(maxUnitPrice.toString(), 'ether'),
-                        personCount,
-                        location,
-                        tags,
-                        { from: address }
-                    )
-                );
+                setAvailableTags(await readContract('getTags', [{ from: address }]));
             } catch (e) {
                 setAlert({
                     message: 'An error has occurred. Check the developer console for more information',
@@ -94,42 +99,14 @@ export default function Renting() {
                 });
                 console.error(e);
             }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [provider, chain, address, location, maxUnitPrice, personCount, tags]);
-
-    useEffect(() => {
-        (async () => {
-            if (provider && chain && chain.id) {
-                try {
-                    const contract = new ethers.Contract(
-                        (artifacts.networks as INetworks)[chain.id].address,
-                        artifacts.abi,
-                        provider
-                    );
-                    setAvailableTags(await contract.getTags());
-                } catch (e) {
-                    setAlert({
-                        message: 'An error has occurred. Check the developer console for more information',
-                        severity: 'error'
-                    });
-                    console.error(e);
-                }
-            }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [provider, chain]);
+    }, []);
 
     useEffect(() => {
         searchRentings();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [address]);
-
-    useEffect(() => {
-        if (!isConnected) {
-            router.push('/');
-        }
-    }, [isConnected, router]);
+    }, [chain, address]);
 
     return (
         <>
