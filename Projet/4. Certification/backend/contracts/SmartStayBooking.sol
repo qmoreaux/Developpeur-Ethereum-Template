@@ -134,6 +134,7 @@ contract SmartStayBooking {
 
         Booking memory _booking;
         _booking.id = indexBooking.current();
+        _booking.recipient = msg.sender;
         _booking.rentingID = _rentingID;
         _booking.timestampStart = _timestampStart;
         _booking.duration = _duration;
@@ -179,6 +180,15 @@ contract SmartStayBooking {
 
     function getBooking(uint256 _bookingID) external view returns (Booking memory) {
         return bookings[_bookingID];
+    }
+
+    /**
+     * @dev Get a renting from a booking ID
+     * @param _bookingID Id of the booking to get the renting from
+     * @return Renting matching the _bookingID passed in parameters
+     */
+    function getRentingFromBookingID(uint _bookingID) external view returns (SmartStayRenting.Renting memory) {
+        return smartStayRenting.getRenting(bookings[_bookingID].rentingID);
     }
 
     /**

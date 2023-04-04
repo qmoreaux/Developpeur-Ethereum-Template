@@ -5,17 +5,17 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./libraries/Tokens.sol";
 
-import "./SmartStayRenting.sol";
 import "./SmartStayBooking.sol";
+
+import "hardhat/console.sol";
 
 /** 
  * @title Voting
  * @author Quentin Moreaux
  * @dev Implements functionnalities for SmartStay Dapp
  */
-contract SmartStay {
+contract SmartStayRating {
 
-    SmartStayRenting smartStayRenting;
     SmartStayBooking smartStayBooking;
 
     using Counters for Counters.Counter;
@@ -37,6 +37,7 @@ contract SmartStay {
     // Struct, Arrays, Enums
 
     struct Rating {
+        uint256 id;
         address from;
         uint8 note;
         bool owner;
@@ -46,26 +47,25 @@ contract SmartStay {
 
     // Constructor
 
-    constructor(address _addressRenting, address _addressBooking) {
-
-        smartStayRenting = SmartStayRenting(_addressRenting);
+    constructor(address _addressBooking) {
         smartStayBooking = SmartStayBooking(_addressBooking);
     }
-
 
     function rateOwner(uint256 _bookingID, uint8 _note, string memory _comment) external  {
         require(smartStayBooking.getBooking(_bookingID).status == SmartStayBooking.BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
         require(!smartStayBooking.getBooking(_bookingID).ratedOwner, 'SmartStay: Already rated owner for this booking');
 
         Rating memory _rating;
+        _rating.id = index.current();
         _rating.from = msg.sender;
         _rating.note = _note;
-        _rating.owner = false;
+        _rating.owner = true;
         _rating.comment = _comment;
+        ratings[smartStayBooking.getRentingFromBookingID(_bookingID).owner].push(_rating); 
 
-        // ratings[rentings[bookings[_bookingID].rentingID].owner].push(_rating);  // TO CHECK
+        index.increment();
 
-        smartStayBooking.getBooking(_bookingID).ratedOwner = true;
+        smartStayBooking.getBooking(_bookingID).ratedOwner = true; // TO CHECK + MODIFIER
 
         emit RatingCreated(_rating);
     }
@@ -75,14 +75,16 @@ contract SmartStay {
         require(!smartStayBooking.getBooking(_bookingID).ratedRecipient, 'SmartStay: Already rated recipient for this booking');
 
         Rating memory _rating;
+        _rating.id = index.current();
         _rating.from = msg.sender;
         _rating.note = _note;
-        _rating.owner = true;
+        _rating.owner = false;
         _rating.comment = _comment;
-
         ratings[smartStayBooking.getBooking(_bookingID).recipient].push(_rating);
 
-        smartStayBooking.getBooking(_bookingID).ratedRecipient = true; // TO CHECK
+        index.increment();
+
+        smartStayBooking.getBooking(_bookingID).ratedRecipient = true; // TO CHECK + MODIFIER
 
         emit RatingCreated(_rating);
     }

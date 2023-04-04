@@ -50,7 +50,7 @@ export default function BookRentingDialog(props: IBookingDialog) {
     const createBooking = async () => {
         setLoadingCreate(true);
         try {
-            const transaction = await writeContract('SmartStayRenting', 'createBooking', [
+            const transaction = await writeContract('SmartStayBooking', 'createBooking', [
                 renting.id.toNumber(),
                 new Date(new Date(startDate).setHours(0, 0, 0, 0)).getTime() / 1000,
                 duration,
@@ -156,5 +156,5 @@ export default function BookRentingDialog(props: IBookingDialog) {
 BookRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    _renting: PropTypes.object.isRequired
+    _renting: PropTypes.array.isRequired
 };

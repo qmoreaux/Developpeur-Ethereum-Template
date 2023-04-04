@@ -1,5 +1,7 @@
+import { BigNumber } from 'ethers';
+
 export default interface IRating {
-    id: number;
+    id: BigNumber;
     note: number;
     owner: boolean;
     comment: string;

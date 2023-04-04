@@ -19,8 +19,9 @@ if (fs.existsSync(filename)) {
 fileContentJSON = JSON.parse(fileContent);
 
 async function main() {
-    const address = await deployRenting();
-    await deployBooking(address);
+    const addressRenting = await deployRenting();
+    const addressBooking = await deployBooking(addressRenting);
+    await deployRating(addressBooking);
 
     fs.writeFileSync(filename, JSON.stringify(fileContentJSON));
 }
@@ -81,6 +82,35 @@ const deployBooking = async (address: string) => {
     console.log(`SmartStayBooking deployed  at address ${smartStayBooking.address}`);
 
     return smartStayBooking.address;
+};
+
+const deployRating = async (address: string) => {
+    const SmartStayRating = await ethers.getContractFactory('SmartStayRating');
+    const smartStayRating = await SmartStayRating.deploy(address);
+    await smartStayRating.deployed();
+
+    const artifacts = await hre.artifacts.readArtifact('SmartStayRating');
+
+    if (!fileContentJSON.SmartStayRating) {
+        fileContentJSON = { ...fileContentJSON, SmartStayRating: {} };
+    }
+    if (
+        !fileContentJSON.SmartStayRating.abi ||
+        JSON.stringify(fileContentJSON.SmartStayRating.abi) !== JSON.stringify(artifacts.abi)
+    ) {
+        fileContentJSON.SmartStayRating = {
+            abi: artifacts.abi,
+            networks: {}
+        };
+    }
+    fileContentJSON.SmartStayRating.networks[smartStayRating.deployTransaction.chainId] = {
+        address: smartStayRating.address,
+        transactionHash: smartStayRating.deployTransaction.hash
+    };
+
+    console.log(`SmartStayRating deployed  at address ${smartStayRating.address}`);
+
+    return smartStayRating.address;
 };
 
 // We recommend this pattern to be able to use async/await everywhere

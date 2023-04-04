@@ -21,7 +21,7 @@ export default function WaitingForPayement({ booking, setBooking, type }: ICardB
 
     const getRenting = async (bookingID: number) => {
         try {
-            return await readContract('getRentingFromBookingID', [bookingID, { from: address }]);
+            return await readContract('SmartStayBooking', 'getRentingFromBookingID', [bookingID, { from: address }]);
         } catch (e) {
             setAlert({
                 message: 'An error has occurred. Check the developer console for more information',
@@ -68,7 +68,7 @@ export default function WaitingForPayement({ booking, setBooking, type }: ICardB
 
             if (metadataOwner.success === true && metadataRecipient.success) {
                 let renting = await getRenting(booking.id.toNumber());
-                const transaction = await writeContract('confirmBooking', [
+                const transaction = await writeContract('SmartStayBooking', 'confirmBooking', [
                     booking.id.toNumber(),
                     metadataOwner.pinataURL,
                     metadataRecipient.pinataURL,

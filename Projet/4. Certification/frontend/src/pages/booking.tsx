@@ -24,7 +24,7 @@ export default function Booking() {
     useEffect(() => {
         (async () => {
             try {
-                setBookingOwner(await readContract('getBookingOwner', [{ from: address }]));
+                setBookingOwner(await readContract('SmartStayBooking', 'getBookingOwner', [{ from: address }]));
             } catch (e) {
                 setAlert({
                     message: 'An error has occurred. Check the developer console for more information',
@@ -39,7 +39,7 @@ export default function Booking() {
     useEffect(() => {
         (async () => {
             try {
-                setBookingRecipient(await readContract('getBookingRecipient', [{ from: address }]));
+                setBookingRecipient(await readContract('SmartStayBooking', 'getBookingRecipient', [{ from: address }]));
             } catch (e) {
                 setAlert({
                     message: 'An error has occurred. Check the developer console for more information',

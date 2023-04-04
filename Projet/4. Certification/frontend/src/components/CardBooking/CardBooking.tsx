@@ -54,7 +54,7 @@ export default function CardBooking({ _booking, type }: ICardBooking) {
             const response = await uploadJSONToIPFS(NFTMetadata, 'metadata_nft_booking_' + booking.id);
 
             if (response.success === true) {
-                const transaction = await writeContract('redeemNFT', [
+                const transaction = await writeContract('SmartStayBooking', 'redeemNFT', [
                     booking.id.toNumber(),
                     response.pinataURL,
                     { from: address }

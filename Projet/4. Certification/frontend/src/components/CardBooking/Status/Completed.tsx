@@ -23,7 +23,7 @@ export default function Completed({ booking, setBooking, type }: ICardBookingSta
         setLoadingPublish(false);
 
         try {
-            const transaction = await writeContract('rateOwner', [
+            const transaction = await writeContract('SmartStayRating', 'rateOwner', [
                 booking.id.toNumber(),
                 note,
                 comment,
@@ -53,7 +53,7 @@ export default function Completed({ booking, setBooking, type }: ICardBookingSta
         setLoadingPublish(false);
 
         try {
-            const transaction = await writeContract('rateRecipient', [
+            const transaction = await writeContract('SmartStayRating', 'rateRecipient', [
                 booking.id.toNumber(),
                 note,
                 comment,

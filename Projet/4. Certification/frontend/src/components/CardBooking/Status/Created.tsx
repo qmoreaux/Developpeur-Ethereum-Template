@@ -23,7 +23,7 @@ export default function Created({ booking, setBooking, type }: ICardBookingStatu
     const handleAcceptBooking = async () => {
         setLoadingAccept(true);
         try {
-            const transaction = await writeContract('approveBooking', [booking.id, { from: address }]);
+            const transaction = await writeContract('SmartStayBooking', 'approveBooking', [booking.id, { from: address }]);
             await transaction.wait();
 
             setAlert({ message: 'You have successfully accepted the booking', severity: 'success' });
@@ -43,7 +43,7 @@ export default function Created({ booking, setBooking, type }: ICardBookingStatu
     const handleRejectBooking = async () => {
         setLoadingRefuse(true);
         try {
-            const transaction = await writeContract('rejectBooking', [booking.id, { from: address }]);
+            const transaction = await writeContract('SmartStayBooking', 'rejectBooking', [booking.id, { from: address }]);
             await transaction.wait();
 
             setAlert({ message: 'You have successfully rejected the booking', severity: 'success' });

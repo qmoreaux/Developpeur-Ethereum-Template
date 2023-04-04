@@ -21,7 +21,10 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
     const handleRetrieveDeposit = async () => {
         setLoadingRetrieve(true);
         try {
-            const transaction = await writeContract('retrieveDeposit', [booking.id.toNumber(), { from: address }]);
+            const transaction = await writeContract('SmartStayBooking', 'retrieveDeposit', [
+                booking.id.toNumber(),
+                { from: address }
+            ]);
             await transaction.wait();
 
             setAlert({ message: 'You have successfully retrieved your deposit', severity: 'success' });
@@ -45,7 +48,10 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
     const handleRetrieveAmount = async () => {
         setLoadingRetrieve(true);
         try {
-            const transaction = await writeContract('retrieveAmount', [booking.id.toNumber(), { from: address }]);
+            const transaction = await writeContract('SmartStayBooking', 'retrieveAmount', [
+                booking.id.toNumber(),
+                { from: address }
+            ]);
             await transaction.wait();
 
             setAlert({ message: 'You have successfully retrieved your amount', severity: 'success' });

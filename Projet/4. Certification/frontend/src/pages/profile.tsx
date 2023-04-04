@@ -38,40 +38,35 @@ export default function Profile() {
     useEffect(() => {
         if (addressToUse) {
             getRatings();
-            getNFTCollection();
-            getSBTCollection();
+            // getNFTCollection();
+            // getSBTCollection();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chain, address, addressToUse]);
 
     const getRatings = async () => {
-        const ratings = await readContract('getRating', [addressToUse, { from: address }]);
-        ratings.map((rating: IRating) => {
-            if (rating.owner) {
-                setRatingsAsOwner([...ratingsAsOwner, rating]);
-            } else {
-                setRatingsAsRecipient([...ratingsAsRecipient, rating]);
-            }
-        });
+        const ratings = await readContract('SmartStayRating', 'getRating', [addressToUse, { from: address }]);
+        console.log(ratings);
+        setRatingsAsOwner(ratings.filter((rating: IRating) => rating.owner));
+        setRatingsAsRecipient(ratings.filter((rating: IRating) => !rating.owner));
     };
 
     const getAverageRatingAsOwner = () => {
-        const totalNote = ratingsAsOwner.reduce((acc, current) => {
-            console.log(acc);
-            console.log(current);
-            return 1;
-        }, 0);
-        return 1;
+        const totalNote = ratingsAsOwner.reduce((acc: number, current: IRating) => acc + current.note, 0);
+        return Math.round((totalNote / ratingsAsOwner.length) * 100) / 100;
     };
 
     const getAverageRatingAsRecipient = () => {
         const totalNote = ratingsAsRecipient.reduce((acc: number, current: IRating) => acc + current.note, 0);
-        return Math.round(totalNote * 100) / 100 / ratingsAsRecipient.length;
+        return Math.round((totalNote / ratingsAsRecipient.length) * 100) / 100;
     };
 
     const getNFTCollection = async () => {
         try {
-            const NFTtransaction = await readContract('getNFTCollection', [addressToUse, { from: address }]);
+            const NFTtransaction = await readContract('SmartStayBooking', 'getNFTCollection', [
+                addressToUse,
+                { from: address }
+            ]);
             setNFTCollection(
                 await Promise.all<INFTItem[]>(
                     NFTtransaction.map(async (NFTItem: INFTItem) => {
@@ -95,7 +90,10 @@ export default function Profile() {
 
     const getSBTCollection = async () => {
         try {
-            const SBTtransaction = await readContract('getSBTCollection', [addressToUse, { from: address }]);
+            const SBTtransaction = await readContract('SmartStayBooking', 'getSBTCollection', [
+                addressToUse,
+                { from: address }
+            ]);
             setSBTCollection(
                 await Promise.all<INFTItem[]>(
                     SBTtransaction.map(async (NFTItem: INFTItem) => {
@@ -143,21 +141,57 @@ export default function Profile() {
                             <Grid container>
                                 <Grid item flexGrow={1} textAlign={'center'}>
                                     <Typography variant="h6">Ratings as owner</Typography>
-                                    <Typography>Average rating as owner {getAverageRatingAsOwner()}</Typography>
+                                    <Typography>
+                                        Average rating as owner :
+                                        <b>
+                                            {getAverageRatingAsOwner()} ({ratingsAsOwner.length} ratings)
+                                        </b>
+                                    </Typography>
                                     {ratingsAsOwner.map((rating) => (
                                         <Card key={rating.id.toNumber()}>
-                                            <CardContent></CardContent>
+                                            <CardContent>
+                                                <Typography>
+                                                    Rating #<b>{rating.id.toNumber()}</b>
+                                                </Typography>
+                                                <Typography>
+                                                    From : <b>{rating.from}</b>
+                                                </Typography>
+                                                <Typography>
+                                                    Note : <b>{rating.note}</b>
+                                                </Typography>
+                                                <Typography>
+                                                    Comment : <b>{rating.comment}</b>
+                                                </Typography>
+                                            </CardContent>
                                         </Card>
                                     ))}
                                 </Grid>
                                 <Grid item flexGrow={1} textAlign={'center'}>
                                     <Typography variant="h6">Ratings as recipient</Typography>
                                     <Typography>
-                                        Average rating as recipient : <b>{getAverageRatingAsRecipient()}</b>
+                                        Average rating as recipient :
+                                        <b>
+                                            {getAverageRatingAsRecipient()} ({ratingsAsRecipient.length} ratings)
+                                        </b>
                                     </Typography>
 
                                     {ratingsAsRecipient.map((rating) => (
-                                        <>{rating.note}</>
+                                        <Card key={rating.id.toNumber()}>
+                                            <CardContent>
+                                                <Typography>
+                                                    Rating #<b>{rating.id.toNumber()}</b>
+                                                </Typography>
+                                                <Typography>
+                                                    From : <b>{rating.from}</b>
+                                                </Typography>
+                                                <Typography>
+                                                    Note : <b>{rating.note}</b>
+                                                </Typography>
+                                                <Typography>
+                                                    Comment : <b>{rating.comment}</b>
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
                                     ))}
                                 </Grid>
                             </Grid>
