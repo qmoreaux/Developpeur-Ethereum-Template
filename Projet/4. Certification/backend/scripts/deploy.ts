@@ -1,13 +1,20 @@
 import hre, { ethers } from 'hardhat';
 import * as fs from 'fs';
-import { SmartStay, SmartStay__factory } from '../typechain-types';
+import { SmartStay, SmartStay__factory, Utils, Utils__factory } from '../typechain-types';
 
 async function main() {
     const filename: string = '../frontend/contracts/SmartStay.json';
 
-    const SmartStay: SmartStay__factory = await ethers.getContractFactory('SmartStay');
-    const smartStay: SmartStay = await SmartStay.deploy();
+    const Utils: Utils__factory = await ethers.getContractFactory('Utils');
+    const utils: Utils = await Utils.deploy();
+    await utils.deployed();
 
+    const SmartStay: SmartStay__factory = await ethers.getContractFactory('SmartStay', {
+        libraries: {
+            Utils: utils.address
+        }
+    });
+    const smartStay: SmartStay = await SmartStay.deploy();
     await smartStay.deployed();
 
     const artifacts = await hre.artifacts.readArtifact('SmartStay');

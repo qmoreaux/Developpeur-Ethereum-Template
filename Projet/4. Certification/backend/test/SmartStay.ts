@@ -1330,18 +1330,4 @@ describe('SmartStay contract test', () => {
         });
     });
 
-    describe('Utils', async () => {
-        beforeEach(async () => {
-            const { _smartStay, _owner } = await loadFixture(deploySmartStayFixture);
-            smartStay = _smartStay;
-            owner = _owner;
-        });
-
-        it('Should get tags', async () => {
-            const _tags = ['Maison', 'Appartement', 'Piscine', 'Montagne', 'Bord de mer'];
-
-            const tags = await smartStay.getTags();
-            expect(tags).to.have.same.members(_tags);
-        });
-    });
 });

@@ -7,6 +7,7 @@ import "./SmartStayNFTCollection.sol";
 import "./SmartStaySBTCollection.sol";
 
 import "./libraries/Tokens.sol";
+import "./libraries/Utils.sol";
 
 /** 
  * @title Voting
@@ -26,7 +27,6 @@ contract SmartStay {
     Counters.Counter private indexBooking;
 
 
-    string[] tags = ['Maison', 'Appartement', 'Piscine', 'Montagne', 'Bord de mer'];
 
     mapping(address => Renting[]) userRentings;
     Renting[] rentings;
@@ -34,6 +34,8 @@ contract SmartStay {
     Booking[] bookings;
     mapping(address => uint[]) bookingRecipient; // mapping to array of booking id (as recipient)
     mapping(address => uint[]) bookingOwner; // mapping to array of booking id (as owner)
+
+    mapping(address => Rating[]) ratings;
 
     // Events 
 
@@ -43,6 +45,8 @@ contract SmartStay {
 
     event BookingCreated(Booking booking);
     event BookingUpdated(Booking booking);
+
+    event RatingCreated(Rating rating);
 
     // Modifiers
 
@@ -92,6 +96,12 @@ contract SmartStay {
 
     // Struct, Arrays, Enums
 
+    struct Rating {
+        uint8 note;
+        bool owner;
+        string comment;
+    }
+
     struct Renting {
         uint256 id;
         uint128 unitPrice;
@@ -119,6 +129,9 @@ contract SmartStay {
         bool validatedOwner;
         bool validatedRecipient;
         bool NFTRedeemed;
+        bool ratedOwner;
+        bool ratedRecipient;
+        address recipient;
         BookingStatus status;
     }
 
@@ -165,8 +178,8 @@ contract SmartStay {
             if (rentings[i].id != 0) {
                 if (_maxUnitPrice == 0 || rentings[i].unitPrice <= _maxUnitPrice) {
                     if (_maxPersonCount == 0 || rentings[i].personCount >= _maxPersonCount) {
-                        if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
-                            if (_tags.length == 0 || containTags(rentings[i], _tags)) {
+                        if (bytes(_location).length == 0 || Utils.compareString(rentings[i].location,_location)) {
+                            if (_tags.length == 0 || Utils.containTags(rentings[i].tags, _tags)) {
                                 _count++;
                             }
                         }
@@ -181,8 +194,8 @@ contract SmartStay {
             if (rentings[i].id != 0) {
                 if (_maxUnitPrice == 0 || rentings[i].unitPrice <= _maxUnitPrice) {
                     if (_maxPersonCount == 0 || rentings[i].personCount >= _maxPersonCount) {
-                        if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
-                            if (_tags.length == 0 || containTags(rentings[i], _tags)) {
+                        if (bytes(_location).length == 0 || Utils.compareString(rentings[i].location,_location)) {
+                            if (_tags.length == 0 || Utils.containTags(rentings[i].tags, _tags)) {
                                 _rentings[_index] = rentings[i];
                                 _index++;
                             }
@@ -313,8 +326,8 @@ contract SmartStay {
      */
     function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
         // TODO DO NOT FORGET TO UNCOMMENT
-        require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
-        require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
+        // require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
+        // require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
         require (rentings[_rentingID].personCount >= _personCount, 'SmartStay : Too many persons for this renting');
 
         Booking memory _booking;
@@ -473,29 +486,69 @@ contract SmartStay {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
-    function cancelBooking(uint256 _bookingID) external isBookingRecipient(_bookingID) {
-        require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
-        require(block.timestamp < bookings[_bookingID].timestampStart, 'SmartStay : Can not cancel booking already started');
+    // function cancelBooking(uint256 _bookingID) external isBookingRecipient(_bookingID) {
+    //     require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
+    //     require(block.timestamp < bookings[_bookingID].timestampStart, 'SmartStay : Can not cancel booking already started');
 
-        uint256 amountToSend = bookings[_bookingID].amountLocked + bookings[_bookingID].depositLocked;
-        bookings[_bookingID].amountLocked = 0;
-        bookings[_bookingID].depositLocked = 0;
+    //     uint256 amountToSend = bookings[_bookingID].amountLocked + bookings[_bookingID].depositLocked;
+    //     bookings[_bookingID].amountLocked = 0;
+    //     bookings[_bookingID].depositLocked = 0;
 
-        (bool success, ) = msg.sender.call{value: amountToSend}("");
-        require(success, 'SmartStay: Amount retrieve failed');
+    //     (bool success, ) = msg.sender.call{value: amountToSend}("");
+    //     require(success, 'SmartStay: Amount retrieve failed');
 
-        if (bookings[_bookingID].NFTRecipientID != 0) {
-            NFTCollection.burn(bookings[_bookingID].NFTRecipientID);
-            bookings[_bookingID].NFTRecipientID = 0;
-        }
-        SBTCollection.burn(bookings[_bookingID].SBTRecipientID);
-        SBTCollection.burn(bookings[_bookingID].SBTOwnerID);
-        bookings[_bookingID].SBTRecipientID = 0;
-        bookings[_bookingID].SBTOwnerID = 0;
+    //     if (bookings[_bookingID].NFTRecipientID != 0) {
+    //         NFTCollection.burn(bookings[_bookingID].NFTRecipientID);
+    //         bookings[_bookingID].NFTRecipientID = 0;
+    //     }
+    //     SBTCollection.burn(bookings[_bookingID].SBTRecipientID);
+    //     SBTCollection.burn(bookings[_bookingID].SBTOwnerID);
+    //     bookings[_bookingID].SBTRecipientID = 0;
+    //     bookings[_bookingID].SBTOwnerID = 0;
 
-        bookings[_bookingID].status = BookingStatus.CANCELLED;
+    //     bookings[_bookingID].status = BookingStatus.CANCELLED;
 
+    //     emit BookingUpdated(bookings[_bookingID]);
+    // }
+
+    // Rating
+
+    function rateOwner(uint256 _bookingID, uint8 _note, string memory _comment) external isBookingRecipient(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
+        require(!bookings[_bookingID].ratedOwner, 'SmartStay: Already rated owner for this booking');
+
+        Rating memory _rating;
+        _rating.note = _note;
+        _rating.owner = false;
+        _rating.comment = _comment;
+
+        ratings[rentings[bookings[_bookingID].rentingID].owner].push(_rating);
+
+        bookings[_bookingID].ratedOwner = true;
+
+        emit RatingCreated(_rating);
         emit BookingUpdated(bookings[_bookingID]);
+    }
+
+    function rateRecipient(uint256 _bookingID, uint8 _note, string memory _comment) external isBookingOwner(_bookingID) {
+        require(bookings[_bookingID].status == BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
+        require(!bookings[_bookingID].ratedRecipient, 'SmartStay: Already rated recipient for this booking');
+
+        Rating memory _rating;
+        _rating.note = _note;
+        _rating.owner = true;
+        _rating.comment = _comment;
+
+        ratings[bookings[_bookingID].recipient].push(_rating);
+
+        bookings[_bookingID].ratedRecipient = true;
+
+        emit RatingCreated(_rating);
+        emit BookingUpdated(bookings[_bookingID]);
+    }
+
+    function getRating(address _address) external view returns (Rating[] memory) {
+        return ratings[_address];
     }
 
     // NFT & SBT
@@ -517,44 +570,4 @@ contract SmartStay {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
-    // Utils
-
-    /**
-     * @dev Returns all possible tags for a renting
-     * @return All possible tags for a renting
-     */
-    function getTags() external view returns (string[] memory) {
-        return tags;
-    }
-
-    /**
-     * @dev Check if the renting contains tags
-     * @param _renting Renting to iterate
-     * @param _tags Tags to check
-     * @return All rentings that contains all the tags
-     */
-    function containTags(Renting memory _renting, string[] memory _tags) private pure returns (bool) {
-        for (uint i; i < _tags.length; i++) {
-            bool tagFound;
-            for (uint j; j < _renting.tags.length; j++) {
-                if (compareString(_renting.tags[j], _tags[i])) {
-                    tagFound = true;
-                }
-            }
-            if (!tagFound) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * @dev Check if two strings are equal
-     * @param a First string to compare
-     * @param b Second string to compare
-     * @return True of both string are equal, false otherwise
-     */
-    function compareString(string memory a, string memory b) private pure returns (bool) {
-        return keccak256(bytes(a)) == keccak256(bytes(b));
-    }
 }
