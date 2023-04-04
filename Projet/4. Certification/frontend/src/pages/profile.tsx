@@ -38,14 +38,14 @@ export default function Profile() {
     useEffect(() => {
         if (addressToUse) {
             getRatings();
-            // getNFTCollection();
-            // getSBTCollection();
+            getNFTCollection();
+            getSBTCollection();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chain, address, addressToUse]);
 
     const getRatings = async () => {
-        const ratings = await readContract('SmartStayRating', 'getRating', [addressToUse, { from: address }]);
+        const ratings = await readContract('SmartStayBooking', 'getRating', [addressToUse, { from: address }]);
         console.log(ratings);
         setRatingsAsOwner(ratings.filter((rating: IRating) => rating.owner));
         setRatingsAsRecipient(ratings.filter((rating: IRating) => !rating.owner));
@@ -136,20 +136,28 @@ export default function Profile() {
                         {ownProfile ? 'My profile' : `Profile of ${addressToUse}`}
                     </Typography>
                     <Container>
-                        <Typography variant="h6">Ratings</Typography>
+                        <Typography variant="h5">Ratings</Typography>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             <Grid container>
                                 <Grid item flexGrow={1} textAlign={'center'}>
-                                    <Typography variant="h6">Ratings as owner</Typography>
-                                    <Typography>
-                                        Average rating as owner :
+                                    <Typography variant="h6">Owner</Typography>
+                                    <Typography sx={{ marginBottom: '1rem' }}>
+                                        Average rating as owner :{' '}
                                         <b>
                                             {getAverageRatingAsOwner()} ({ratingsAsOwner.length} ratings)
                                         </b>
                                     </Typography>
                                     {ratingsAsOwner.map((rating) => (
-                                        <Card key={rating.id.toNumber()}>
-                                            <CardContent>
+                                        <Card
+                                            key={rating.id.toNumber()}
+                                            sx={{
+                                                backgroundColor: 'whitesmoke',
+                                                width: '500px',
+                                                boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                                marginBottom: '2rem'
+                                            }}
+                                        >
+                                            <CardContent sx={{ textAlign: 'left' }}>
                                                 <Typography>
                                                     Rating #<b>{rating.id.toNumber()}</b>
                                                 </Typography>
@@ -167,17 +175,25 @@ export default function Profile() {
                                     ))}
                                 </Grid>
                                 <Grid item flexGrow={1} textAlign={'center'}>
-                                    <Typography variant="h6">Ratings as recipient</Typography>
-                                    <Typography>
-                                        Average rating as recipient :
+                                    <Typography variant="h6">Recipient</Typography>
+                                    <Typography sx={{ marginBottom: '1rem' }}>
+                                        Average rating as recipient :{' '}
                                         <b>
                                             {getAverageRatingAsRecipient()} ({ratingsAsRecipient.length} ratings)
                                         </b>
                                     </Typography>
 
                                     {ratingsAsRecipient.map((rating) => (
-                                        <Card key={rating.id.toNumber()}>
-                                            <CardContent>
+                                        <Card
+                                            key={rating.id.toNumber()}
+                                            sx={{
+                                                backgroundColor: 'whitesmoke',
+                                                width: '500px',
+                                                boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                                marginBottom: '2rem'
+                                            }}
+                                        >
+                                            <CardContent sx={{ textAlign: 'left' }}>
                                                 <Typography>
                                                     Rating #<b>{rating.id.toNumber()}</b>
                                                 </Typography>

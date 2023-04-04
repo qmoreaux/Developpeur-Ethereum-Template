@@ -25,15 +25,21 @@ contract SmartStayBooking {
     // State Variables
 
     Counters.Counter private indexBooking;
+    Counters.Counter private indexRating;
+
 
     Booking[] bookings;
     mapping(address => uint[]) bookingRecipient; // mapping to array of booking id (as recipient)
     mapping(address => uint[]) bookingOwner; // mapping to array of booking id (as owner)
 
+    mapping(address => Rating[]) ratings;
+
     // Events 
 
     event BookingCreated(Booking booking);
     event BookingUpdated(Booking booking);
+
+    event RatingCreated(Rating rating);
 
     // Modifiers
 
@@ -72,7 +78,15 @@ contract SmartStayBooking {
     }
 
 
-    // Struct, Arrays, Enums
+    // Struct, Enums
+
+    struct Rating {
+        uint256 id;
+        address from;
+        uint8 note;
+        bool owner;
+        string comment;
+    }
 
     struct Booking {
         uint256 id;
@@ -187,7 +201,7 @@ contract SmartStayBooking {
      * @param _bookingID Id of the booking to get the renting from
      * @return Renting matching the _bookingID passed in parameters
      */
-    function getRentingFromBookingID(uint _bookingID) external view returns (SmartStayRenting.Renting memory) {
+    function getRentingFromBookingID(uint _bookingID) public view returns (SmartStayRenting.Renting memory) {
         return smartStayRenting.getRenting(bookings[_bookingID].rentingID);
     }
 
@@ -319,6 +333,72 @@ contract SmartStayBooking {
         bookings[_bookingID].SBTOwnerID = 0;
 
         bookings[_bookingID].status = BookingStatus.CANCELLED;
+
+        emit BookingUpdated(bookings[_bookingID]);
+    }
+
+    // Rating
+
+    function rateOwner(uint256 _bookingID, uint8 _note, string memory _comment) external isBookingRecipient(_bookingID)  {
+        require(bookings[_bookingID].status == SmartStayBooking.BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
+        require(!bookings[_bookingID].ratedOwner, 'SmartStay: Already rated owner for this booking');
+
+        Rating memory _rating;
+        _rating.id = indexRating.current();
+        _rating.from = msg.sender;
+        _rating.note = _note;
+        _rating.owner = true;
+        _rating.comment = _comment;
+        ratings[getRentingFromBookingID(_bookingID).owner].push(_rating); 
+
+        indexRating.increment();
+
+        bookings[_bookingID].ratedOwner = true;
+
+        emit RatingCreated(_rating);
+        emit BookingUpdated(bookings[_bookingID]);
+    }
+
+    function rateRecipient(uint256 _bookingID, uint8 _note, string memory _comment) external isBookingOwner(_bookingID) {
+        require(bookings[_bookingID].status == SmartStayBooking.BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
+        require(!bookings[_bookingID].ratedRecipient, 'SmartStay: Already rated recipient for this booking');
+
+        Rating memory _rating;
+        _rating.id = indexRating.current();
+        _rating.from = msg.sender;
+        _rating.note = _note;
+        _rating.owner = false;
+        _rating.comment = _comment;
+        ratings[bookings[_bookingID].recipient].push(_rating);
+
+        indexRating.increment();
+
+        bookings[_bookingID].ratedRecipient = true;
+
+        emit RatingCreated(_rating);
+        emit BookingUpdated(bookings[_bookingID]);
+    }
+
+    function getRating(address _address) external view returns (Rating[] memory) {
+        return ratings[_address];
+    }
+    
+
+    // NFT & SBT
+
+    function getNFTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
+        return NFTCollection.getUserNFT(_address);
+    }
+
+    function getSBTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
+        return SBTCollection.getUserSBT(_address);
+    }
+
+    function redeemNFT(uint256 _bookingID, string calldata _metadataURI) external isBookingRecipient(_bookingID) {
+        require (!bookings[_bookingID].NFTRedeemed, 'SmartStay: NFT already redeemed');
+
+        bookings[_bookingID].NFTRecipientID = NFTCollection.mint(msg.sender, _metadataURI);
+        bookings[_bookingID].NFTRedeemed = true;
 
         emit BookingUpdated(bookings[_bookingID]);
     }
