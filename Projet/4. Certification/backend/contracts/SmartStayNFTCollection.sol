@@ -15,11 +15,11 @@ contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private tokenID;
 
-    mapping (address => Tokens.SmartStay[]) tokenOwner;
+    mapping (address => Tokens.SmartStayNFT[]) tokenOwner;
  
     constructor() ERC721 ("SmartStayNFTCollection", "SSNFT") {}
 
-    function getUserNFT(address _address) public view returns  (Tokens.SmartStay[] memory) {
+    function getUserNFT(address _address) public view returns  (Tokens.SmartStayNFT[] memory) {
         return tokenOwner[_address];
     }
  
@@ -30,7 +30,7 @@ contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
         _setTokenURI(newTokenID, _tokenURI);
 
 
-        Tokens.SmartStay memory _token;
+        Tokens.SmartStayNFT memory _token;
         _token.tokenID = newTokenID;
         _token.tokenURI = _tokenURI;
         tokenOwner[to].push(_token);

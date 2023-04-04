@@ -38,8 +38,8 @@ export default function Profile() {
     useEffect(() => {
         if (addressToUse) {
             getRatings();
-            getNFTCollection();
-            getSBTCollection();
+            getUserNFT();
+            getUserSBT();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chain, address, addressToUse]);
@@ -61,9 +61,9 @@ export default function Profile() {
         return Math.round((totalNote / ratingsAsRecipient.length) * 100) / 100;
     };
 
-    const getNFTCollection = async () => {
+    const getUserNFT = async () => {
         try {
-            const NFTtransaction = await readContract('SmartStayBooking', 'getNFTCollection', [
+            const NFTtransaction = await readContract('SmartStayBooking', 'getUserNFT', [
                 addressToUse,
                 { from: address }
             ]);
@@ -88,9 +88,9 @@ export default function Profile() {
         }
     };
 
-    const getSBTCollection = async () => {
+    const getUserSBT = async () => {
         try {
-            const SBTtransaction = await readContract('SmartStayBooking', 'getSBTCollection', [
+            const SBTtransaction = await readContract('SmartStayBooking', 'getUserSBT', [
                 addressToUse,
                 { from: address }
             ]);

@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./SmartStayNFTCollection.sol";
 import "./SmartStaySBTCollection.sol";
+import "./SmartStayDIDCollection.sol";
 
 import "./SmartStayRenting.sol";
 
@@ -17,6 +18,8 @@ contract SmartStayBooking {
 
     SmartStayNFTCollection NFTCollection;
     SmartStaySBTCollection SBTCollection;
+    SmartStayDIDCollection DIDCollection;
+
 
     SmartStayRenting smartStayRenting;
 
@@ -125,12 +128,15 @@ contract SmartStayBooking {
 
         NFTCollection = new SmartStayNFTCollection();
         SBTCollection = new SmartStaySBTCollection();
+        DIDCollection = new SmartStayDIDCollection();
 
         smartStayRenting = SmartStayRenting(_address);
 
         Booking memory _booking;
         bookings.push(_booking);
         indexBooking.increment();
+
+        indexRating.increment();
     }
 
     /**
@@ -142,8 +148,8 @@ contract SmartStayBooking {
      */
     function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
         // TODO DO NOT FORGET TO UNCOMMENT
-        // require(msg.sender != rentings[_rentingID].owner, 'SmartStay : Can not create booking for your own rentings');
-        // require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
+        require(msg.sender != smartStayRenting.getRenting(_rentingID).owner, 'SmartStay : Can not create booking for your own rentings');
+        require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
         require (smartStayRenting.getRenting(_rentingID).personCount >= _personCount, 'SmartStay : Too many persons for this renting');
 
         Booking memory _booking;
@@ -240,8 +246,8 @@ contract SmartStayBooking {
         bookings[_bookingID].amountLocked = uint128(smartStayRenting.getRenting(bookings[_bookingID].rentingID).unitPrice * bookings[_bookingID].duration);
         bookings[_bookingID].depositLocked = uint128(smartStayRenting.getRenting(bookings[_bookingID].rentingID).deposit);
 
-        bookings[_bookingID].SBTOwnerID = SBTCollection.mint(smartStayRenting.getRenting(bookings[_bookingID].rentingID).owner, _ownerMetadataURI);
-        bookings[_bookingID].SBTRecipientID = SBTCollection.mint(msg.sender, _recipientMetadataURI);
+        bookings[_bookingID].SBTOwnerID = SBTCollection.mint(smartStayRenting.getRenting(bookings[_bookingID].rentingID).owner, _ownerMetadataURI, bookings[_bookingID].duration, bookings[_bookingID].amountLocked, _bookingID);
+        bookings[_bookingID].SBTRecipientID = SBTCollection.mint(msg.sender, _recipientMetadataURI, bookings[_bookingID].duration, bookings[_bookingID].amountLocked, _bookingID);
 
         bookings[_bookingID].status = BookingStatus.ONGOING;
 
@@ -340,7 +346,7 @@ contract SmartStayBooking {
     // Rating
 
     function rateOwner(uint256 _bookingID, uint8 _note, string memory _comment) external isBookingRecipient(_bookingID)  {
-        require(bookings[_bookingID].status == SmartStayBooking.BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
+        require(bookings[_bookingID].status == BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
         require(!bookings[_bookingID].ratedOwner, 'SmartStay: Already rated owner for this booking');
 
         Rating memory _rating;
@@ -360,7 +366,7 @@ contract SmartStayBooking {
     }
 
     function rateRecipient(uint256 _bookingID, uint8 _note, string memory _comment) external isBookingOwner(_bookingID) {
-        require(bookings[_bookingID].status == SmartStayBooking.BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
+        require(bookings[_bookingID].status == BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
         require(!bookings[_bookingID].ratedRecipient, 'SmartStay: Already rated recipient for this booking');
 
         Rating memory _rating;
@@ -383,15 +389,22 @@ contract SmartStayBooking {
         return ratings[_address];
     }
     
+    // NFT & SBT && DID
 
-    // NFT & SBT
-
-    function getNFTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
+    function getUserNFT(address _address) public view returns (Tokens.SmartStayNFT[] memory) {
         return NFTCollection.getUserNFT(_address);
     }
 
-    function getSBTCollection(address _address) public view returns (Tokens.SmartStay[] memory) {
+    function getUserSBT(address _address) public view returns (Tokens.SmartStaySBT[] memory) {
         return SBTCollection.getUserSBT(_address);
+    }
+
+    function getUserDID(address _address) public view returns (Tokens.SmartStayDID memory) {
+        return DIDCollection.getUserDID(_address);
+    }
+
+    function createDID(address to, string memory _tokenURI, string memory _firstname, string memory _lastname, string memory _email, uint256 _registeringNumber) external {
+        DIDCollection.mint(to, _tokenURI, _firstname, _lastname, _email, _registeringNumber);
     }
 
     function redeemNFT(uint256 _bookingID, string calldata _metadataURI) external isBookingRecipient(_bookingID) {
