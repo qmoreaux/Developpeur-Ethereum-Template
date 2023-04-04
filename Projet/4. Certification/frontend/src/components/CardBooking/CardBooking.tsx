@@ -134,6 +134,7 @@ export default function CardBooking({ _booking, type }: ICardBooking) {
                         ) : (
                             ''
                         )}
+                        
                     </CardContent>
                 </Card>
             ) : (

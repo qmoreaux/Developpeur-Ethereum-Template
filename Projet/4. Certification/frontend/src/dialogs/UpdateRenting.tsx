@@ -41,22 +41,11 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
     const [loadingImage, setLoadingImage] = useState(false);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
 
-    const [availableTags, setAvailableTags] = useState([]);
+    const [availableTags, setAvailableTags] = useState<Array<string>>([]);
 
     useEffect(() => {
-        (async () => {
-            try {
-                setAvailableTags(await readContract('getTags', [{ from: address }]));
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                console.error(e);
-            }
-        })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chain, address]);
+        setAvailableTags(['Maison', 'Appartement', 'Piscine', 'Montagne', 'Bord de mer']);
+    }, []);
 
     useEffect(() => {
         if (Object.keys(renting).length) {
@@ -142,7 +131,7 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
     const updateRenting = async () => {
         setLoadingUpdate(true);
         try {
-            const transaction = await writeContract('updateRenting', [
+            const transaction = await writeContract('SmartStayRenting', 'updateRenting', [
                 renting.id.toNumber(),
                 {
                     id: 0,
@@ -325,5 +314,5 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
 UpdateRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    renting: PropTypes.object.isRequired
+    renting: PropTypes.array.isRequired
 };

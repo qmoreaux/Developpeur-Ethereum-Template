@@ -32,7 +32,7 @@ export default function Renter() {
     useEffect(() => {
         (async () => {
             try {
-                setUserRentings(await readContract('getUserRenting', [{ from: address }]));
+                setUserRentings(await readContract('SmartStayRenting', 'getUserRenting', [{ from: address }]));
             } catch (e) {
                 setAlert({
                     message: 'An error has occurred. Check the developer console for more information',

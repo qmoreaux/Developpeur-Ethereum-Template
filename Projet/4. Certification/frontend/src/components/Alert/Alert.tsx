@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 
 import { useAlertContext } from '@/context';
+import { IAlert } from '@/interfaces/Alert';
 
 const AlertComponent = () => {
-    const { alert } = useAlertContext();
+    const { alert, setAlert } = useAlertContext();
 
     const [open, setOpen] = useState(false);
 
@@ -16,6 +17,7 @@ const AlertComponent = () => {
         if (reason === 'clickaway') {
             return;
         }
+        setAlert({} as IAlert);
         setOpen(false);
     };
 

@@ -3,14 +3,10 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
-import { ethers } from 'ethers';
 import { useNetwork, useSigner, useAccount } from 'wagmi';
 
 import { useAlertContext, useContractContext } from '@/context';
 
-import artifacts from '../../../../contracts/SmartStay.json';
-
-import INetworks from '../../../interfaces/Networks';
 import ICardBookingStatus from '@/interfaces/CardBookingStatus';
 
 export default function Created({ booking, setBooking, type }: ICardBookingStatus) {

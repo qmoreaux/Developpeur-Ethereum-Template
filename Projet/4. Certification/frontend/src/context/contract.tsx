@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 import artifacts from '../../contracts/SmartStay.json';
 
 import ILayout from '@/interfaces/Layout';
-import INetworks from '@/interfaces/Networks';
+import IArtifacts from '@/interfaces/Artifacts';
 
 import { IContractContextProps } from '@/interfaces/Contract';
 
@@ -22,25 +22,25 @@ export const ContractContextProvider = ({ children }: ILayout) => {
     const provider = useProvider();
     const { data: signer } = useSigner();
 
-    const _readContract = async (functionName: string, params: Array<any>) => {
+    const _readContract = async (contractName: string, functionName: string, params: Array<any>) => {
         let chainId = chain?.id || 1337;
 
         const contract = new ethers.Contract(
-            (artifacts.networks as INetworks)[chainId].address,
-            artifacts.abi,
+            (artifacts as IArtifacts)[contractName].networks[chainId].address,
+            (artifacts as IArtifacts)[contractName].abi,
             provider
         );
 
         return contract[functionName](...params);
     };
 
-    const _writeContract = async (functionName: string, params: Array<any>) => {
+    const _writeContract = async (contractName: string, functionName: string, params: Array<any>) => {
         let chainId = chain?.id || 1337;
 
         if (signer) {
             const contract = new ethers.Contract(
-                (artifacts.networks as INetworks)[chainId].address,
-                artifacts.abi,
+                (artifacts as IArtifacts)[contractName].networks[chainId].address,
+                (artifacts as IArtifacts)[contractName].abi,
                 signer
             );
 

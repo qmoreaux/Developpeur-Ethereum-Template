@@ -70,7 +70,7 @@ export default function Renting() {
     const searchRentings = useCallback(async () => {
         try {
             setRentings(
-                await readContract('searchRenting', [
+                await readContract('SmartStayRenting', 'searchRenting', [
                     ethers.utils.parseUnits(maxUnitPrice.toString(), 'ether'),
                     personCount,
                     location,
@@ -89,18 +89,7 @@ export default function Renting() {
     }, [chain, address, location, maxUnitPrice, personCount, tags]);
 
     useEffect(() => {
-        (async () => {
-            try {
-                setAvailableTags(await readContract('getTags', [{ from: address }]));
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                console.error(e);
-            }
-        })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        setAvailableTags(['Maison', 'Appartement', 'Piscine', 'Montagne', 'Bord de mer']);
     }, []);
 
     useEffect(() => {
@@ -241,6 +230,15 @@ export default function Renting() {
                                         <Typography>Location : {renting.location}</Typography>
                                         <Typography>Tags : {renting.tags.join(', ')}</Typography>
                                         <Typography>Description : {renting.description}</Typography>
+                                        <Typography>
+                                            <a
+                                                onClick={() => {
+                                                    router.push('/profile?addr=' + renting.owner);
+                                                }}
+                                            >
+                                                View owner profile
+                                            </a>
+                                        </Typography>
                                         <Box display="flex" justifyContent="space-between" mt="1rem">
                                             <Button
                                                 variant="contained"

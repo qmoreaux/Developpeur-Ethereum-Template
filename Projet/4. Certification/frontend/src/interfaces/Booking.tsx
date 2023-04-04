@@ -13,4 +13,6 @@ export default interface IBooking {
     validatedRecipient: boolean;
     NFTRedeemed: boolean;
     status: number;
+    ratedOwner: boolean;
+    ratedRecipient: boolean;
 }

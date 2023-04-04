@@ -25,7 +25,7 @@ export default function NewRentingDialog(props: IRentingDialog) {
     const { chain } = useNetwork();
 
     const { setAlert } = useAlertContext();
-    const { readContract, writeContract } = useContractContext();
+    const { writeContract } = useContractContext();
 
     const [unitPrice, setUnitPrice] = useState<string>('');
     const [deposit, setDeposit] = useState<string>('');
@@ -38,24 +38,13 @@ export default function NewRentingDialog(props: IRentingDialog) {
     const [loadingImage, setLoadingImage] = useState(false);
     const [loadingCreate, setLoadingCreate] = useState(false);
 
-    const [availableTags, setAvailableTags] = useState([]);
+    const [availableTags, setAvailableTags] = useState<Array<string>>([]);
 
     const { onClose, open } = props;
 
     useEffect(() => {
-        (async () => {
-            try {
-                setAvailableTags(await readContract('getTags', [{ from: address }]));
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                console.error(e);
-            }
-        })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chain, address]);
+        setAvailableTags(['Maison', 'Appartement', 'Piscine', 'Montagne', 'Bord de mer']);
+    }, []);
 
     const handleClose = (data: IRenting | boolean) => {
         setUnitPrice('');
@@ -126,7 +115,7 @@ export default function NewRentingDialog(props: IRentingDialog) {
     const createRenting = async () => {
         try {
             setLoadingCreate(true);
-            const transaction = await writeContract('createRenting', [
+            const transaction = await writeContract('SmartStayRenting', 'createRenting', [
                 {
                     id: 0,
                     owner: '0x0000000000000000000000000000000000000000',

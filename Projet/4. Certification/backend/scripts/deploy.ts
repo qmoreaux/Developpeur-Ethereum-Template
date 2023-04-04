@@ -1,51 +1,50 @@
 import hre, { ethers } from 'hardhat';
 import * as fs from 'fs';
-import { SmartStay, SmartStay__factory, Utils, Utils__factory } from '../typechain-types';
+// import { SmartStayRenting, SmartStayRenting__factory } from '../typechain-types';
+
+const filename: string = '../frontend/contracts/SmartStay.json';
+
+let fileContent: string;
+let fileContentJSON: any;
+if (fs.existsSync(filename)) {
+    fileContent = fs.readFileSync(filename, 'utf-8');
+} else {
+    fileContent = '{}';
+}
+fileContentJSON = JSON.parse(fileContent);
 
 async function main() {
-    const filename: string = '../frontend/contracts/SmartStay.json';
+    await deployRenting();
 
-    const Utils: Utils__factory = await ethers.getContractFactory('Utils');
-    const utils: Utils = await Utils.deploy();
-    await utils.deployed();
+    fs.writeFileSync(filename, JSON.stringify(fileContentJSON));
+}
 
-    const SmartStay: SmartStay__factory = await ethers.getContractFactory('SmartStay', {
-        libraries: {
-            Utils: utils.address
-        }
-    });
-    const smartStay: SmartStay = await SmartStay.deploy();
-    await smartStay.deployed();
+const deployRenting = async () => {
+    const SmartStayRenting = await ethers.getContractFactory('SmartStayRenting');
+    const smartStayRenting = await SmartStayRenting.deploy();
+    await smartStayRenting.deployed();
 
-    const artifacts = await hre.artifacts.readArtifact('SmartStay');
+    const artifacts = await hre.artifacts.readArtifact('SmartStayRenting');
 
-    let fileContent: string;
-    if (fs.existsSync(filename)) {
-        fileContent = fs.readFileSync(filename, 'utf-8');
-    } else {
-        fileContent = '{}';
+    if (!fileContentJSON.SmartStayRenting) {
+        fileContentJSON = { ...fileContentJSON, SmartStayRenting: {} };
     }
-    let fileContentJSON = JSON.parse(fileContent);
-    if (fileContentJSON.abi && JSON.stringify(fileContentJSON.abi) === JSON.stringify(artifacts.abi)) {
-        fileContentJSON.networks[smartStay.deployTransaction.chainId] = {
-            address: smartStay.address,
-            transactionHash: smartStay.deployTransaction.hash
-        };
-    } else {
-        fileContentJSON = {
+    if (
+        !fileContentJSON.SmartStayRenting.abi ||
+        JSON.stringify(fileContentJSON.SmartStayRenting.abi) !== JSON.stringify(artifacts.abi)
+    ) {
+        fileContentJSON.SmartStayRenting = {
             abi: artifacts.abi,
             networks: {}
         };
-        fileContentJSON.networks[smartStay.deployTransaction.chainId] = {
-            address: smartStay.address,
-            transactionHash: smartStay.deployTransaction.hash
-        };
     }
+    fileContentJSON.SmartStayRenting.networks[smartStayRenting.deployTransaction.chainId] = {
+        address: smartStayRenting.address,
+        transactionHash: smartStayRenting.deployTransaction.hash
+    };
 
-    fs.writeFileSync(filename, JSON.stringify(fileContentJSON));
-
-    console.log(`SmartStay deployed  at address ${smartStay.address}`);
-}
+    console.log(`SmartStayRenting deployed  at address ${smartStayRenting.address}`);
+};
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.

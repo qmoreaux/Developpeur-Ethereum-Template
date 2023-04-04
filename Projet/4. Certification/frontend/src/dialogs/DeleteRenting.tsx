@@ -34,7 +34,10 @@ export default function DeleteRentingDialog(props: IRentingDialog) {
     const deleteRenting = async () => {
         setLoadingDelete(true);
         try {
-            const transaction = await writeContract('deleteRenting', [renting.id.toNumber(), { from: address }]);
+            const transaction = await writeContract('SmartStayRenting', 'deleteRenting', [
+                renting.id.toNumber(),
+                { from: address }
+            ]);
             await transaction.wait();
             await unpinFileFromIPFS(renting.imageURL.slice(34));
 
@@ -73,5 +76,5 @@ export default function DeleteRentingDialog(props: IRentingDialog) {
 DeleteRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    renting: PropTypes.object.isRequired
+    renting: PropTypes.array.isRequired
 };
