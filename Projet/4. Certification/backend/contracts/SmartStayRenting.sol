@@ -14,9 +14,7 @@ contract SmartStayRenting {
 
     // State Variables
 
-    Counters.Counter private indexRenting;
-
-
+    Counters.Counter private index;
 
     mapping(address => Renting[]) userRentings;
     Renting[] rentings;
@@ -59,7 +57,7 @@ contract SmartStayRenting {
         // Create empty renting and booking to avoid issue with index 0
         Renting memory _renting;
         rentings.push(_renting);
-        indexRenting.increment();
+        index.increment();
 
     }
 
@@ -119,7 +117,7 @@ contract SmartStayRenting {
         require(userRentings[msg.sender].length < 5, 'SmartStay : Too many renting');
 
         Renting memory tempRenting;
-        tempRenting.id = indexRenting.current();
+        tempRenting.id = index.current();
         tempRenting.owner = msg.sender;
         tempRenting.unitPrice = _renting.unitPrice;
         tempRenting.deposit = _renting.deposit;
@@ -132,7 +130,7 @@ contract SmartStayRenting {
         rentings.push(tempRenting);
         userRentings[msg.sender].push(tempRenting);
 
-        indexRenting.increment();
+        index.increment();
 
         emit RentingCreated(tempRenting);
     }
@@ -197,9 +195,9 @@ contract SmartStayRenting {
     /**
      * @dev Get index in userRenting for an id
      * @param _id Id of a renting
-     * @return index Index of the renting in userRenting
+     * @return _index Index of the renting in userRenting
      */
-    function getUserRentingIndex(uint256 _id) private view returns (uint index) {
+    function getUserRentingIndex(uint256 _id) private view returns (uint _index) {
         for (uint i = 0; i < userRentings[msg.sender].length; i++) {
             if (userRentings[msg.sender][i].id == _id) {
                 return i;
