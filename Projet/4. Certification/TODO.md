@@ -5,7 +5,6 @@
 ## Normal
 
 * Update SBT
-* Readme
 * Rapport
 * Vidéo
 

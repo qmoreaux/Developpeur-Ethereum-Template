@@ -30,4 +30,23 @@ Manage the NFT collection created by SmartStayBooking
 
 Each contract has its own unit test file. They are located in `/test`
 
-The coverage can be found in `/coverage` or [here](coverage/index.html)
+The coverage according to `solidity-coverage` is the following :
+
+|File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+|-----------------------------|----------|----------|----------|----------|----------------|
+| contracts/                  |      100 |    98.21 |      100 |      100 |                |
+|  SmartStayBooking.sol       |      100 |    96.67 |      100 |      100 |                |
+|  SmartStayDIDCollection.sol |      100 |      100 |      100 |      100 |                |
+|  SmartStayNFTCollection.sol |      100 |      100 |      100 |      100 |                |
+|  SmartStayRenting.sol       |      100 |      100 |      100 |      100 |                |
+|  SmartStaySBTCollection.sol |      100 |      100 |      100 |      100 |                |
+| contracts/libraries/        |      100 |      100 |      100 |      100 |                |
+|  Tokens.sol                 |      100 |      100 |      100 |      100 |                |
+|**All files**                    |      **100** |    **98.21** |      **100** |      **100** |                |
+
+## Deployement
+
+The deployement script not only deploy SmartStayRenting and SmartStayBooking on the corresponding network, it also create a `SmartStay.json` file in the `frontend/` repository, that contains :
+
+* The ABI of the 2 contracts
+* The address of the contract on the network it was deployed to
