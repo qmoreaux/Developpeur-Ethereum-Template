@@ -12,6 +12,9 @@ import { useNetwork, useAccount } from 'wagmi';
 import { Container, Typography, Box, Card, Grid, CardContent, CardMedia } from '@mui/material';
 
 import INFTItem from '../interfaces/NFTItem';
+import ISBTItem from '../interfaces/SBTItem';
+import IDIDItem from '../interfaces/DIDItem';
+
 import IRating from '../interfaces/Rating';
 
 export default function Profile() {
@@ -27,6 +30,8 @@ export default function Profile() {
 
     const [NFTCollection, setNFTCollection] = useState<INFTItem[]>([]);
     const [SBTCollection, setSBTCollection] = useState<INFTItem[]>([]);
+    const [DIDItem, setDIDItem] = useState<IDIDItem>({} as IDIDItem);
+
     const [ratingsAsOwner, setRatingsAsOwner] = useState<IRating[]>([]);
     const [ratingsAsRecipient, setRatingsAsRecipient] = useState<IRating[]>([]);
 
@@ -38,6 +43,7 @@ export default function Profile() {
     useEffect(() => {
         if (addressToUse) {
             getRatings();
+            getUserDID();
             getUserNFT();
             getUserSBT();
         }
@@ -46,7 +52,6 @@ export default function Profile() {
 
     const getRatings = async () => {
         const ratings = await readContract('SmartStayBooking', 'getRating', [addressToUse, { from: address }]);
-        console.log(ratings);
         setRatingsAsOwner(ratings.filter((rating: IRating) => rating.owner));
         setRatingsAsRecipient(ratings.filter((rating: IRating) => !rating.owner));
     };
@@ -115,6 +120,18 @@ export default function Profile() {
         }
     };
 
+    const getUserDID = async () => {
+        try {
+            setDIDItem(await readContract('SmartStayBooking', 'getUserDID', [addressToUse, { from: address }]));
+        } catch (e) {
+            setAlert({
+                message: 'An error has occurred. Check the developer console for more information',
+                severity: 'error'
+            });
+            console.error(e);
+        }
+    };
+
     return (
         <>
             <Head>
@@ -135,124 +152,231 @@ export default function Profile() {
                     <Typography variant="h4" textAlign={'center'} m="2rem">
                         {ownProfile ? 'My profile' : `Profile of ${addressToUse}`}
                     </Typography>
-                    <Container>
-                        <Typography variant="h5">Ratings</Typography>
+                    <Container sx={{ margin: '2rem 0' }}>
+                        <Typography variant="h5" mb={'2rem'}>
+                            Ratings
+                        </Typography>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             <Grid container>
                                 <Grid item flexGrow={1} textAlign={'center'}>
-                                    <Typography variant="h6">Owner</Typography>
-                                    <Typography sx={{ marginBottom: '1rem' }}>
-                                        Average rating as owner :{' '}
-                                        <b>
-                                            {getAverageRatingAsOwner()} ({ratingsAsOwner.length} ratings)
-                                        </b>
-                                    </Typography>
-                                    {ratingsAsOwner.map((rating) => (
-                                        <Card
-                                            key={rating.id.toNumber()}
-                                            sx={{
-                                                backgroundColor: 'whitesmoke',
-                                                width: '500px',
-                                                boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
-                                                marginBottom: '2rem'
-                                            }}
-                                        >
-                                            <CardContent sx={{ textAlign: 'left' }}>
-                                                <Typography>
-                                                    Rating #<b>{rating.id.toNumber()}</b>
-                                                </Typography>
-                                                <Typography>
-                                                    From : <b>{rating.from}</b>
-                                                </Typography>
-                                                <Typography>
-                                                    Note : <b>{rating.note}</b>
-                                                </Typography>
-                                                <Typography>
-                                                    Comment : <b>{rating.comment}</b>
-                                                </Typography>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
+                                    <Typography variant="h6">As Owner</Typography>
+                                    {ratingsAsOwner.length ? (
+                                        <>
+                                            <Typography sx={{ marginBottom: '1rem' }}>
+                                                Average rating as owner :{' '}
+                                                <b>
+                                                    {getAverageRatingAsOwner()} ({ratingsAsOwner.length} ratings)
+                                                </b>
+                                            </Typography>
+                                            {ratingsAsOwner.map((rating) => (
+                                                <Card
+                                                    key={rating.id.toNumber()}
+                                                    sx={{
+                                                        backgroundColor: 'whitesmoke',
+                                                        width: '500px',
+                                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)'
+                                                    }}
+                                                >
+                                                    <CardContent sx={{ textAlign: 'left' }}>
+                                                        <Typography>
+                                                            Rating #<b>{rating.id.toNumber()}</b>
+                                                        </Typography>
+                                                        <Typography>
+                                                            From : <b>{rating.from}</b>
+                                                        </Typography>
+                                                        <Typography>
+                                                            Note : <b>{rating.note}</b>
+                                                        </Typography>
+                                                        <Typography>
+                                                            Comment : <b>{rating.comment}</b>
+                                                        </Typography>
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {ownProfile ? (
+                                                <Typography>You do not have any rating as owner yet</Typography>
+                                            ) : (
+                                                <Typography>This user do not have any rating as owner yet</Typography>
+                                            )}
+                                        </>
+                                    )}
                                 </Grid>
                                 <Grid item flexGrow={1} textAlign={'center'}>
-                                    <Typography variant="h6">Recipient</Typography>
-                                    <Typography sx={{ marginBottom: '1rem' }}>
-                                        Average rating as recipient :{' '}
-                                        <b>
-                                            {getAverageRatingAsRecipient()} ({ratingsAsRecipient.length} ratings)
-                                        </b>
-                                    </Typography>
+                                    <Typography variant="h6">As Recipient</Typography>
+                                    {ratingsAsOwner.length ? (
+                                        <>
+                                            <Typography sx={{ marginBottom: '1rem' }}>
+                                                Average rating as recipient :{' '}
+                                                <b>
+                                                    {getAverageRatingAsRecipient()} ({ratingsAsRecipient.length}{' '}
+                                                    ratings)
+                                                </b>
+                                            </Typography>
 
-                                    {ratingsAsRecipient.map((rating) => (
-                                        <Card
-                                            key={rating.id.toNumber()}
-                                            sx={{
-                                                backgroundColor: 'whitesmoke',
-                                                width: '500px',
-                                                boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
-                                                marginBottom: '2rem'
-                                            }}
-                                        >
-                                            <CardContent sx={{ textAlign: 'left' }}>
+                                            {ratingsAsRecipient.map((rating) => (
+                                                <Card
+                                                    key={rating.id.toNumber()}
+                                                    sx={{
+                                                        backgroundColor: 'whitesmoke',
+                                                        width: '500px',
+                                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)'
+                                                    }}
+                                                >
+                                                    <CardContent sx={{ textAlign: 'left' }}>
+                                                        <Typography>
+                                                            Rating #<b>{rating.id.toNumber()}</b>
+                                                        </Typography>
+                                                        <Typography>
+                                                            From : <b>{rating.from}</b>
+                                                        </Typography>
+                                                        <Typography>
+                                                            Note : <b>{rating.note}</b>
+                                                        </Typography>
+                                                        <Typography>
+                                                            Comment : <b>{rating.comment}</b>
+                                                        </Typography>
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {ownProfile ? (
+                                                <Typography>You do not have any rating as recipient yet</Typography>
+                                            ) : (
                                                 <Typography>
-                                                    Rating #<b>{rating.id.toNumber()}</b>
+                                                    This user do not have any rating as recipient yet
                                                 </Typography>
-                                                <Typography>
-                                                    From : <b>{rating.from}</b>
-                                                </Typography>
-                                                <Typography>
-                                                    Note : <b>{rating.note}</b>
-                                                </Typography>
-                                                <Typography>
-                                                    Comment : <b>{rating.comment}</b>
-                                                </Typography>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
+                                            )}
+                                        </>
+                                    )}
                                 </Grid>
                             </Grid>
                         </Box>
                     </Container>
-                    <Container>
-                        <Typography variant="h6">Decentralized Identity</Typography>
-                        <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap"></Box>
-                    </Container>
-                    <Container>
-                        <Typography variant="h6">SmartStay Collection</Typography>
+                    <Container sx={{ margin: '2rem 0' }}>
+                        <Typography variant="h6" mb={'2rem'}>
+                            Decentralized Identity
+                        </Typography>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
-                            {NFTCollection.map((NFTItem: INFTItem) => (
-                                <Card key={NFTItem.tokenID.toString()}>
-                                    <CardMedia
-                                        component="img"
-                                        height="200px"
-                                        image={NFTItem.image}
-                                        alt="Image rental"
-                                        sx={{ backgroundColor: 'white', objectFit: 'contain' }}
-                                    ></CardMedia>
+                            {DIDItem.tokenID && DIDItem.tokenID.toNumber() ? (
+                                <Card
+                                    sx={{
+                                        backgroundColor: 'whitesmoke',
+                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)'
+                                    }}
+                                >
                                     <CardContent>
-                                        <Typography>NFT ID : #{NFTItem.tokenID.toString()}</Typography>
+                                        <Typography>
+                                            Name :{' '}
+                                            <b>
+                                                {DIDItem.firstname} {DIDItem.lastname.toUpperCase()}
+                                            </b>
+                                        </Typography>
+                                        <Typography>
+                                            Email : <b>{DIDItem.email}</b>
+                                        </Typography>
+                                        {DIDItem.registeringNumber ? (
+                                            <Typography>
+                                                Registering number : <b>{DIDItem.registeringNumber.toNumber()}</b>
+                                            </Typography>
+                                        ) : (
+                                            ''
+                                        )}
                                     </CardContent>
                                 </Card>
-                            ))}
+                            ) : (
+                                <>
+                                    {ownProfile ? (
+                                        <Typography textAlign={'center'}>
+                                            You have not created your DID yet.
+                                            <br /> Please create a renting or a booking to create it.
+                                        </Typography>
+                                    ) : (
+                                        <Typography textAlign={'center'}>
+                                            This user did not create his DID yet
+                                        </Typography>
+                                    )}
+                                </>
+                            )}
                         </Box>
                     </Container>
-                    <Container>
-                        <Typography variant="h6">SmartStay receipts</Typography>
+                    <Container sx={{ margin: '2rem 0' }}>
+                        <Typography variant="h6" mb={'2rem'}>
+                            SmartStay Collection
+                        </Typography>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
-                            {SBTCollection.map((SBTItem: INFTItem) => (
-                                <Card key={SBTItem.tokenID.toString()}>
-                                    <CardMedia
-                                        component="img"
-                                        height="200px"
-                                        image={SBTItem.image}
-                                        alt="Image rental"
-                                        sx={{ backgroundColor: 'white', objectFit: 'contain' }}
-                                    ></CardMedia>
-                                    <CardContent>
-                                        <Typography>SBT ID : #{SBTItem.tokenID.toString()}</Typography>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                            {NFTCollection.length ? (
+                                <>
+                                    {NFTCollection.map((NFTItem: INFTItem) => (
+                                        <Card key={NFTItem.tokenID.toString()}>
+                                            <CardMedia
+                                                component="img"
+                                                height="200px"
+                                                image={NFTItem.image}
+                                                alt="Image rental"
+                                                sx={{ backgroundColor: 'white', objectFit: 'contain' }}
+                                            ></CardMedia>
+                                            <CardContent>
+                                                <Typography>NFT ID : #{NFTItem.tokenID.toString()}</Typography>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </>
+                            ) : (
+                                <>
+                                    {ownProfile ? (
+                                        <Typography textAlign={'center'}>
+                                            You do not have any NFT yet.
+                                            <br /> Redeem it after a booking to display it here.
+                                        </Typography>
+                                    ) : (
+                                        <Typography textAlign={'center'}>
+                                            This user did not redeem any NFT yet.
+                                        </Typography>
+                                    )}
+                                </>
+                            )}
+                        </Box>
+                    </Container>
+                    <Container sx={{ margin: '2rem 0' }}>
+                        <Typography variant="h6" mb={'2rem'}>
+                            SmartStay receipts
+                        </Typography>
+                        <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
+                            {SBTCollection.length ? (
+                                <>
+                                    {SBTCollection.map((SBTItem: INFTItem) => (
+                                        <Card key={SBTItem.tokenID.toString()}>
+                                            <CardMedia
+                                                component="img"
+                                                height="200px"
+                                                image={SBTItem.image}
+                                                alt="Image rental"
+                                                sx={{ backgroundColor: 'white', objectFit: 'contain' }}
+                                            ></CardMedia>
+                                            <CardContent>
+                                                <Typography>SBT ID : #{SBTItem.tokenID.toString()}</Typography>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </>
+                            ) : (
+                                <>
+                                    {ownProfile ? (
+                                        <Typography textAlign={'center'}>
+                                            You do not have any SBT yet.
+                                            <br />
+                                            Complete a booking to display it here.
+                                        </Typography>
+                                    ) : (
+                                        <Typography textAlign={'center'}>This user do not have any SBT yet.</Typography>
+                                    )}
+                                </>
+                            )}
                         </Box>
                     </Container>
                 </Box>

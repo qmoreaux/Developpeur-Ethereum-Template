@@ -138,18 +138,19 @@ export default function OnGoing({ booking, setBooking, type }: ICardBookingStatu
                             {booking.validatedOwner ? (
                                 <Typography>Please wait for the recipient to validate the booking</Typography>
                             ) : (
-                                <Box display="flex" justifyContent="space-between">
+                                <Stack display="flex" justifyContent="space-between">
                                     <LoadingButton
                                         loading={loadingValidate}
                                         variant="contained"
                                         onClick={handleValidateBookingAsOwner}
+                                        sx={{ marginBottom: '1rem' }}
                                     >
                                         Validate booking
                                     </LoadingButton>
                                     <Button variant="contained" color="error">
                                         Express reservations
                                     </Button>
-                                </Box>
+                                </Stack>
                             )}
                         </>
                     ) : (
@@ -158,18 +159,19 @@ export default function OnGoing({ booking, setBooking, type }: ICardBookingStatu
                                 {booking.validatedRecipient ? (
                                     <Typography>Please wait for the owner to validate the booking</Typography>
                                 ) : (
-                                    <Box display="flex" justifyContent="space-between">
+                                    <Stack display="flex" justifyContent="space-between">
                                         <LoadingButton
                                             loading={loadingValidate}
                                             variant="contained"
                                             onClick={handleValidateBookingAsRecipient}
+                                            sx={{ marginBottom: '1rem' }}
                                         >
                                             Validate booking
                                         </LoadingButton>
                                         <Button variant="contained" color="error">
                                             Express reservations
                                         </Button>
-                                    </Box>
+                                    </Stack>
                                 )}
                             </>
                         </>

@@ -15,4 +15,5 @@ export default interface IBooking {
     status: number;
     ratedOwner: boolean;
     ratedRecipient: boolean;
+    recipient: string;
 }

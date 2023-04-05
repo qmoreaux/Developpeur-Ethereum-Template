@@ -6,6 +6,7 @@ import Layout from '@/components/Layout/Layout';
 import NewRentingDialog from '@/dialogs/NewRenting';
 import UpdateRentingDialog from '@/dialogs/UpdateRenting';
 import DeleteRentingDialog from '@/dialogs/DeleteRenting';
+import CreateDIDDialog from '@/dialogs/CreateDID';
 
 import { ethers } from 'ethers';
 import { useNetwork, useAccount } from 'wagmi';
@@ -24,8 +25,15 @@ export default function Renter() {
     const { setAlert } = useAlertContext();
     const { readContract } = useContractContext();
 
+    const [isDIDValid, setIsDIDValid] = useState(false);
+
     const [userRentings, setUserRentings] = useState<Array<IRenting>>([]);
-    const [open, setOpen] = useState({ NewRenting: false, UpdateRenting: false, DeleteRenting: false });
+    const [open, setOpen] = useState({
+        NewRenting: false,
+        UpdateRenting: false,
+        DeleteRenting: false,
+        CreateDID: false
+    });
     const [updateRenting, setUpdateRenting] = useState<IRenting>({} as IRenting);
     const [deleteRenting, setDeleteRenting] = useState<IRenting>({} as IRenting);
 
@@ -44,7 +52,27 @@ export default function Renter() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chain, address]);
 
-    const handleClickOpen = (dialog: string, data: IRenting) => {
+    useEffect(() => {
+        (async () => {
+            try {
+                const DID = await readContract('SmartStayBooking', 'getUserDID', [address, { from: address }]);
+                setIsDIDValid(DID.tokenID.toNumber() && DID.registeringNumber.toNumber());
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
+            }
+        })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chain, address]);
+
+    const handleClickOpen = async (dialog: string, data: IRenting) => {
+        if (dialog === 'NewRenting' && !isDIDValid) {
+            setOpen({ ...open, CreateDID: true });
+            return;
+        }
         setOpen({ ...open, [dialog]: true });
         switch (dialog) {
             case 'UpdateRenting': {
@@ -62,6 +90,12 @@ export default function Renter() {
         setOpen({ ...open, [dialog]: false });
 
         switch (dialog) {
+            case 'CreateDID': {
+                if (data) {
+                    setIsDIDValid(true);
+                }
+                break;
+            }
             case 'NewRenting': {
                 if (data) {
                     setUserRentings([...userRentings, data]);
@@ -204,6 +238,12 @@ export default function Renter() {
                     </Box>
                 </Box>
                 <NewRentingDialog open={open.NewRenting} onClose={(status) => handleClose('NewRenting', status)} />
+                <CreateDIDDialog
+                    open={open.CreateDID}
+                    renter={true}
+                    onClose={(status) => handleClose('CreateDID', status)}
+                />
+
                 <UpdateRentingDialog
                     open={open.UpdateRenting}
                     renting={updateRenting}

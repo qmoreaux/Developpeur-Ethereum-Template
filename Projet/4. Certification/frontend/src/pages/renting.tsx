@@ -230,14 +230,19 @@ export default function Renting() {
                                         <Typography>Location : {renting.location}</Typography>
                                         <Typography>Tags : {renting.tags.join(', ')}</Typography>
                                         <Typography>Description : {renting.description}</Typography>
-                                        <Typography>
-                                            <a
-                                                onClick={() => {
-                                                    router.push('/profile?addr=' + renting.owner);
-                                                }}
-                                            >
-                                                View owner profile
-                                            </a>
+                                        <Typography
+                                            onClick={() => {
+                                                router.push('/profile?addr=' + renting.owner);
+                                            }}
+                                            sx={{
+                                                textDecoration: 'underline',
+                                                textAlign: 'center',
+                                                cursor: 'pointer',
+                                                color: '#1976d2',
+                                                marginTop: '1rem'
+                                            }}
+                                        >
+                                            View owner profile
                                         </Typography>
                                         <Box display="flex" justifyContent="space-between" mt="1rem">
                                             <Button

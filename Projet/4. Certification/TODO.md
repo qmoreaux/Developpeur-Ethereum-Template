@@ -4,7 +4,11 @@
 
 ## Normal
 
-* Manage unpin in pinata
+* Check DID for create booking
+* Update SBT
+* Ajouter addresse de la collection pour Collection and Receipts
+* Afficher metadata
+* Check mint DID only once
 
 ## Used for dev
 
@@ -18,5 +22,4 @@
 
 ## Question
 
-* Metadata NFT
 * Que faire si pas de payement avant date de début de la réservation

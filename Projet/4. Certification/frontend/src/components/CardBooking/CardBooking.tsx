@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 import { Typography, Box, Card, CardContent } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -19,16 +20,37 @@ import Validated from './Status/Validated';
 import Completed from './Status/Completed';
 import Rejected from './Status/Rejected';
 import Cancelled from './Status/Cancelled';
+import IRenting from '@/interfaces/Renting';
 
 export default function CardBooking({ _booking, type }: ICardBooking) {
     const { address } = useAccount();
 
+    const router = useRouter();
+
     const { setAlert } = useAlertContext();
-    const { writeContract } = useContractContext();
+    const { readContract, writeContract } = useContractContext();
 
     const [booking, setBooking] = useState<IBooking>(_booking);
+    const [renting, setRenting] = useState<IRenting>({} as IRenting);
 
     const [loadingRedeem, setLoadingRedeem] = useState(false);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                setRenting(
+                    await readContract('SmartStayBooking', 'getRentingFromBookingID', [booking.id, { from: address }])
+                );
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
+            }
+        })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [booking, address]);
 
     const handleRedeemNFT = async () => {
         setLoadingRedeem(true);
@@ -94,6 +116,37 @@ export default function CardBooking({ _booking, type }: ICardBooking) {
                         </Typography>
                         <Typography>Person count: {booking.personCount.toString()}</Typography>
                         <Typography>Duration : {booking.duration.toString()} days</Typography>
+                        {type === 'owner' ? (
+                            <Typography
+                                onClick={() => {
+                                    router.push('/profile?addr=' + booking.recipient);
+                                }}
+                                sx={{
+                                    textDecoration: 'underline',
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    color: '#1976d2',
+                                    marginTop: '1rem'
+                                }}
+                            >
+                                View recipient profile
+                            </Typography>
+                        ) : (
+                            <Typography
+                                onClick={() => {
+                                    router.push('/profile?addr=' + renting.owner);
+                                }}
+                                sx={{
+                                    textDecoration: 'underline',
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    color: '#1976d2',
+                                    marginTop: '1rem'
+                                }}
+                            >
+                                View owner profile
+                            </Typography>
+                        )}
                         <Box
                             display="flex"
                             justifyContent={booking.status === 0 && type === 'owner' ? 'space-between' : 'center'}
@@ -134,7 +187,6 @@ export default function CardBooking({ _booking, type }: ICardBooking) {
                         ) : (
                             ''
                         )}
-                        
                     </CardContent>
                 </Card>
             ) : (
