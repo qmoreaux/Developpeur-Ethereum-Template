@@ -12,7 +12,7 @@ import "./SmartStayRenting.sol";
 /** 
  * @title SmartStayBooking
  * @author Quentin Moreaux
- * @dev Implements functionnalities for SmartStay Dapp
+ * @dev Implements core functionnalities for SmartStay Dapp
  */
 contract SmartStayBooking {
 
@@ -139,6 +139,8 @@ contract SmartStayBooking {
         indexRating.increment();
     }
 
+    // Booking
+
     /**
      * @dev Create a booking
      * @param _rentingID Id of the renting to book
@@ -198,6 +200,11 @@ contract SmartStayBooking {
         return _bookings;
     }
 
+    /**
+     * Get a booking from its ID
+     * @param _bookingID Booking of the id to get
+     * @return Booking matching the id passed in parameters
+     */
     function getBooking(uint256 _bookingID) external view returns (Booking memory) {
         return bookings[_bookingID];
     }
@@ -254,6 +261,10 @@ contract SmartStayBooking {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
+    /**
+     * @dev Validate a booking as owner of the booking
+     * @param _bookingID Id of the booking to validate as owner
+     */
     function validateBookingAsOwner(uint256 _bookingID) external isBookingOwner(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
         require(block.timestamp > bookings[_bookingID].timestampEnd, 'SmartStay : Booking is not finished yet');
@@ -267,6 +278,10 @@ contract SmartStayBooking {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
+    /**
+     * @dev Validate a booking as recipient of the booking
+     * @param _bookingID Id of the booking to validate as recipient
+     */
     function validateBookingAsRecipient(uint256 _bookingID) external isBookingRecipient(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
         require(block.timestamp > bookings[_bookingID].timestampEnd, 'SmartStay : Booking is not finished yet');
@@ -282,7 +297,7 @@ contract SmartStayBooking {
 
     /**
      * Retrieve deposit as recipient of a booking
-     * @param _bookingID Od of booking to retrieve deposit
+     * @param _bookingID Id of booking to retrieve deposit
      */
     function retrieveDeposit(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.VALIDATED, 'SmartStay : Wrong booking status');
@@ -301,7 +316,7 @@ contract SmartStayBooking {
 
     /**
      * Retrieve amount as owner of a booking
-     * @param _bookingID Od of booking to retrieve deposit
+     * @param _bookingID Id of booking to retrieve deposit
      */
     function retrieveAmount(uint256 _bookingID) external payable isBookingOwner(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.VALIDATED, 'SmartStay : Wrong booking status');
@@ -318,6 +333,10 @@ contract SmartStayBooking {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
+    /**
+     * Cancel booking as recipient of the booking
+     * @param _bookingID Id of booking to cancel
+     */
     function cancelBooking(uint256 _bookingID) external isBookingRecipient(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.ONGOING, 'SmartStay : Wrong booking status');
         require(block.timestamp < bookings[_bookingID].timestampStart, 'SmartStay : Can not cancel booking already started');
@@ -345,6 +364,12 @@ contract SmartStayBooking {
 
     // Rating
 
+    /**
+     * @dev Rate the owner of a booking after it is completed
+     * @param _bookingID ID of the booking to rate the owner from
+     * @param _note Note to give to the owner
+     * @param _comment Comment to add to the rating
+     */
     function rateOwner(uint256 _bookingID, uint8 _note, string memory _comment) external isBookingRecipient(_bookingID)  {
         require(bookings[_bookingID].status == BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
         require(!bookings[_bookingID].ratedOwner, 'SmartStay: Already rated owner for this booking');
@@ -365,6 +390,12 @@ contract SmartStayBooking {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
+    /**
+     * @dev Rate the recipient of a booking after it is completed
+     * @param _bookingID ID of the booking to rate the recipient from
+     * @param _note Note to give to the recipient
+     * @param _comment Comment to add to the rating
+     */
     function rateRecipient(uint256 _bookingID, uint8 _note, string memory _comment) external isBookingOwner(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.COMPLETED, 'SmartStay : Wrong booking status');
         require(!bookings[_bookingID].ratedRecipient, 'SmartStay: Already rated recipient for this booking');
@@ -385,40 +416,83 @@ contract SmartStayBooking {
         emit BookingUpdated(bookings[_bookingID]);
     }
 
+    /**
+     * @dev Get all ratings for an address
+     * @param _address Address of the user to get the ratings
+     * @return Array of ratings for the user
+     */
     function getRating(address _address) external view returns (Rating[] memory) {
         return ratings[_address];
     }
     
     // NFT & SBT && DID
 
+    /**
+     * @return Address of the NFTCollection
+     */
     function getNFTCollection() public view returns (address) {
         return address(NFTCollection);
     }
 
+    /**
+     * @return Address of the SBTCollection
+     */
     function getSBTCollection() public view returns (address) {
         return address(SBTCollection);
     }
 
+    /**
+     * @return Address of the DIDCollection
+     */
     function getDIDCollection() public view returns (address) {
         return address(SBTCollection);
     }
 
+    /**
+     * @dev Get all NFT for an address
+     * @param _address Adress to get the NFT from
+     * @return Array of SmartStayNFT
+     */
     function getUserNFT(address _address) public view returns (Tokens.SmartStayNFT[] memory) {
         return NFTCollection.getUserNFT(_address);
     }
 
+    /**
+     * @dev Get all SBT for an address
+     * @param _address Adress to get the SBT from
+     * @return Array of SmartStaySBT
+     */
     function getUserSBT(address _address) public view returns (Tokens.SmartStaySBT[] memory) {
         return SBTCollection.getUserSBT(_address);
     }
 
+    /**
+     * @dev Get all DID for an address
+     * @param _address Adress to get the DID from
+     * @return A single SmartStayDID
+     */
     function getUserDID(address _address) public view returns (Tokens.SmartStayDID memory) {
         return DIDCollection.getUserDID(_address);
     }
 
+    /**
+     * @dev Create a DID for a user
+     * @param to Address to mint the DID for
+     * @param _tokenURI URI of the DID metadata
+     * @param _firstname Firstname of the user
+     * @param _lastname Lastname of the user
+     * @param _email Email of the user
+     * @param _registeringNumber Registering number of the user
+     */
     function createDID(address to, string memory _tokenURI, string memory _firstname, string memory _lastname, string memory _email, uint256 _registeringNumber) external {
         DIDCollection.mint(to, _tokenURI, _firstname, _lastname, _email, _registeringNumber);
     }
 
+    /**
+     * @dev Mint an NFT for the recipient of a booking
+     * @param _bookingID Id of the booking
+     * @param _metadataURI URI of the metadata of the NFT to mint
+     */
     function redeemNFT(uint256 _bookingID, string calldata _metadataURI) external isBookingRecipient(_bookingID) {
         require (!bookings[_bookingID].NFTRedeemed, 'SmartStay: NFT already redeemed');
 
@@ -427,6 +501,4 @@ contract SmartStayBooking {
 
         emit BookingUpdated(bookings[_bookingID]);
     }
-
-
 }

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 /** 
  * @title SmartStayRenting
  * @author Quentin Moreaux
- * @dev Implements functionnalities for SmartStay Dapp
+ * @dev Implements renting functionnalities for SmartStay Dapp
  */
 contract SmartStayRenting {
 

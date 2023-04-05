@@ -6,7 +6,6 @@
 
 * Update SBT
 * Readme
-* Natspec
 * Rapport
 * Vidéo
 
