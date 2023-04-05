@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
+import { ethers } from 'ethers';
+
 import Axios from 'axios';
 
 import Head from 'next/head';
@@ -29,7 +31,7 @@ export default function Profile() {
     const [ownProfile, setOwnProfile] = useState(false);
 
     const [NFTCollection, setNFTCollection] = useState<INFTItem[]>([]);
-    const [SBTCollection, setSBTCollection] = useState<INFTItem[]>([]);
+    const [SBTCollection, setSBTCollection] = useState<ISBTItem[]>([]);
     const [DIDItem, setDIDItem] = useState<IDIDItem>({} as IDIDItem);
 
     const [NFTCollectionAddress, setNFTCollectionAddress] = useState<string>('');
@@ -109,13 +111,13 @@ export default function Profile() {
                 { from: address }
             ]);
             setSBTCollection(
-                await Promise.all<INFTItem[]>(
-                    SBTtransaction.map(async (NFTItem: INFTItem) => {
+                await Promise.all<ISBTItem[]>(
+                    SBTtransaction.map(async (NFTItem: ISBTItem) => {
                         let meta = await Axios.get(NFTItem.tokenURI);
                         meta = meta.data;
                         return {
-                            ...meta,
-                            tokenID: NFTItem.tokenID
+                            ...NFTItem,
+                            ...meta
                         };
                     })
                 )
@@ -358,19 +360,43 @@ export default function Profile() {
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             {SBTCollection.length ? (
                                 <>
-                                    {SBTCollection.map((SBTItem: INFTItem) => (
-                                        <Card key={SBTItem.tokenID.toString()}>
-                                            <CardMedia
-                                                component="img"
-                                                height="200px"
-                                                image={SBTItem.image}
-                                                alt="Image rental"
-                                                sx={{ backgroundColor: 'white', objectFit: 'contain' }}
-                                            ></CardMedia>
-                                            <CardContent>
-                                                <Typography>SBT ID : #{SBTItem.tokenID.toString()}</Typography>
-                                            </CardContent>
-                                        </Card>
+                                    {SBTCollection.map((SBTItem: ISBTItem) => (
+                                        <>
+                                            <Card key={SBTItem.tokenID.toString()}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="200px"
+                                                    image={SBTItem.image}
+                                                    alt="Image rental"
+                                                    sx={{ backgroundColor: 'white', objectFit: 'contain' }}
+                                                ></CardMedia>
+                                                <CardContent>
+                                                    <Typography>SBT ID : #{SBTItem.tokenID.toString()}</Typography>
+                                                    <Typography>
+                                                        Booking ID : #{SBTItem.bookingID.toString()}
+                                                    </Typography>
+                                                    <Typography>
+                                                        Duration: {SBTItem.duration.toString()} days
+                                                    </Typography>
+                                                    <Typography>
+                                                        Price: {ethers.utils.formatEther(SBTItem.price)} ETH
+                                                    </Typography>
+
+                                                    {SBTItem.location ? (
+                                                        <Typography>Location : {SBTItem.location}</Typography>
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                    {SBTItem.owner !== ethers.constants.AddressZero ? (
+                                                        <Typography>Owner : {SBTItem.owner}</Typography>
+                                                    ) : (
+                                                        ''
+                                                    )}
+
+                                                    <Typography></Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </>
                                     ))}
                                 </>
                             ) : (

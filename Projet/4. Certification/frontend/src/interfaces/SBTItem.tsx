@@ -12,4 +12,9 @@ export default interface ISBTItem {
     image: string;
     description: string;
     attributes: Array<Attributes>;
+    bookingID: BigNumber;
+    duration: BigNumber;
+    price: BigNumber;
+    location: string;
+    owner: string;
 }
