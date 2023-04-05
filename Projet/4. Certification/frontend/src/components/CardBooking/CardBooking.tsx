@@ -59,18 +59,9 @@ export default function CardBooking({ _booking, type }: ICardBooking) {
                 image: `https://gateway.pinata.cloud/ipfs/QmP5xTq4AwNnSLj6r3hX44UBxsZcvMKxPucX4AY8MqUBya/${
                     Math.floor(Math.random() * 10) + 1
                 }.png`,
-                name: 'Dada',
-                description: 'Didi',
-                attributes: [
-                    {
-                        trait_type: 'Booking',
-                        value: booking.id
-                    },
-                    {
-                        trait_type: 'Toto',
-                        value: 10
-                    }
-                ]
+                name: 'NFT for Booking #' + booking.id,
+                description: '',
+                attributes: []
             };
 
             const response = await uploadJSONToIPFS(NFTMetadata, 'metadata_nft_booking_' + booking.id);

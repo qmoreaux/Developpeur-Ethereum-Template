@@ -4,7 +4,6 @@
 
 ## Normal
 
-* Metadata DID
 * Update SBT
 * Readme
 * Natspec

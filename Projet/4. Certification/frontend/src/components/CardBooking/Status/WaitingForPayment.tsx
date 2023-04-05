@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
-import { useNetwork, useAccount } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { useAlertContext, useContractContext } from '@/context';
 
@@ -34,19 +34,22 @@ export default function WaitingForPayement({ booking, setBooking, type }: ICardB
     const handlePayBooking = async () => {
         setLoadingPay(true);
         try {
+            let renting = await getRenting(booking.id.toNumber());
+
             const SBTMetadata = {
                 image: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs',
-                name: 'Wawa',
-                description: 'dada',
+                name: 'SmartStay SBT for Booking #' + booking.id,
+                description: '',
                 attributes: [
                     {
                         trait_type: 'Booking',
                         value: booking.id
                     },
                     {
-                        trait_type: 'Toto',
-                        value: 10
-                    }
+                        trait_type: 'Duration',
+                        value: booking.duration
+                    },
+                    { trait_type: 'Price', value: renting.price }
                 ]
             };
 
@@ -67,7 +70,6 @@ export default function WaitingForPayement({ booking, setBooking, type }: ICardB
             );
 
             if (metadataOwner.success === true && metadataRecipient.success) {
-                let renting = await getRenting(booking.id.toNumber());
                 const transaction = await writeContract('SmartStayBooking', 'confirmBooking', [
                     booking.id.toNumber(),
                     metadataOwner.pinataURL,

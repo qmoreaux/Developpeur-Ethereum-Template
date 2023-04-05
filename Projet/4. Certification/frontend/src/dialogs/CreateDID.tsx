@@ -1,19 +1,14 @@
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Dialog, DialogTitle, Chip, Stack, Box, Typography, TextField, InputAdornment } from '@mui/material';
-import { AttachMoney } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 
 import { useAlertContext, useContractContext } from '@/context';
 
-import { ethers } from 'ethers';
 import { useNetwork, useAccount } from 'wagmi';
 
-import { uploadFileToIPFS, updateFileName } from '../pinata';
-
-import IRenting from '../interfaces/Renting';
+import { uploadJSONToIPFS } from '../pinata';
 
 interface IRentingDialog {
     open: boolean;
@@ -60,9 +55,31 @@ export default function CreateDIDDialog(props: IRentingDialog) {
     const createDID = async () => {
         try {
             setLoadingCreate(true);
+            const DIDMetadata = {
+                image: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs',
+                name: 'SmartStay DID for address ' + address,
+                description: '',
+                attributes: [
+                    {
+                        trait_type: 'Firstname',
+                        value: firstname
+                    },
+                    {
+                        trait_type: 'Lastname',
+                        value: lastname
+                    },
+                    { trait_type: 'Email', value: email }
+                ]
+            };
+
+            if (registeringNumber) {
+                DIDMetadata.attributes.push({ trait_type: 'Registering Number', value: registeringNumber.toString() });
+            }
+
+            const DIDMetadataURI = await uploadJSONToIPFS(DIDMetadata, 'metadata_did_' + address);
             const transaction = await writeContract('SmartStayBooking', 'createDID', [
                 address,
-                'TODO',
+                DIDMetadataURI,
                 firstname,
                 lastname,
                 email,
