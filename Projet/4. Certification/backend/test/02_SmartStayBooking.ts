@@ -1170,6 +1170,10 @@ describe('SmartStayBooking contract', () => {
                 addr1 = _addr1;
             });
 
+            it('Should check that the DID collection is correctly created', async () => {
+                expect(await smartStayBooking.getDIDCollection()).to.be.a.properAddress;
+            });
+
             it('Should create a DID and check its attribute', async () => {
                 const DIDMetadataURI =
                     'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';

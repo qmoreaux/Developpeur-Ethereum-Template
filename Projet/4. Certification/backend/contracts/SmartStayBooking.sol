@@ -399,6 +399,10 @@ contract SmartStayBooking {
         return address(SBTCollection);
     }
 
+    function getDIDCollection() public view returns (address) {
+        return address(SBTCollection);
+    }
+
     function getUserNFT(address _address) public view returns (Tokens.SmartStayNFT[] memory) {
         return NFTCollection.getUserNFT(_address);
     }
