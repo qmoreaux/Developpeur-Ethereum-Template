@@ -1,8 +1,6 @@
-import { time, loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { anyValue } from '@nomicfoundation/hardhat-chai-matchers/withArgs';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { BigNumber } from 'ethers';
 
 describe('SmartStaySBTCollection contract', () => {
     let smartStaySBTCollection: any;
@@ -193,7 +191,7 @@ describe('SmartStaySBTCollection contract', () => {
                 await smartStaySBTCollection.mint(addr1.address, SBTMetadataURI, duration, price, bookingID);
             });
 
-            it('Should attempt to transfer a DID and expect a revert', async () => {
+            it('Should attempt to transfer a SBT and expect a revert', async () => {
                 await expect(
                     smartStaySBTCollection.connect(addr1).transferFrom(addr1.address, owner.address, 1)
                 ).to.be.revertedWith('SmartStay : Can not transfer a SBT');

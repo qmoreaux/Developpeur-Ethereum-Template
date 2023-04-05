@@ -9,8 +9,6 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import './libraries/Tokens.sol';
  
-import "hardhat/console.sol";
-
 contract SmartStayDIDCollection is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private tokenID;
@@ -24,6 +22,7 @@ contract SmartStayDIDCollection is ERC721URIStorage, Ownable {
     }
  
     function mint(address to, string memory _tokenURI, string memory _firstname, string memory _lastname, string memory _email, uint256 _registeringNumber) public onlyOwner {
+        require(tokenOwner[to].tokenID == 0, 'SmartStay : DID already minted for this address');
         tokenID.increment();
         uint256 newTokenID = tokenID.current();
         _mint(to, newTokenID);

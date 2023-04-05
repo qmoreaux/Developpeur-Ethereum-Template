@@ -1,5 +1,4 @@
-import { time, loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { anyValue } from '@nomicfoundation/hardhat-chai-matchers/withArgs';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { BigNumber } from 'ethers';
@@ -18,7 +17,7 @@ describe('SmartStayDIDCollection contract', () => {
         return { _smartStayDIDCollection, _SmartStayDIDCollection, _owner, _addr1 };
     };
 
-    describe('NFT Collection', async () => {
+    describe('DID Collection', async () => {
         describe('Create', async () => {
             beforeEach(async () => {
                 const { _smartStayDIDCollection, _owner, _addr1 } = await loadFixture(deploySmartStayFixture);
@@ -89,6 +88,35 @@ describe('SmartStayDIDCollection contract', () => {
                         .connect(addr1)
                         .mint(addr1.address, DIDMetadataURI, firstname, lastname, email, registeringNumber)
                 ).to.be.revertedWith('Ownable: caller is not the owner');
+            });
+
+            it('Should attempt to mint a DID twice and expect a revert', async () => {
+                const DIDMetadataURI =
+                    'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+                const firstname = 'Prénom';
+                const lastname = 'Nom';
+                const email = 'email@email.com';
+                const registeringNumber = BigNumber.from(7511606576443);
+
+                await smartStayDIDCollection.mint(
+                    addr1.address,
+                    DIDMetadataURI,
+                    firstname,
+                    lastname,
+                    email,
+                    registeringNumber
+                );
+
+                await expect(
+                    smartStayDIDCollection.mint(
+                        addr1.address,
+                        DIDMetadataURI,
+                        firstname,
+                        lastname,
+                        email,
+                        registeringNumber
+                    )
+                ).to.be.revertedWith('SmartStay : DID already minted for this address');
             });
         });
 

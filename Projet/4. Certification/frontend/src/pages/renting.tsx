@@ -24,6 +24,7 @@ import {
 import { BookOnline, Person, AttachMoney, LocationCity, Filter } from '@mui/icons-material';
 
 import IRenting from '../interfaces/Renting';
+import CreateDIDDialog from '@/dialogs/CreateDID';
 
 export default function Renting() {
     const { address } = useAccount();
@@ -42,11 +43,26 @@ export default function Renting() {
     const [availableTags, setAvailableTags] = useState<Array<string>>([]);
 
     const [openBooking, setOpenBooking] = useState(false);
+    const [openCreateDID, setOpenCreateDID] = useState(false);
+
     const [bookingRenting, setBookingRenting] = useState({} as IRenting);
 
+    const [isDIDValid, setIsDIDValid] = useState(false);
+
     const handleStartBooking = (data: IRenting) => {
+        if (!isDIDValid) {
+            setOpenCreateDID(true);
+            return;
+        }
         setOpenBooking(true);
         setBookingRenting(data);
+    };
+
+    const handleCloseCreateDID = (data: boolean) => {
+        setOpenCreateDID(false);
+        if (data) {
+            setIsDIDValid(true);
+        }
     };
 
     const handleCloseBooking = (data: boolean) => {
@@ -94,6 +110,22 @@ export default function Renting() {
 
     useEffect(() => {
         searchRentings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chain, address]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const DID = await readContract('SmartStayBooking', 'getUserDID', [address, { from: address }]);
+                setIsDIDValid(DID.tokenID.toNumber() && DID.registeringNumber.toNumber());
+            } catch (e) {
+                setAlert({
+                    message: 'An error has occurred. Check the developer console for more information',
+                    severity: 'error'
+                });
+                console.error(e);
+            }
+        })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chain, address]);
 
@@ -264,6 +296,11 @@ export default function Renting() {
                         </Box>
                     </Box>
                 </Box>
+                <CreateDIDDialog
+                    open={openCreateDID}
+                    renter={false}
+                    onClose={(status: boolean) => handleCloseCreateDID(status)}
+                />
                 <BookRentingDialog
                     open={openBooking}
                     _renting={bookingRenting}

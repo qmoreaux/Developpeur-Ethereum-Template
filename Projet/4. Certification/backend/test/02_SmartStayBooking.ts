@@ -1240,6 +1240,10 @@ describe('SmartStayBooking contract', () => {
                     .confirmBooking(1, ownerMetadataURI, recipientMetadataURI, { value: amountToSend });
             });
 
+            it('Should check that the SBT collection is correctly created', async () => {
+                expect(await smartStayBooking.getSBTCollection()).to.be.a.properAddress;
+            });
+
             it('Should check that owner received a SBT', async () => {
                 const SBTCollection = await smartStayBooking.getUserSBT(owner.address);
 
@@ -1298,6 +1302,10 @@ describe('SmartStayBooking contract', () => {
                 await smartStayBooking
                     .connect(addr1)
                     .confirmBooking(1, ownerMetadataURI, recipientMetadataURI, { value: amountToSend });
+            });
+
+            it('Should check that the NFT collection is correctly created', async () => {
+                expect(await smartStayBooking.getNFTCollection()).to.be.a.properAddress;
             });
 
             it('Should redeem a NFT and check the recipient received it', async () => {

@@ -1,8 +1,6 @@
-import { time, loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { anyValue } from '@nomicfoundation/hardhat-chai-matchers/withArgs';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { BigNumber } from 'ethers';
 
 describe('SmartStayNFTCollection contract', () => {
     let smartStayNFTCollection: any;
@@ -51,7 +49,7 @@ describe('SmartStayNFTCollection contract', () => {
                 expect(tokenURI).to.be.equal(NFTMetadataURI);
             });
 
-            it('Should attempt to mint a DID without being the owner and expect a revert', async () => {
+            it('Should attempt to mint a NFT without being the owner and expect a revert', async () => {
                 const NFTMetadataURI =
                     'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
 

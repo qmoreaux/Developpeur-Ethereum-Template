@@ -148,8 +148,8 @@ contract SmartStayBooking {
      */
     function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
         // TODO DO NOT FORGET TO UNCOMMENT
-        // require(msg.sender != smartStayRenting.getRenting(_rentingID).owner, 'SmartStay : Can not create booking for your own rentings');
-        // require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
+        require(msg.sender != smartStayRenting.getRenting(_rentingID).owner, 'SmartStay : Can not create booking for your own rentings');
+        require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
         require (smartStayRenting.getRenting(_rentingID).personCount >= _personCount, 'SmartStay : Too many persons for this renting');
 
         Booking memory _booking;
@@ -390,6 +390,14 @@ contract SmartStayBooking {
     }
     
     // NFT & SBT && DID
+
+    function getNFTCollection() public view returns (address) {
+        return address(NFTCollection);
+    }
+
+    function getSBTCollection() public view returns (address) {
+        return address(SBTCollection);
+    }
 
     function getUserNFT(address _address) public view returns (Tokens.SmartStayNFT[] memory) {
         return NFTCollection.getUserNFT(_address);

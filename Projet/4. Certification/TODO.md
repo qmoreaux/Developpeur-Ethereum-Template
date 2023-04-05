@@ -4,11 +4,12 @@
 
 ## Normal
 
-* Check DID for create booking
 * Update SBT
-* Ajouter addresse de la collection pour Collection and Receipts
 * Afficher metadata
-* Check mint DID only once
+* Readme
+* Natspec
+* Rapport
+* Vidéo
 
 ## Used for dev
 

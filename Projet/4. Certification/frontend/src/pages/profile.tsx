@@ -32,6 +32,9 @@ export default function Profile() {
     const [SBTCollection, setSBTCollection] = useState<INFTItem[]>([]);
     const [DIDItem, setDIDItem] = useState<IDIDItem>({} as IDIDItem);
 
+    const [NFTCollectionAddress, setNFTCollectionAddress] = useState<string>('');
+    const [SBTCollectionAddress, setSBTCollectionAddress] = useState<string>('');
+
     const [ratingsAsOwner, setRatingsAsOwner] = useState<IRating[]>([]);
     const [ratingsAsRecipient, setRatingsAsRecipient] = useState<IRating[]>([]);
 
@@ -42,6 +45,7 @@ export default function Profile() {
 
     useEffect(() => {
         if (addressToUse) {
+            getCollectionAddress();
             getRatings();
             getUserDID();
             getUserNFT();
@@ -49,6 +53,11 @@ export default function Profile() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chain, address, addressToUse]);
+
+    const getCollectionAddress = async () => {
+        setNFTCollectionAddress(await readContract('SmartStayBooking', 'getNFTCollection', [{ from: address }]));
+        setSBTCollectionAddress(await readContract('SmartStayBooking', 'getSBTCollection', [{ from: address }]));
+    };
 
     const getRatings = async () => {
         const ratings = await readContract('SmartStayBooking', 'getRating', [addressToUse, { from: address }]);
@@ -279,7 +288,7 @@ export default function Profile() {
                                         <Typography>
                                             Email : <b>{DIDItem.email}</b>
                                         </Typography>
-                                        {DIDItem.registeringNumber ? (
+                                        {DIDItem.registeringNumber.toNumber() ? (
                                             <Typography>
                                                 Registering number : <b>{DIDItem.registeringNumber.toNumber()}</b>
                                             </Typography>
@@ -306,7 +315,7 @@ export default function Profile() {
                     </Container>
                     <Container sx={{ margin: '2rem 0' }}>
                         <Typography variant="h6" mb={'2rem'}>
-                            SmartStay Collection
+                            SmartStay Collection ({NFTCollectionAddress})
                         </Typography>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             {NFTCollection.length ? (
@@ -344,7 +353,7 @@ export default function Profile() {
                     </Container>
                     <Container sx={{ margin: '2rem 0' }}>
                         <Typography variant="h6" mb={'2rem'}>
-                            SmartStay receipts
+                            SmartStay Receipts ({SBTCollectionAddress})
                         </Typography>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             {SBTCollection.length ? (

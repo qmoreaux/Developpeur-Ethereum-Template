@@ -18,7 +18,7 @@ import IRenting from '../interfaces/Renting';
 interface IRentingDialog {
     open: boolean;
     renter: boolean;
-    onClose: (status: boolean | IRenting) => void;
+    onClose: (status: boolean) => void;
 }
 
 export default function CreateDIDDialog(props: IRentingDialog) {
@@ -37,7 +37,7 @@ export default function CreateDIDDialog(props: IRentingDialog) {
 
     const { onClose, renter, open } = props;
 
-    const handleClose = (data: IRenting | boolean) => {
+    const handleClose = (data: boolean) => {
         setFirstname('');
         setLastname('');
         setEmail('');
