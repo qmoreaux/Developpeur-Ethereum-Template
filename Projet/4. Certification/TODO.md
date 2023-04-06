@@ -5,7 +5,6 @@
 ## Normal
 
 * Update SBT
-* Check proptypes
 
 ## Used for dev
 

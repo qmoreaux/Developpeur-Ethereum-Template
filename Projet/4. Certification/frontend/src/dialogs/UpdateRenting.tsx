@@ -314,5 +314,5 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
 UpdateRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    renting: PropTypes.array.isRequired
+    renting: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired
 };

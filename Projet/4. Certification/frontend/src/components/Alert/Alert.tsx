@@ -9,10 +9,6 @@ const AlertComponent = () => {
 
     const [open, setOpen] = useState(false);
 
-    useEffect(() => {
-        console.log(alert);
-    }, [alert]);
-
     const handleClose = (event: React.SyntheticEvent<any> | Event, reason: string) => {
         if (reason === 'clickaway') {
             return;

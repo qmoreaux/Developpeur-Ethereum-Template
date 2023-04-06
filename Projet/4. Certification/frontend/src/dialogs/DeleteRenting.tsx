@@ -76,5 +76,5 @@ export default function DeleteRentingDialog(props: IRentingDialog) {
 DeleteRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    renting: PropTypes.array.isRequired
+    renting: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired
 };
