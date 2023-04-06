@@ -5,7 +5,6 @@
 ## Normal
 
 * Update SBT
-* Logo + favicon
 * Check proptypes
 
 ## Used for dev

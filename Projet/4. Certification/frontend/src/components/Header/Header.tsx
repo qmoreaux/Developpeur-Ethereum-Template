@@ -1,5 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { useState, useEffect } from 'react';
@@ -26,9 +27,9 @@ const Header = () => {
             position={'relative'}
             sx={{ backgroundColor: 'whitesmoke' }}
         >
-            <Typography fontWeight="bold" width="30%">
-                Logo
-            </Typography>
+            <Box width="30%">
+                <Image src="/../public/SmartStay.png" alt="Logo" width={60} height={60}></Image>
+            </Box>
             <Box width="25%" display="flex" justifyContent="space-between" alignItems="center">
                 {_isConnected ? (
                     <>
