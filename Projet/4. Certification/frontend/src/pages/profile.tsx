@@ -165,18 +165,18 @@ export default function Profile() {
                     <Typography variant="h4" textAlign={'center'} m="2rem">
                         {ownProfile ? 'My profile' : `Profile of ${addressToUse}`}
                     </Typography>
-                    <Container sx={{ margin: '2rem 0' }}>
+                    <Container>
                         <Typography variant="h5" mb={'2rem'}>
                             Ratings
                         </Typography>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             <Grid container>
-                                <Grid item flexGrow={1} textAlign={'center'}>
+                                <Grid item display={'flex'} flexGrow={1} flexDirection={'column'} alignItems={'center'}>
                                     <Typography variant="h6">As Owner</Typography>
                                     {ratingsAsOwner.length ? (
                                         <>
                                             <Typography sx={{ marginBottom: '1rem' }}>
-                                                Average rating as owner :{' '}
+                                                Average rating :{' '}
                                                 <b>
                                                     {getAverageRatingAsOwner()} ({ratingsAsOwner.length} ratings)
                                                 </b>
@@ -187,7 +187,8 @@ export default function Profile() {
                                                     sx={{
                                                         backgroundColor: 'whitesmoke',
                                                         width: '500px',
-                                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)'
+                                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                                        marginBottom: '2rem'
                                                     }}
                                                 >
                                                     <CardContent sx={{ textAlign: 'left' }}>
@@ -210,19 +211,23 @@ export default function Profile() {
                                     ) : (
                                         <>
                                             {ownProfile ? (
-                                                <Typography>You do not have any rating as owner yet</Typography>
+                                                <Typography mb={'2rem'}>
+                                                    You do not have any rating as owner yet
+                                                </Typography>
                                             ) : (
-                                                <Typography>This user do not have any rating as owner yet</Typography>
+                                                <Typography mb={'2rem'}>
+                                                    This user do not have any rating as owner yet
+                                                </Typography>
                                             )}
                                         </>
                                     )}
                                 </Grid>
-                                <Grid item flexGrow={1} textAlign={'center'}>
+                                <Grid item display={'flex'} flexGrow={1} flexDirection={'column'} alignItems={'center'}>
                                     <Typography variant="h6">As Recipient</Typography>
                                     {ratingsAsRecipient.length ? (
                                         <>
                                             <Typography sx={{ marginBottom: '1rem' }}>
-                                                Average rating as recipient :{' '}
+                                                Average rating :{' '}
                                                 <b>
                                                     {getAverageRatingAsRecipient()} ({ratingsAsRecipient.length}{' '}
                                                     ratings)
@@ -235,7 +240,8 @@ export default function Profile() {
                                                     sx={{
                                                         backgroundColor: 'whitesmoke',
                                                         width: '500px',
-                                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)'
+                                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                                        marginBottom: '2rem'
                                                     }}
                                                 >
                                                     <CardContent sx={{ textAlign: 'left' }}>
@@ -258,9 +264,11 @@ export default function Profile() {
                                     ) : (
                                         <>
                                             {ownProfile ? (
-                                                <Typography>You do not have any rating as recipient yet</Typography>
+                                                <Typography mb={'2rem'}>
+                                                    You do not have any rating as recipient yet
+                                                </Typography>
                                             ) : (
-                                                <Typography>
+                                                <Typography mb={'2rem'}>
                                                     This user do not have any rating as recipient yet
                                                 </Typography>
                                             )}
@@ -270,17 +278,20 @@ export default function Profile() {
                             </Grid>
                         </Box>
                     </Container>
-                    <Container sx={{ margin: '2rem 0' }}>
-                        <Typography variant="h6">Decentralized Identity</Typography>
-                        <Typography variant="body2" mb={'2rem'}>
-                            {DIDCollectionAddress}
-                        </Typography>
+                    <Container>
+                        <Box display={'flex'} alignItems={'center'} mb={'2rem'}>
+                            <Typography variant="h6">Decentralized Identity</Typography>
+                            <Typography variant="body2" ml={'1rem'}>
+                                ({DIDCollectionAddress})
+                            </Typography>
+                        </Box>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             {DIDItem.tokenID && DIDItem.tokenID.toNumber() ? (
                                 <Card
                                     sx={{
                                         backgroundColor: 'whitesmoke',
-                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)'
+                                        boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                        marginBottom: '2rem'
                                     }}
                                 >
                                     <CardContent>
@@ -305,12 +316,12 @@ export default function Profile() {
                             ) : (
                                 <>
                                     {ownProfile ? (
-                                        <Typography textAlign={'center'}>
+                                        <Typography textAlign={'center'} mb={'2rem'}>
                                             You have not created your DID yet.
                                             <br /> Please create a renting or a booking to create it.
                                         </Typography>
                                     ) : (
-                                        <Typography textAlign={'center'}>
+                                        <Typography textAlign={'center'} mb={'2rem'}>
                                             This user did not create his DID yet
                                         </Typography>
                                     )}
@@ -318,22 +329,27 @@ export default function Profile() {
                             )}
                         </Box>
                     </Container>
-                    <Container sx={{ margin: '2rem 0' }}>
-                        <Typography variant="h6">SmartStay Collection</Typography>
-                        <Typography variant="body2" mb={'2rem'}>
-                            {NFTCollectionAddress}
-                        </Typography>
+                    <Container>
+                        <Box display={'flex'} alignItems={'center'} mb={'2rem'}>
+                            <Typography variant="h6">SmartStay Collection</Typography>
+                            <Typography variant="body2" ml={'1rem'}>
+                                ({NFTCollectionAddress})
+                            </Typography>
+                        </Box>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             {NFTCollection.length ? (
                                 <>
                                     {NFTCollection.map((NFTItem: INFTItem) => (
-                                        <Card key={NFTItem.tokenID.toString()}>
+                                        <Card key={NFTItem.tokenID.toString()} sx={{ marginBottom: '2rem' }}>
                                             <CardMedia
                                                 component="img"
                                                 height="200px"
                                                 image={NFTItem.image}
                                                 alt="Image rental"
-                                                sx={{ backgroundColor: 'white', objectFit: 'contain' }}
+                                                sx={{
+                                                    backgroundColor: 'white',
+                                                    objectFit: 'contain'
+                                                }}
                                             ></CardMedia>
                                             <CardContent>
                                                 <Typography>NFT ID : #{NFTItem.tokenID.toString()}</Typography>
@@ -344,12 +360,12 @@ export default function Profile() {
                             ) : (
                                 <>
                                     {ownProfile ? (
-                                        <Typography textAlign={'center'}>
+                                        <Typography textAlign={'center'} mb={'2rem'}>
                                             You do not have any NFT yet.
                                             <br /> Redeem it after a booking to display it here.
                                         </Typography>
                                     ) : (
-                                        <Typography textAlign={'center'}>
+                                        <Typography textAlign={'center'} mb={'2rem'}>
                                             This user did not redeem any NFT yet.
                                         </Typography>
                                     )}
@@ -357,23 +373,28 @@ export default function Profile() {
                             )}
                         </Box>
                     </Container>
-                    <Container sx={{ margin: '2rem 0' }}>
-                        <Typography variant="h6">SmartStay Receipts</Typography>
-                        <Typography variant="body2" mb={'2rem'}>
-                            {SBTCollectionAddress}
-                        </Typography>
+                    <Container>
+                        <Box display={'flex'} alignItems={'center'} mb={'2rem'}>
+                            <Typography variant="h6">SmartStay Receipts</Typography>
+                            <Typography variant="body2" ml={'1rem'}>
+                                ({SBTCollectionAddress})
+                            </Typography>
+                        </Box>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             {SBTCollection.length ? (
                                 <>
                                     {SBTCollection.map((SBTItem: ISBTItem) => (
                                         <>
-                                            <Card key={SBTItem.tokenID.toString()}>
+                                            <Card key={SBTItem.tokenID.toString()} sx={{ marginBottom: '2rem' }}>
                                                 <CardMedia
                                                     component="img"
                                                     height="200px"
                                                     image={SBTItem.image}
                                                     alt="Image rental"
-                                                    sx={{ backgroundColor: 'white', objectFit: 'contain' }}
+                                                    sx={{
+                                                        backgroundColor: 'white',
+                                                        objectFit: 'contain'
+                                                    }}
                                                 ></CardMedia>
                                                 <CardContent>
                                                     <Typography>SBT ID : #{SBTItem.tokenID.toString()}</Typography>
@@ -407,13 +428,15 @@ export default function Profile() {
                             ) : (
                                 <>
                                     {ownProfile ? (
-                                        <Typography textAlign={'center'}>
+                                        <Typography textAlign={'center'} mb={'2rem'}>
                                             You do not have any SBT yet.
                                             <br />
                                             Complete a booking to display it here.
                                         </Typography>
                                     ) : (
-                                        <Typography textAlign={'center'}>This user do not have any SBT yet.</Typography>
+                                        <Typography textAlign={'center'} mb={'2rem'}>
+                                            This user do not have any SBT yet.
+                                        </Typography>
                                     )}
                                 </>
                             )}

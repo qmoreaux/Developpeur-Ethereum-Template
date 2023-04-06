@@ -5,7 +5,6 @@
 ## Normal
 
 * Update SBT
-* Vérifier les espaces entre les carte de rating
 * Logo + favicon
 * Check redirect not logged
 
