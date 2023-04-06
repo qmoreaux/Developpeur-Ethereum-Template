@@ -18,10 +18,7 @@ const Header = () => {
             </Typography>
             <Box width="25%" display="flex" justifyContent="space-between" alignItems="center">
                 <Typography>
-                    <Link href="/">Home</Link>
-                </Typography>
-                <Typography>
-                    <Link href="/renting">Renting</Link>
+                    <Link href="/">Renting</Link>
                 </Typography>
                 <Typography>
                     <Link href="/renter">Renter</Link>

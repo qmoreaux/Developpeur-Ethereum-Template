@@ -5,8 +5,9 @@
 ## Normal
 
 * Update SBT
-* Rapport
-* Vidéo
+* Vérifier les espaces entre les carte de rating
+* Logo + favicon
+* Check redirect not logged
 
 ## Used for dev
 
@@ -17,6 +18,8 @@
 
 * Gérer un tableau de tableau de tags
 * Vérifier couleur texte avec theme clair
+* Rapport
+* Vidéo
 
 ## Question
 

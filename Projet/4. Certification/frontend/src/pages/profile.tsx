@@ -219,7 +219,7 @@ export default function Profile() {
                                 </Grid>
                                 <Grid item flexGrow={1} textAlign={'center'}>
                                     <Typography variant="h6">As Recipient</Typography>
-                                    {ratingsAsOwner.length ? (
+                                    {ratingsAsRecipient.length ? (
                                         <>
                                             <Typography sx={{ marginBottom: '1rem' }}>
                                                 Average rating as recipient :{' '}

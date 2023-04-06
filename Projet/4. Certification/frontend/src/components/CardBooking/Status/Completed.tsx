@@ -35,8 +35,7 @@ export default function Completed({ booking, setBooking, type }: ICardBookingSta
 
             setBooking({
                 ...booking,
-                validatedOwner: true,
-                status: booking.validatedRecipient ? 3 : 2
+                ratedOwner: true
             });
             setLoadingPublish(false);
         } catch (e) {
@@ -65,8 +64,7 @@ export default function Completed({ booking, setBooking, type }: ICardBookingSta
 
             setBooking({
                 ...booking,
-                validatedOwner: true,
-                status: booking.validatedRecipient ? 3 : 2
+                ratedRecipient: true
             });
             setLoadingPublish(false);
         } catch (e) {

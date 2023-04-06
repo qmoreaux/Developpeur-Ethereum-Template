@@ -156,5 +156,5 @@ export default function BookRentingDialog(props: IBookingDialog) {
 BookRentingDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    _renting: PropTypes.array.isRequired
+    _renting: PropTypes.oneOf([PropTypes.array, PropTypes.object]).isRequired
 };
