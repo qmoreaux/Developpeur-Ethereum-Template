@@ -1,8 +1,11 @@
 import '@/styles/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { configureChains, createClient, WagmiConfig, goerli } from 'wagmi';
+import { configureChains, createClient, WagmiConfig, goerli, useAccount } from 'wagmi';
 import { localhost, polygonMumbai, sepolia } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 
@@ -23,6 +26,15 @@ const wagmiClient = createClient({
 });
 
 export default function App({ Component, pageProps }: any) {
+    const router = useRouter();
+    const { isConnected } = useAccount();
+
+    useEffect(() => {
+        if (!isConnected) {
+            router.push('/');
+        }
+    }, [isConnected, router]);
+
     return (
         <WagmiConfig client={wagmiClient}>
             <RainbowKitProvider chains={chains}>

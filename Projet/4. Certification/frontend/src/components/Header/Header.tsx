@@ -2,10 +2,17 @@ import { Box, Container, Typography } from '@mui/material';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
 
+import { useState, useEffect } from 'react';
+
 import { useAccount } from 'wagmi';
 
 const Header = () => {
     const { isConnected } = useAccount();
+    const [_isConnected, _setIsConnected] = useState(false);
+
+    useEffect(() => {
+        _setIsConnected(isConnected);
+    }, [isConnected]);
 
     return (
         <Box
@@ -23,7 +30,7 @@ const Header = () => {
                 Logo
             </Typography>
             <Box width="25%" display="flex" justifyContent="space-between" alignItems="center">
-                {isConnected ? (
+                {_isConnected ? (
                     <>
                         <Typography>
                             <Link href="/">Renting</Link>
