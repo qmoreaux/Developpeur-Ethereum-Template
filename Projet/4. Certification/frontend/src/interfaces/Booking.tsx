@@ -12,6 +12,8 @@ export default interface IBooking {
     validatedOwner: boolean;
     validatedRecipient: boolean;
     NFTRedeemed: boolean;
+    SBTOwnerID: BigNumber;
+    SBTRecipientID: BigNumber;
     status: number;
     ratedOwner: boolean;
     ratedRecipient: boolean;

@@ -3,29 +3,59 @@ import { useState } from 'react';
 import { Typography, Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
+import Axios from 'axios';
+
 import { ethers, BigNumber } from 'ethers';
 import { useAccount } from 'wagmi';
 
 import { useAlertContext, useContractContext } from '@/context';
 
+import { uploadJSONToIPFS, unpinFileFromIPFS } from '../../../pinata';
+
 import ICardBookingStatus from '@/interfaces/CardBookingStatus';
+import ISBTItem from '@/interfaces/SBTItem';
 
 export default function Validated({ booking, setBooking, type }: ICardBookingStatus) {
     const { address } = useAccount();
 
     const { setAlert } = useAlertContext();
-    const { writeContract } = useContractContext();
+    const { readContract, writeContract } = useContractContext();
 
     const [loadingRetrieve, setLoadingRetrieve] = useState(false);
 
     const handleRetrieveDeposit = async () => {
         setLoadingRetrieve(true);
         try {
-            const transaction = await writeContract('SmartStayBooking', 'retrieveDeposit', [
-                booking.id.toNumber(),
+            const SBTCollection = await readContract('SmartStayBooking', 'getUserSBT', [address, { from: address }]);
+            const renting = await readContract('SmartStayRenting', 'getRenting', [
+                booking.rentingID,
                 { from: address }
             ]);
-            await transaction.wait();
+            const SBT = SBTCollection.filter(
+                (SBTItem: ISBTItem) => SBTItem.tokenID.toNumber() === booking.SBTRecipientID.toNumber()
+            )[0];
+
+            let request = await Axios.get(SBT.tokenURI);
+            let metadata = request.data;
+
+            metadata.attributes.push({ trait_type: 'location', value: renting.location });
+            metadata.attributes.push({ trait_type: 'owner', value: address });
+
+            const pinataRequest = await uploadJSONToIPFS(
+                metadata,
+                'metadata_sbt_recipient_completed_booking_' + booking.id
+            );
+
+            if (pinataRequest.success) {
+                const transaction = await writeContract('SmartStayBooking', 'retrieveDeposit', [
+                    booking.id.toNumber(),
+                    pinataRequest.pinataURL,
+
+                    { from: address }
+                ]);
+                await transaction.wait();
+                await unpinFileFromIPFS(SBT.tokenURI.slice(34));
+            }
 
             setAlert({ message: 'You have successfully retrieved your deposit', severity: 'success' });
 
@@ -48,11 +78,35 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
     const handleRetrieveAmount = async () => {
         setLoadingRetrieve(true);
         try {
-            const transaction = await writeContract('SmartStayBooking', 'retrieveAmount', [
-                booking.id.toNumber(),
+            const SBTCollection = await readContract('SmartStayBooking', 'getUserSBT', [address, { from: address }]);
+            const renting = await readContract('SmartStayRenting', 'getRenting', [
+                booking.rentingID,
                 { from: address }
             ]);
-            await transaction.wait();
+            const SBT = SBTCollection.filter(
+                (SBTItem: ISBTItem) => SBTItem.tokenID.toNumber() === booking.SBTOwnerID.toNumber()
+            )[0];
+
+            let request = await Axios.get(SBT.tokenURI);
+            let metadata = request.data;
+
+            metadata.attributes.push({ trait_type: 'location', value: renting.location });
+            metadata.attributes.push({ trait_type: 'owner', value: address });
+
+            const pinataRequest = await uploadJSONToIPFS(
+                metadata,
+                'metadata_sbt_owner_completed_booking_' + booking.id
+            );
+
+            if (pinataRequest.success) {
+                const transaction = await writeContract('SmartStayBooking', 'retrieveAmount', [
+                    booking.id.toNumber(),
+                    pinataRequest.pinataURL,
+                    { from: address }
+                ]);
+                await transaction.wait();
+                await unpinFileFromIPFS(SBT.tokenURI.slice(34));
+            }
 
             setAlert({ message: 'You have successfully retrieved your amount', severity: 'success' });
 
@@ -110,9 +164,6 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
         <>
             {type === 'owner' ? (
                 <Stack>
-                    <Typography>
-                        Amount to get :<b> {ethers.utils.formatEther(booking.amountLocked)} ETH</b>
-                    </Typography>
                     {isBookingEnded() ? (
                         <>
                             {booking.amountLocked.toString() !== '0' ? (
@@ -121,7 +172,7 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
                                     variant="contained"
                                     onClick={handleRetrieveAmount}
                                 >
-                                    Retrieve amount
+                                    Retrieve amount (<b> {ethers.utils.formatEther(booking.amountLocked)} ETH</b>)
                                 </LoadingButton>
                             ) : (
                                 <Typography>Already retrieved</Typography>
@@ -142,9 +193,6 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
                 </Stack>
             ) : (
                 <Stack>
-                    <Typography>
-                        Amount to get :<b> {ethers.utils.formatEther(booking.depositLocked)} ETH</b>
-                    </Typography>
                     {isBookingEnded() ? (
                         <>
                             {booking.depositLocked.toString() !== '0' ? (
@@ -153,7 +201,7 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
                                     variant="contained"
                                     onClick={handleRetrieveDeposit}
                                 >
-                                    Retrieve deposit
+                                    Retrieve deposit (<b> {ethers.utils.formatEther(booking.depositLocked)} ETH</b>)
                                 </LoadingButton>
                             ) : (
                                 <Typography>Already retrieved</Typography>

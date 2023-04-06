@@ -212,12 +212,12 @@
         ],
         "networks": {
             "1337": {
-                "address": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
-                "transactionHash": "0x54f2f24034a24cb86c32b9b4c90130645332f5a1ed8e9326ab839f37ab080d63"
+                "address": "0xD8a5a9b31c3C0232E196d518E89Fd8bF83AcAd43",
+                "transactionHash": "0x49b380a08a37d996debb27b9507b243e12388baeb553155e780cb7587b121627"
             },
             "80001": {
-                "address": "0xc5fCBaFE06A4A7F74240633D7Eed64081afB8F87",
-                "transactionHash": "0xd0f8d3384bbd467cd2fba27452b6d6e46201586a7fbdc106f44c7f260bb96e50"
+                "address": "0x0bE744130050c2cB07765d9f50a143D1dA16AEBF",
+                "transactionHash": "0x7936f9dd25b4af5c226055e4902f7fb3cb483ff6bd16829fc2d6b45c198f502a"
             }
         }
     },
@@ -629,17 +629,23 @@
                 "type": "function"
             },
             {
-                "inputs": [{ "internalType": "uint256", "name": "_bookingID", "type": "uint256" }],
+                "inputs": [
+                    { "internalType": "uint256", "name": "_bookingID", "type": "uint256" },
+                    { "internalType": "string", "name": "_newTokenURI", "type": "string" }
+                ],
                 "name": "retrieveAmount",
                 "outputs": [],
-                "stateMutability": "payable",
+                "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
-                "inputs": [{ "internalType": "uint256", "name": "_bookingID", "type": "uint256" }],
+                "inputs": [
+                    { "internalType": "uint256", "name": "_bookingID", "type": "uint256" },
+                    { "internalType": "string", "name": "_newTokenURI", "type": "string" }
+                ],
                 "name": "retrieveDeposit",
                 "outputs": [],
-                "stateMutability": "payable",
+                "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
@@ -659,12 +665,12 @@
         ],
         "networks": {
             "1337": {
-                "address": "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
-                "transactionHash": "0x5ba2c5bf9caeff1dec603a77d75e944942148731d619422206a879f0a0857a40"
+                "address": "0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD",
+                "transactionHash": "0x552db1959431aabee80c3cecf332dcff4732c81fd708c8023f4642dd721d2a6d"
             },
             "80001": {
-                "address": "0x9E60D8a7dbc0bA57a33a1883DB5248310A760246",
-                "transactionHash": "0xbcb67258a4335fb7b7134b193f31cad0cf919c88444d27314b5fc5f94201b008"
+                "address": "0xc7eB4b787e93dAF3012B541f5F41F6a66c477454",
+                "transactionHash": "0x28086de71f829a8593e2d36b2885b9077b694d16b28e3ba04f75e3f7316d1b66"
             }
         }
     }

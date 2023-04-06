@@ -4,7 +4,7 @@
 
 ## Normal
 
-* Update SBT
+* Marketplace NFT
 
 ## Used for dev
 
