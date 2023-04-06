@@ -21,13 +21,13 @@ import {
     InputAdornment,
     Autocomplete
 } from '@mui/material';
-import { BookOnline, Person, AttachMoney, LocationCity, Filter } from '@mui/icons-material';
+import { BookOnline, Person, AttachMoney, LocationCity } from '@mui/icons-material';
 
 import IRenting from '../interfaces/Renting';
 import CreateDIDDialog from '@/dialogs/CreateDID';
 
 export default function Renting() {
-    const { address } = useAccount();
+    const { address, isConnected } = useAccount();
     const { chain } = useNetwork();
 
     const router = useRouter();
@@ -115,19 +115,21 @@ export default function Renting() {
 
     useEffect(() => {
         (async () => {
-            try {
-                const DID = await readContract('SmartStayBooking', 'getUserDID', [address, { from: address }]);
-                setIsDIDValid(DID.tokenID.toNumber());
-            } catch (e) {
-                setAlert({
-                    message: 'An error has occurred. Check the developer console for more information',
-                    severity: 'error'
-                });
-                console.error(e);
+            if (isConnected) {
+                try {
+                    const DID = await readContract('SmartStayBooking', 'getUserDID', [address, { from: address }]);
+                    setIsDIDValid(DID.tokenID.toNumber());
+                } catch (e) {
+                    setAlert({
+                        message: 'An error has occurred. Check the developer console for more information',
+                        severity: 'error'
+                    });
+                    console.error(e);
+                }
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chain, address]);
+    }, [chain, address, isConnected]);
 
     return (
         <>
@@ -262,29 +264,35 @@ export default function Renting() {
                                         <Typography>Location : {renting.location}</Typography>
                                         <Typography>Tags : {renting.tags.join(', ')}</Typography>
                                         <Typography>Description : {renting.description}</Typography>
-                                        <Typography
-                                            onClick={() => {
-                                                router.push('/profile?addr=' + renting.owner);
-                                            }}
-                                            sx={{
-                                                textDecoration: 'underline',
-                                                textAlign: 'center',
-                                                cursor: 'pointer',
-                                                color: '#1976d2',
-                                                marginTop: '1rem'
-                                            }}
-                                        >
-                                            View owner profile
-                                        </Typography>
-                                        <Box display="flex" justifyContent="space-between" mt="1rem">
-                                            <Button
-                                                variant="contained"
-                                                onClick={() => handleStartBooking(renting)}
-                                                startIcon={<BookOnline />}
-                                            >
-                                                <Typography>Book</Typography>
-                                            </Button>
-                                        </Box>
+                                        {isConnected ? (
+                                            <>
+                                                <Typography
+                                                    onClick={() => {
+                                                        router.push('/profile?addr=' + renting.owner);
+                                                    }}
+                                                    sx={{
+                                                        textDecoration: 'underline',
+                                                        textAlign: 'center',
+                                                        cursor: 'pointer',
+                                                        color: '#1976d2',
+                                                        marginTop: '1rem'
+                                                    }}
+                                                >
+                                                    View owner profile
+                                                </Typography>
+                                                <Box display="flex" justifyContent="space-between" mt="1rem">
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={() => handleStartBooking(renting)}
+                                                        startIcon={<BookOnline />}
+                                                    >
+                                                        <Typography>Book</Typography>
+                                                    </Button>
+                                                </Box>
+                                            </>
+                                        ) : (
+                                            ''
+                                        )}
                                     </CardContent>
                                 </Card>
                             ))}

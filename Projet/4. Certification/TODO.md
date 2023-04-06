@@ -6,7 +6,7 @@
 
 * Update SBT
 * Logo + favicon
-* Check redirect not logged
+* Check proptypes
 
 ## Used for dev
 
@@ -19,7 +19,3 @@
 * Vérifier couleur texte avec theme clair
 * Rapport
 * Vidéo
-
-## Question
-
-* Que faire si pas de payement avant date de début de la réservation
