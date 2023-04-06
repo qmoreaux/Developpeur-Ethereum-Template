@@ -299,7 +299,7 @@ contract SmartStayBooking {
      * Retrieve deposit as recipient of a booking
      * @param _bookingID Id of booking to retrieve deposit
      */
-    function retrieveDeposit(uint256 _bookingID) external payable isBookingRecipient(_bookingID) {
+    function retrieveDeposit(uint256 _bookingID, string memory _newTokenURI) external isBookingRecipient(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.VALIDATED, 'SmartStay : Wrong booking status');
 
         uint256 depositToSend = bookings[_bookingID].depositLocked;
@@ -307,6 +307,7 @@ contract SmartStayBooking {
 
         (bool success, ) = msg.sender.call{value: depositToSend}("");
         require(success, 'SmartStay: Deposit retrieve failed');
+        SBTCollection.update(bookings[_bookingID].SBTRecipientID, _newTokenURI, getRentingFromBookingID(_bookingID).location, msg.sender);
         if (bookings[_bookingID].amountLocked == 0) {
             bookings[_bookingID].status = BookingStatus.COMPLETED;
         }
@@ -318,7 +319,7 @@ contract SmartStayBooking {
      * Retrieve amount as owner of a booking
      * @param _bookingID Id of booking to retrieve deposit
      */
-    function retrieveAmount(uint256 _bookingID) external payable isBookingOwner(_bookingID) {
+    function retrieveAmount(uint256 _bookingID, string memory _newTokenURI) external isBookingOwner(_bookingID) {
         require(bookings[_bookingID].status == BookingStatus.VALIDATED, 'SmartStay : Wrong booking status');
 
         uint256 amountToSend = bookings[_bookingID].amountLocked;
@@ -326,6 +327,7 @@ contract SmartStayBooking {
 
         (bool success, ) = msg.sender.call{value: amountToSend}("");
         require(success, 'SmartStay: Amount retrieve failed');
+        SBTCollection.update(bookings[_bookingID].SBTOwnerID, _newTokenURI, getRentingFromBookingID(_bookingID).location, msg.sender);
         if (bookings[_bookingID].depositLocked == 0) {
             bookings[_bookingID].status = BookingStatus.COMPLETED;
         }

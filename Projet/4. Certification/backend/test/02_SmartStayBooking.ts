@@ -651,7 +651,7 @@ describe('SmartStayBooking contract', () => {
                 });
 
                 it('Should retrieve deposit and check depositLocked value', async () => {
-                    await smartStayBooking.connect(addr1).retrieveDeposit(1);
+                    await smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI');
 
                     const booking = await smartStayBooking.getBooking(1);
 
@@ -660,15 +660,15 @@ describe('SmartStayBooking contract', () => {
 
                 it('Should retrieve deposit and check balances has been updated', async () => {
                     const amountToRetrieve = ethers.utils.parseUnits('1', 'ether');
-                    await expect(smartStayBooking.connect(addr1).retrieveDeposit(1)).to.changeEtherBalances(
+                    await expect(smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI')).to.changeEtherBalances(
                         [smartStayBooking.address, addr1],
                         [amountToRetrieve.mul(-1), amountToRetrieve]
                     );
                 });
 
                 it('Should retrieve deposit after owner retrieved amount and check its status', async () => {
-                    await smartStayBooking.retrieveAmount(1);
-                    await smartStayBooking.connect(addr1).retrieveDeposit(1);
+                    await smartStayBooking.retrieveAmount(1, 'https://newTokenURI');
+                    await smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI');
 
                     const booking = await smartStayBooking.getBooking(1);
 
@@ -676,22 +676,22 @@ describe('SmartStayBooking contract', () => {
                 });
 
                 it('Should retrieve deposit and emit an event', async () => {
-                    await expect(smartStayBooking.connect(addr1).retrieveDeposit(1))
+                    await expect(smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI'))
                         .to.emit(smartStayBooking, 'BookingUpdated')
                         .withArgs(anyValue);
                 });
 
                 it('Should attempt to retrieve deposit as owner and expect a revert', async () => {
-                    await expect(smartStayBooking.retrieveDeposit(1)).to.be.revertedWith(
+                    await expect(smartStayBooking.retrieveDeposit(1, 'https://newTokenURI')).to.be.revertedWith(
                         'SmartStay: Not recipient of the booking'
                     );
                 });
 
                 it('Should attempt to retrieve deposit twice and expect a revert', async () => {
-                    await smartStayBooking.retrieveAmount(1);
-                    await smartStayBooking.connect(addr1).retrieveDeposit(1);
+                    await smartStayBooking.retrieveAmount(1, 'https://newTokenURI');
+                    await smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI');
 
-                    await expect(smartStayBooking.connect(addr1).retrieveDeposit(1)).to.be.revertedWith(
+                    await expect(smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI')).to.be.revertedWith(
                         'SmartStay : Wrong booking status'
                     );
                 });
@@ -744,7 +744,7 @@ describe('SmartStayBooking contract', () => {
                 });
 
                 it('Should retrieve amount and check amountLocked value', async () => {
-                    await smartStayBooking.retrieveAmount(1);
+                    await smartStayBooking.retrieveAmount(1, 'https://newTokenURI');
 
                     const booking = await smartStayBooking.getBooking(1);
 
@@ -753,15 +753,15 @@ describe('SmartStayBooking contract', () => {
 
                 it('Should retrieve amount and check balances has been updated', async () => {
                     const amountToRetrieve = ethers.utils.parseUnits('0.3', 'ether');
-                    await expect(smartStayBooking.retrieveAmount(1)).to.changeEtherBalances(
+                    await expect(smartStayBooking.retrieveAmount(1, 'https://newTokenURI')).to.changeEtherBalances(
                         [smartStayBooking.address, owner],
                         [amountToRetrieve.mul(-1), amountToRetrieve]
                     );
                 });
 
                 it('Should retrieve amount after recipient retrieved deposit and check its status', async () => {
-                    await smartStayBooking.connect(addr1).retrieveDeposit(1);
-                    await smartStayBooking.retrieveAmount(1);
+                    await smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI');
+                    await smartStayBooking.retrieveAmount(1, 'https://newTokenURI');
 
                     const booking = await smartStayBooking.getBooking(1);
 
@@ -769,22 +769,22 @@ describe('SmartStayBooking contract', () => {
                 });
 
                 it('Should retrieve amount and emit an event', async () => {
-                    await expect(smartStayBooking.retrieveAmount(1))
+                    await expect(smartStayBooking.retrieveAmount(1, 'https://newTokenURI'))
                         .to.emit(smartStayBooking, 'BookingUpdated')
                         .withArgs(anyValue);
                 });
 
                 it('Should attempt to retrieve amount as recipient and expect a revert', async () => {
-                    await expect(smartStayBooking.connect(addr1).retrieveAmount(1)).to.be.revertedWith(
+                    await expect(smartStayBooking.connect(addr1).retrieveAmount(1, 'https://newTokenURI')).to.be.revertedWith(
                         'SmartStay: Not owner of the booking'
                     );
                 });
 
                 it('Should attempt to retrieve amount twice and expect a revert', async () => {
-                    await smartStayBooking.connect(addr1).retrieveDeposit(1);
-                    await smartStayBooking.retrieveAmount(1);
+                    await smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI');
+                    await smartStayBooking.retrieveAmount(1, 'https://newTokenURI');
 
-                    await expect(smartStayBooking.retrieveAmount(1)).to.be.revertedWith(
+                    await expect(smartStayBooking.retrieveAmount(1, 'https://newTokenURI')).to.be.revertedWith(
                         'SmartStay : Wrong booking status'
                     );
                 });
@@ -951,8 +951,8 @@ describe('SmartStayBooking contract', () => {
                 await smartStayBooking.validateBookingAsOwner(1);
                 await smartStayBooking.connect(addr1).validateBookingAsRecipient(1);
 
-                await smartStayBooking.retrieveAmount(1);
-                await smartStayBooking.connect(addr1).retrieveDeposit(1);
+                await smartStayBooking.retrieveAmount(1, 'https://newTokenURI');
+                await smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI');
             });
 
             it('Should rate the owner and check a rating has been created', async () => {
@@ -1078,8 +1078,8 @@ describe('SmartStayBooking contract', () => {
                 await smartStayBooking.validateBookingAsOwner(1);
                 await smartStayBooking.connect(addr1).validateBookingAsRecipient(1);
 
-                await smartStayBooking.retrieveAmount(1);
-                await smartStayBooking.connect(addr1).retrieveDeposit(1);
+                await smartStayBooking.retrieveAmount(1, 'https://newTokenURI');
+                await smartStayBooking.connect(addr1).retrieveDeposit(1, 'https://newTokenURI');
             });
 
             it('Should rate the recipient and check a rating has been created', async () => {
