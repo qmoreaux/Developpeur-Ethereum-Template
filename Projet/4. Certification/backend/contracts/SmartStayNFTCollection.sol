@@ -3,19 +3,19 @@
 pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-
-import './libraries/Tokens.sol';
- 
-import "hardhat/console.sol";
 
 contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private tokenID;
 
-    mapping (address => Tokens.SmartStayNFT[]) tokenOwner;
+    mapping (address => SmartStayNFT[]) tokenOwner;
+
+    struct SmartStayNFT {
+        uint256 tokenID;
+        string tokenURI;
+    } 
  
     constructor() ERC721 ("SmartStayNFTCollection", "SSNFT") {}
 
@@ -24,7 +24,7 @@ contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
      * @param _address Address of the user to get the NFTs
      * @return Array of NFT possessed by the address passed in parameters
      */
-    function getUserNFT(address _address) public view returns  (Tokens.SmartStayNFT[] memory) {
+    function getUserNFT(address _address) public view returns  (SmartStayNFT[] memory) {
         return tokenOwner[_address];
     }
  
@@ -40,7 +40,7 @@ contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
         _setTokenURI(newTokenID, _tokenURI);
 
 
-        Tokens.SmartStayNFT memory _token;
+        SmartStayNFT memory _token;
         _token.tokenID = newTokenID;
         _token.tokenURI = _tokenURI;
         tokenOwner[to].push(_token);
@@ -77,4 +77,5 @@ contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
 
         _burn(_tokenID);
     }
+
 }

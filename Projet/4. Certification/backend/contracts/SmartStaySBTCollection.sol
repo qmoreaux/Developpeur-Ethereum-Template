@@ -7,15 +7,23 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import './libraries/Tokens.sol';
-
 import 'hardhat/console.sol';
  
 contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private tokenID;
 
-    mapping (address => Tokens.SmartStaySBT[]) tokenOwner;
+    mapping (address => SmartStaySBT[]) tokenOwner;
+
+     struct SmartStaySBT {
+        uint256 tokenID;
+        uint256 bookingID;
+        string tokenURI;
+        string location;
+        uint64 duration;
+        uint128 price;
+        address owner;
+    } 
  
     constructor() ERC721 ("SmartStayNFTCollection", "SSNFT") {}
 
@@ -24,7 +32,7 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
      * @param _address Address of the user to get the SBTs
      * @return Array of SBT possessed by the address passed in parameters
      */
-    function getUserSBT(address _address) public view returns  (Tokens.SmartStaySBT[] memory) {
+    function getUserSBT(address _address) public view returns  (SmartStaySBT[] memory) {
         return tokenOwner[_address];
     }
  
@@ -42,7 +50,7 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
         _mint(_to, newTokenID);
         _setTokenURI(newTokenID, _tokenURI);
 
-        Tokens.SmartStaySBT memory _token;
+        SmartStaySBT memory _token;
         _token.tokenID = newTokenID;
         _token.tokenURI = _tokenURI;
         _token.duration = _duration;

@@ -4,7 +4,9 @@ import {
     SmartStayRenting,
     SmartStayRenting__factory,
     SmartStayBooking,
-    SmartStayBooking__factory
+    SmartStayBooking__factory,
+    SmartStayMarketplace,
+    SmartStayMarketplace__factory
 } from '../typechain-types';
 
 const filename: string = '../frontend/contracts/SmartStay.json';
@@ -20,7 +22,9 @@ fileContentJSON = JSON.parse(fileContent);
 
 async function main() {
     const addressRenting = await deployRenting();
-    await deployBooking(addressRenting);
+    const NFTCollectionAddress = await deployBooking(addressRenting);
+    await deployMarketplace(NFTCollectionAddress);
+    await addNFTCollectionToArtifacts();
 
     fs.writeFileSync(filename, JSON.stringify(fileContentJSON));
 }
@@ -80,7 +84,50 @@ const deployBooking = async (address: string) => {
 
     console.log(`SmartStayBooking deployed  at address ${smartStayBooking.address}`);
 
-    return smartStayBooking.address;
+    return await smartStayBooking.getNFTCollection();
+};
+
+const deployMarketplace = async (address: string) => {
+    const SmartStayMarketplace: SmartStayMarketplace__factory = await ethers.getContractFactory('SmartStayMarketplace');
+    const smartStayMarketplace: SmartStayMarketplace = await SmartStayMarketplace.deploy(address);
+    await smartStayMarketplace.deployed();
+
+    const artifacts = await hre.artifacts.readArtifact('SmartStayMarketplace');
+
+    if (!fileContentJSON.SmartStayMarketplace) {
+        fileContentJSON = { ...fileContentJSON, SmartStayMarketplace: {} };
+    }
+    if (
+        !fileContentJSON.SmartStayMarketplace.abi ||
+        JSON.stringify(fileContentJSON.SmartStayMarketplace.abi) !== JSON.stringify(artifacts.abi)
+    ) {
+        fileContentJSON.SmartStayMarketplace = {
+            abi: artifacts.abi,
+            networks: {}
+        };
+    }
+    fileContentJSON.SmartStayMarketplace.networks[smartStayMarketplace.deployTransaction.chainId] = {
+        address: smartStayMarketplace.address,
+        transactionHash: smartStayMarketplace.deployTransaction.hash
+    };
+
+    console.log(`SmartStayMarketplace deployed  at address ${smartStayMarketplace.address}`);
+};
+
+const addNFTCollectionToArtifacts = async () => {
+    const artifacts = await hre.artifacts.readArtifact('SmartStayNFTCollection');
+
+    if (!fileContentJSON.SmartStayNFTCollection) {
+        fileContentJSON = { ...fileContentJSON, SmartStayNFTCollection: {} };
+    }
+    if (
+        !fileContentJSON.SmartStayNFTCollection.abi ||
+        JSON.stringify(fileContentJSON.SmartStayNFTCollection.abi) !== JSON.stringify(artifacts.abi)
+    ) {
+        fileContentJSON.SmartStayNFTCollection = {
+            abi: artifacts.abi
+        };
+    }
 };
 
 // We recommend this pattern to be able to use async/await everywhere

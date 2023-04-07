@@ -16,20 +16,18 @@ import "./SmartStayRenting.sol";
  */
 contract SmartStayBooking {
 
-    SmartStayNFTCollection NFTCollection;
-    SmartStaySBTCollection SBTCollection;
-    SmartStayDIDCollection DIDCollection;
-
-
-    SmartStayRenting smartStayRenting;
-
     using Counters for Counters.Counter;
 
     // State Variables
 
+    SmartStayRenting smartStayRenting;
+
+    SmartStayNFTCollection NFTCollection;
+    SmartStaySBTCollection SBTCollection;
+    SmartStayDIDCollection DIDCollection;
+
     Counters.Counter private indexBooking;
     Counters.Counter private indexRating;
-
 
     Booking[] bookings;
     mapping(address => uint[]) bookingRecipient; // mapping to array of booking id (as recipient)
@@ -150,8 +148,8 @@ contract SmartStayBooking {
      */
     function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
         // TODO DO NOT FORGET TO UNCOMMENT
-        // require(msg.sender != smartStayRenting.getRenting(_rentingID).owner, 'SmartStay : Can not create booking for your own rentings');
-        // require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
+        require(msg.sender != smartStayRenting.getRenting(_rentingID).owner, 'SmartStay : Can not create booking for your own rentings');
+        require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
         require (smartStayRenting.getRenting(_rentingID).personCount >= _personCount, 'SmartStay : Too many persons for this renting');
 
         Booking memory _booking;
@@ -307,6 +305,7 @@ contract SmartStayBooking {
 
         (bool success, ) = msg.sender.call{value: depositToSend}("");
         require(success, 'SmartStay: Deposit retrieve failed');
+
         SBTCollection.update(bookings[_bookingID].SBTRecipientID, _newTokenURI, getRentingFromBookingID(_bookingID).location, msg.sender);
         if (bookings[_bookingID].amountLocked == 0) {
             bookings[_bookingID].status = BookingStatus.COMPLETED;
@@ -327,6 +326,7 @@ contract SmartStayBooking {
 
         (bool success, ) = msg.sender.call{value: amountToSend}("");
         require(success, 'SmartStay: Amount retrieve failed');
+        
         SBTCollection.update(bookings[_bookingID].SBTOwnerID, _newTokenURI, getRentingFromBookingID(_bookingID).location, msg.sender);
         if (bookings[_bookingID].depositLocked == 0) {
             bookings[_bookingID].status = BookingStatus.COMPLETED;
@@ -455,7 +455,7 @@ contract SmartStayBooking {
      * @param _address Adress to get the NFT from
      * @return Array of SmartStayNFT
      */
-    function getUserNFT(address _address) public view returns (Tokens.SmartStayNFT[] memory) {
+    function getUserNFT(address _address) public view returns (SmartStayNFTCollection.SmartStayNFT[] memory) {
         return NFTCollection.getUserNFT(_address);
     }
 
@@ -464,7 +464,7 @@ contract SmartStayBooking {
      * @param _address Adress to get the SBT from
      * @return Array of SmartStaySBT
      */
-    function getUserSBT(address _address) public view returns (Tokens.SmartStaySBT[] memory) {
+    function getUserSBT(address _address) public view returns (SmartStaySBTCollection.SmartStaySBT[] memory) {
         return SBTCollection.getUserSBT(_address);
     }
 
@@ -473,7 +473,7 @@ contract SmartStayBooking {
      * @param _address Adress to get the DID from
      * @return A single SmartStayDID
      */
-    function getUserDID(address _address) public view returns (Tokens.SmartStayDID memory) {
+    function getUserDID(address _address) public view returns (SmartStayDIDCollection.SmartStayDID memory) {
         return DIDCollection.getUserDID(_address);
     }
 

@@ -6,14 +6,21 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-
-import './libraries/Tokens.sol';
  
 contract SmartStayDIDCollection is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private tokenID;
 
-    mapping (address => Tokens.SmartStayDID) tokenOwner;
+    mapping (address => SmartStayDID) tokenOwner;
+
+    struct SmartStayDID {
+        uint256 tokenID;
+        string tokenURI;
+        uint256 registeringNumber;
+        string lastname;
+        string firstname;
+        string email;
+    } 
  
     constructor() ERC721 ("SmartStayDIDCollection", "SSDID") {}
 
@@ -22,7 +29,7 @@ contract SmartStayDIDCollection is ERC721URIStorage, Ownable {
      * @param _address Address of the user to get the DID
      * @return DID possessed by the address passed in parameters
      */
-    function getUserDID(address _address) public view returns  (Tokens.SmartStayDID memory) {
+    function getUserDID(address _address) public view returns  (SmartStayDID memory) {
         return tokenOwner[_address];
     }
  
@@ -43,7 +50,7 @@ contract SmartStayDIDCollection is ERC721URIStorage, Ownable {
         _setTokenURI(newTokenID, _tokenURI);
 
 
-        Tokens.SmartStayDID memory _token;
+        SmartStayDID memory _token;
         _token.tokenID = newTokenID;
         _token.tokenURI = _tokenURI;
         _token.firstname = _firstname;
