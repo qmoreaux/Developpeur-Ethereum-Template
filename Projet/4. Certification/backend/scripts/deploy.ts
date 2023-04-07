@@ -125,7 +125,8 @@ const addNFTCollectionToArtifacts = async () => {
         JSON.stringify(fileContentJSON.SmartStayNFTCollection.abi) !== JSON.stringify(artifacts.abi)
     ) {
         fileContentJSON.SmartStayNFTCollection = {
-            abi: artifacts.abi
+            abi: artifacts.abi,
+            networks: {}
         };
     }
 };

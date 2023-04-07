@@ -36,6 +36,7 @@ export default function BookRentingDialog(props: IBookingDialog) {
     useEffect(() => {
         if (_renting) {
             setRenting(_renting);
+            setPersonCount(_renting.personCount);
         }
     }, [_renting]);
 

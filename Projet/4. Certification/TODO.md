@@ -4,7 +4,11 @@
 
 ## Normal
 
-* Marketplace NFT
+* Marketplace NFT frontend
+* Add price to listing
+* Check approved before asking
+* Check get metadata in myListed and listed
+* Change gateway pinata by ipfs.io/ipfs/
 
 ## Used for dev
 
@@ -19,7 +23,7 @@
 * Vidéo
 * Scripts
 
-# Point d'amélioration possible
+## Point d'amélioration possible
 
 * Utiliser Event dans le front
 * Meilleur gestion de l'approval

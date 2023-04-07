@@ -83,6 +83,7 @@ export default function Renting() {
             searchRentings();
         }
     };
+
     const searchRentings = useCallback(async () => {
         try {
             setRentings(

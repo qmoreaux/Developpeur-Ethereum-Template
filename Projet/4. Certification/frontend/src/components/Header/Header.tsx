@@ -45,6 +45,9 @@ const Header = () => {
                         <Typography>
                             <Link href="/profile">Profile</Link>
                         </Typography>
+                        <Typography>
+                            <Link href="/marketplace">Marketplace</Link>
+                        </Typography>
                     </>
                 ) : (
                     ''

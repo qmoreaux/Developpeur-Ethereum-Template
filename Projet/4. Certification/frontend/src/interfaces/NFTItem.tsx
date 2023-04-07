@@ -8,6 +8,7 @@ interface Attributes {
 export default interface INFTItem {
     tokenID: BigNumber;
     tokenURI: string;
+    price: BigNumber;
     name: string;
     image: string;
     description: string;
