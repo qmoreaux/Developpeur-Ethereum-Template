@@ -6,7 +6,8 @@ import { ethers, BigNumber } from 'ethers';
 
 import { useAlertContext, useContractContext } from '@/context';
 
-import { Typography, Card, Button, CardContent, CardMedia } from '@mui/material';
+import { TextField, Typography, Card, Stack, Button, CardContent, CardMedia, InputAdornment } from '@mui/material';
+import { AttachMoney } from '@mui/icons-material';
 
 import INFTItem from '@/interfaces/NFTItem';
 import IArtifacts from '@/interfaces/Artifacts';
@@ -21,20 +22,25 @@ export default function Available({ NFTCollectionAddress, NFTItem, onItemListed 
     const { setAlert } = useAlertContext();
     const { writeContract } = useContractContext();
 
-    const [price, setPrice] = useState<number>(10);
+    const [showPrice, setShowPrice] = useState<boolean>(false);
+    const [price, setPrice] = useState<string>('');
+
+    const isValidPrice = () => {
+        return /^\d{0,3}(\.\d{0,18})?$/.test(price);
+    };
 
     const listOnMarketplace = async (token: INFTItem) => {
         try {
             await approveMarketplace(token);
             const transaction = await writeContract('SmartStayMarketplace', 'listToken', [
                 token.tokenID,
-                price,
+                ethers.utils.parseEther(price),
                 { from: address }
             ]);
             await transaction.wait();
             setAlert({ message: 'Your NFT has successfully been listed', severity: 'success' });
 
-            onItemListed({ ...token, price: BigNumber.from(price) });
+            onItemListed({ ...token, price: ethers.utils.parseEther(price) });
         } catch (e) {
             setAlert({
                 message: 'An error has occurred. Check the developer console for more information',
@@ -77,9 +83,38 @@ export default function Available({ NFTCollectionAddress, NFTItem, onItemListed 
             ></CardMedia>
             <CardContent>
                 <Typography>NFT ID : #{NFTItem.tokenID.toString()}</Typography>
-                <Button variant="contained" onClick={() => listOnMarketplace(NFTItem)}>
-                    List on marketplace
-                </Button>
+
+                {showPrice ? (
+                    <Stack>
+                        <TextField
+                            margin="dense"
+                            size="small"
+                            label="Price"
+                            InputProps={{
+                                inputProps: {
+                                    min: 0
+                                },
+                                endAdornment: <InputAdornment position="end">ETH</InputAdornment>
+                            }}
+                            error={!isValidPrice()}
+                            helperText={isValidPrice() ? '' : 'Wrong format'}
+                            onChange={(event) => {
+                                setPrice(event.target.value);
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            onClick={() => listOnMarketplace(NFTItem)}
+                            disabled={!isValidPrice() || price === ''}
+                        >
+                            List on marketplace
+                        </Button>
+                    </Stack>
+                ) : (
+                    <Button variant="contained" onClick={() => setShowPrice(true)}>
+                        List on marketplace
+                    </Button>
+                )}
             </CardContent>
         </Card>
     );
