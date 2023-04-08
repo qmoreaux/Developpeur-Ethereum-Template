@@ -26,8 +26,7 @@ export default function Completed({ booking, setBooking, type }: ICardBookingSta
             const transaction = await writeContract('SmartStayBooking', 'rateOwner', [
                 booking.id.toNumber(),
                 note,
-                comment,
-                { from: address }
+                comment
             ]);
             await transaction.wait();
 
@@ -55,8 +54,7 @@ export default function Completed({ booking, setBooking, type }: ICardBookingSta
             const transaction = await writeContract('SmartStayBooking', 'rateRecipient', [
                 booking.id.toNumber(),
                 note,
-                comment,
-                { from: address }
+                comment
             ]);
             await transaction.wait();
 

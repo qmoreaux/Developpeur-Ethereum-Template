@@ -4,14 +4,8 @@
 
 ## Normal
 
-* Create demo mod
 * Gérer un tableau de tableau de tags
 * Vérifier couleur texte avec theme clair
-
-## Used for dev
-
-* Dapp : Create booking : Start date > current date
-* Search : Do not show own renting
 
 ## Tomorrow
 

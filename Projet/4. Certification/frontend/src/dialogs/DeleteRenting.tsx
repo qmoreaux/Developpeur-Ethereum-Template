@@ -34,10 +34,7 @@ export default function DeleteRentingDialog(props: IRentingDialog) {
     const deleteRenting = async () => {
         setLoadingDelete(true);
         try {
-            const transaction = await writeContract('SmartStayRenting', 'deleteRenting', [
-                renting.id.toNumber(),
-                { from: address }
-            ]);
+            const transaction = await writeContract('SmartStayRenting', 'deleteRenting', [renting.id.toNumber()]);
             await transaction.wait();
             await unpinFileFromIPFS(renting.imageURL.slice(21));
 

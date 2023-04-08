@@ -21,10 +21,7 @@ export default function OnGoing({ booking, setBooking, type }: ICardBookingStatu
     const handleCancelBooking = async () => {
         setLoadingCancel(true);
         try {
-            const transaction = await writeContract('SmartStayBooking', 'cancelBooking', [
-                booking.id,
-                { from: address }
-            ]);
+            const transaction = await writeContract('SmartStayBooking', 'cancelBooking', [booking.id]);
             await transaction.wait();
 
             setAlert({ message: 'You have successfully canceled the booking', severity: 'success' });
@@ -45,8 +42,7 @@ export default function OnGoing({ booking, setBooking, type }: ICardBookingStatu
         setLoadingValidate(true);
         try {
             const transaction = await writeContract('SmartStayBooking', 'validateBookingAsOwner', [
-                booking.id.toNumber(),
-                { from: address }
+                booking.id.toNumber()
             ]);
             await transaction.wait();
 
@@ -72,8 +68,7 @@ export default function OnGoing({ booking, setBooking, type }: ICardBookingStatu
         setLoadingValidate(true);
         try {
             const transaction = await writeContract('SmartStayBooking', 'validateBookingAsRecipient', [
-                booking.id.toNumber(),
-                { from: address }
+                booking.id.toNumber()
             ]);
             await transaction.wait();
 

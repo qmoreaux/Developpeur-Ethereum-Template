@@ -34,8 +34,7 @@ export default function Available({ NFTCollectionAddress, NFTItem, onItemListed 
             await approveMarketplace(token);
             const transaction = await writeContract('SmartStayMarketplace', 'listToken', [
                 token.tokenID,
-                ethers.utils.parseEther(price),
-                { from: address }
+                ethers.utils.parseEther(price)
             ]);
             await transaction.wait();
             setAlert({ message: 'Your NFT has successfully been listed', severity: 'success' });

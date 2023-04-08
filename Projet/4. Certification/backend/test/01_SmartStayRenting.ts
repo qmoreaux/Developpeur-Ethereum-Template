@@ -13,7 +13,7 @@ describe('SmartStayRentingTest', () => {
         const _SmartStayRenting = await ethers.getContractFactory('SmartStayRenting');
         const [_owner, _addr1] = await ethers.getSigners();
 
-        const _smartStayRenting = await _SmartStayRenting.deploy();
+        const _smartStayRenting = await _SmartStayRenting.deploy(false);
 
         await _smartStayRenting.deployed();
 
@@ -318,27 +318,29 @@ describe('SmartStayRentingTest', () => {
         });
 
         it('Should search with default params and check the length', async () => {
-            const rentings = await smartStayRenting.searchRenting(0, 0, '', []);
+            const rentings = await smartStayRenting.connect(addr1).searchRenting(0, 0, '', []);
             expect(rentings.length).to.be.equal(5);
         });
 
         it('Should search with unitPrice and check the length', async () => {
-            const rentings = await smartStayRenting.searchRenting(ethers.utils.parseUnits('0.5', 'ether'), 0, '', []);
+            const rentings = await smartStayRenting
+                .connect(addr1)
+                .searchRenting(ethers.utils.parseUnits('0.5', 'ether'), 0, '', []);
             expect(rentings.length).to.be.equal(1);
         });
 
         it('Should search with personCount and check the length', async () => {
-            const rentings = await smartStayRenting.searchRenting(0, 4, '', []);
+            const rentings = await smartStayRenting.connect(addr1).searchRenting(0, 4, '', []);
             expect(rentings.length).to.be.equal(3);
         });
 
         it('Should search with location and check the length', async () => {
-            const rentings = await smartStayRenting.searchRenting(0, 0, 'Paris', []);
+            const rentings = await smartStayRenting.connect(addr1).searchRenting(0, 0, 'Paris', []);
             expect(rentings.length).to.be.equal(3);
         });
 
         it('Should search with location and check the length', async () => {
-            const rentings = await smartStayRenting.searchRenting(0, 0, '', ['Maison']);
+            const rentings = await smartStayRenting.connect(addr1).searchRenting(0, 0, '', ['Maison']);
             expect(rentings.length).to.be.equal(4);
         });
     });

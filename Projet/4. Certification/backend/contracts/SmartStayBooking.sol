@@ -35,6 +35,8 @@ contract SmartStayBooking {
 
     mapping(address => Rating[]) ratings;
 
+    bool demoMode; // Used to avoid certain checks to make demo easier
+
     // Events 
 
     event BookingCreated(Booking booking);
@@ -122,13 +124,15 @@ contract SmartStayBooking {
 
     // Constructor
     
-    constructor(address _address) {
+    constructor(address _address, bool _demoMode) {
 
         NFTCollection = new SmartStayNFTCollection();
         SBTCollection = new SmartStaySBTCollection();
         DIDCollection = new SmartStayDIDCollection();
 
         smartStayRenting = SmartStayRenting(_address);
+
+        demoMode = _demoMode;
 
         Booking memory _booking;
         bookings.push(_booking);
@@ -147,9 +151,8 @@ contract SmartStayBooking {
      * @param _personCount Number of person
      */
     function createBooking(uint256 _rentingID, uint64 _timestampStart, uint64 _duration, uint64 _personCount) external {
-        // TODO DO NOT FORGET TO UNCOMMENT
-        // require(msg.sender != smartStayRenting.getRenting(_rentingID).owner, 'SmartStay : Can not create booking for your own rentings');
-        // require (block.timestamp < _timestampStart, 'SmartStay : Can not create a booking in the past');
+        require(msg.sender != smartStayRenting.getRenting(_rentingID).owner || demoMode, 'SmartStay : Can not create booking for your own rentings');
+        require (block.timestamp < _timestampStart || demoMode, 'SmartStay : Can not create a booking in the past');
         require (smartStayRenting.getRenting(_rentingID).personCount >= _personCount, 'SmartStay : Too many persons for this renting');
 
         Booking memory _booking;

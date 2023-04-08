@@ -69,8 +69,7 @@ export default function CardBooking({ _booking, type }: ICardBooking) {
             if (response.success === true) {
                 const transaction = await writeContract('SmartStayBooking', 'redeemNFT', [
                     booking.id.toNumber(),
-                    response.pinataURL,
-                    { from: address }
+                    response.pinataURL
                 ]);
                 await transaction.wait();
 

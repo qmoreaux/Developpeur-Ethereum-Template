@@ -13,11 +13,11 @@ describe('SmartStayBookingTest', () => {
     const deploySmartStayFixture = async () => {
         const [_owner, _addr1] = await ethers.getSigners();
         const _SmartStayRenting = await ethers.getContractFactory('SmartStayRenting');
-        const _smartStayRenting = await _SmartStayRenting.deploy();
+        const _smartStayRenting = await _SmartStayRenting.deploy(false);
         const instance = await _smartStayRenting.deployed();
 
         const _SmartStayBooking = await ethers.getContractFactory('SmartStayBooking');
-        const _smartStayBooking = await _SmartStayBooking.deploy(instance.address);
+        const _smartStayBooking = await _SmartStayBooking.deploy(instance.address, false);
 
         return { _smartStayRenting, _smartStayBooking, _owner, _addr1 };
     };

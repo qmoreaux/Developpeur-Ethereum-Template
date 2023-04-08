@@ -49,9 +49,7 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
             if (pinataRequest.success) {
                 const transaction = await writeContract('SmartStayBooking', 'retrieveDeposit', [
                     booking.id.toNumber(),
-                    pinataRequest.pinataURL,
-
-                    { from: address }
+                    pinataRequest.pinataURL
                 ]);
                 await transaction.wait();
                 await unpinFileFromIPFS(SBT.tokenURI.slice(21));
@@ -101,8 +99,7 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
             if (pinataRequest.success) {
                 const transaction = await writeContract('SmartStayBooking', 'retrieveAmount', [
                     booking.id.toNumber(),
-                    pinataRequest.pinataURL,
-                    { from: address }
+                    pinataRequest.pinataURL
                 ]);
                 await transaction.wait();
                 await unpinFileFromIPFS(SBT.tokenURI.slice(21));

@@ -83,10 +83,7 @@ export default function CreateDIDDialog(props: IRentingDialog) {
                 firstname,
                 lastname,
                 email,
-                registeringNumber,
-                {
-                    from: address
-                }
+                registeringNumber
             ]);
             const receipt = await transaction.wait();
             setAlert({ message: 'Your DID was successfully created', severity: 'success' });

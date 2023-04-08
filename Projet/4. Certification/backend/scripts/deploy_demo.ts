@@ -31,7 +31,7 @@ async function main() {
 
 const deployRenting = async () => {
     const SmartStayRenting: SmartStayRenting__factory = await ethers.getContractFactory('SmartStayRenting');
-    const smartStayRenting: SmartStayRenting = await SmartStayRenting.deploy(false);
+    const smartStayRenting: SmartStayRenting = await SmartStayRenting.deploy(true);
     await smartStayRenting.deployed();
 
     const artifacts = await hre.artifacts.readArtifact('SmartStayRenting');
@@ -60,7 +60,7 @@ const deployRenting = async () => {
 
 const deployBooking = async (address: string) => {
     const SmartStayBooking: SmartStayBooking__factory = await ethers.getContractFactory('SmartStayBooking');
-    const smartStayBooking: SmartStayBooking = await SmartStayBooking.deploy(address, false);
+    const smartStayBooking: SmartStayBooking = await SmartStayBooking.deploy(address, true);
     await smartStayBooking.deployed();
 
     const artifacts = await hre.artifacts.readArtifact('SmartStayBooking');

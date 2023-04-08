@@ -19,6 +19,7 @@ contract SmartStayRenting {
     mapping(address => Renting[]) userRentings;
     Renting[] rentings;
 
+    bool demoMode; // Used to avoid certain checks to make demo easier
 
     // Events 
 
@@ -52,7 +53,9 @@ contract SmartStayRenting {
 
     // Constructor
 
-    constructor() {
+    constructor(bool _demoMode) {
+
+        demoMode = _demoMode;
 
         // Create empty renting and booking to avoid issue with index 0
         Renting memory _renting;
@@ -79,7 +82,9 @@ contract SmartStayRenting {
                     if (_maxPersonCount == 0 || rentings[i].personCount >= _maxPersonCount) {
                         if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
                             if (_tags.length == 0 || containTags(rentings[i].tags, _tags)) {
-                                _count++;
+                                if (rentings[i].owner != msg.sender || demoMode) {
+                                    _count++;
+                                }
                             }
                         }
                     }
@@ -95,8 +100,10 @@ contract SmartStayRenting {
                     if (_maxPersonCount == 0 || rentings[i].personCount >= _maxPersonCount) {
                         if (bytes(_location).length == 0 || compareString(rentings[i].location,_location)) {
                             if (_tags.length == 0 || containTags(rentings[i].tags, _tags)) {
-                                _rentings[_index] = rentings[i];
-                                _index++;
+                                if (rentings[i].owner != msg.sender || demoMode) {
+                                    _rentings[_index] = rentings[i];
+                                    _index++;
+                                }
                             }
                         }
                     }

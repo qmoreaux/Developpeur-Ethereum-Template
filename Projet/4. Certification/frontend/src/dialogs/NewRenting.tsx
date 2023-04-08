@@ -118,7 +118,7 @@ export default function NewRentingDialog(props: IRentingDialog) {
             const transaction = await writeContract('SmartStayRenting', 'createRenting', [
                 {
                     id: 0,
-                    owner: '0x0000000000000000000000000000000000000000',
+                    owner: ethers.constants.AddressZero,
                     unitPrice: ethers.utils.parseUnits(unitPrice.toString(), 'ether'),
                     deposit: ethers.utils.parseUnits(deposit.toString(), 'ether'),
                     personCount,
@@ -126,9 +126,6 @@ export default function NewRentingDialog(props: IRentingDialog) {
                     tags,
                     description,
                     imageURL
-                },
-                {
-                    from: address
                 }
             ]);
             const receipt = await transaction.wait();

@@ -135,7 +135,7 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
                 renting.id.toNumber(),
                 {
                     id: 0,
-                    owner: '0x0000000000000000000000000000000000000000',
+                    owner: ethers.constants.AddressZero,
                     unitPrice: ethers.utils.parseUnits(unitPrice, 'ether'),
                     deposit: ethers.utils.parseUnits(deposit, 'ether'),
                     personCount,
@@ -143,9 +143,6 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
                     tags,
                     description,
                     imageURL
-                },
-                {
-                    from: address
                 }
             ]);
             const receipt = await transaction.wait();

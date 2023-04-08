@@ -18,7 +18,7 @@ export default function Listed({ NFTItem, onItemSold }: any) {
         try {
             const transaction = await writeContract('SmartStayMarketplace', 'delistToken', [
                 token.tokenID,
-                { value: token.price, from: address }
+                { value: token.price }
             ]);
             await transaction.wait();
             setAlert({ message: 'NFT successfully purchased', severity: 'success' });

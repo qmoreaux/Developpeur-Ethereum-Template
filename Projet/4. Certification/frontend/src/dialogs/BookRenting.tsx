@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { useAccount } from 'wagmi';
-import { Dialog, DialogTitle, Stack, Box, TextField } from '@mui/material';
+import { Dialog, DialogTitle, Stack, Box, TextField, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 import { useAlertContext, useContractContext } from '@/context';
@@ -48,6 +48,13 @@ export default function BookRentingDialog(props: IBookingDialog) {
         return startDate && duration && personCount;
     };
 
+    const showDemoWarning = () => {
+        console.log(new Date(startDate).getTime());
+        console.log(new Date(new Date().setDate(new Date().getDate() + 1)).getTime());
+
+        return new Date(startDate).getTime() < new Date().getTime();
+    };
+
     const createBooking = async () => {
         setLoadingCreate(true);
         try {
@@ -55,8 +62,7 @@ export default function BookRentingDialog(props: IBookingDialog) {
                 renting.id.toNumber(),
                 new Date(new Date(startDate).setHours(0, 0, 0, 0)).getTime() / 1000,
                 duration,
-                personCount,
-                { from: address }
+                personCount
             ]);
 
             await transaction.wait();
@@ -131,6 +137,20 @@ export default function BookRentingDialog(props: IBookingDialog) {
                             }}
                         />
                     </Box>
+                    {showDemoWarning() ? (
+                        <Typography
+                            variant="body2"
+                            sx={{ width: '300px', fontSize: '12px', fontStyle: 'italic' }}
+                            textAlign={'center'}
+                            color={'#d32f2f'}
+                        >
+                            It seems you are trying to create a booking in the past. <br />
+                            Please make sure the contract you are interacting with is in demo mode to avoid any
+                            unexpected errors.
+                        </Typography>
+                    ) : (
+                        ''
+                    )}
                     <Box
                         sx={{
                             width: '300px'

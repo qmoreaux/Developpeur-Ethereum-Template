@@ -16,10 +16,7 @@ export default function MyListed({ NFTItem, onItemDelisted }: any) {
 
     const delistToken = async (token: INFTItem) => {
         try {
-            const transaction = await writeContract('SmartStayMarketplace', 'delistToken', [
-                token.tokenID,
-                { from: address }
-            ]);
+            const transaction = await writeContract('SmartStayMarketplace', 'delistToken', [token.tokenID]);
             await transaction.wait();
             setAlert({ message: 'Your NFT has successfully been delisted', severity: 'success' });
             onItemDelisted(token);

@@ -75,8 +75,7 @@ export default function WaitingForPayement({ booking, setBooking, type }: ICardB
                     metadataOwner.pinataURL,
                     metadataRecipient.pinataURL,
                     {
-                        value: renting.unitPrice.mul(booking.duration).add(renting.deposit),
-                        from: address
+                        value: renting.unitPrice.mul(booking.duration).add(renting.deposit)
                     }
                 ]);
                 await transaction.wait();
