@@ -4,14 +4,11 @@
 
 ## Normal
 
-* Gérer un tableau de tableau de tags
-* Vérifier couleur texte avec theme clair
 
 ## Tomorrow
 
 * Rapport
 * Vidéo
-* Scripts
 
 ## Point d'amélioration possible
 
