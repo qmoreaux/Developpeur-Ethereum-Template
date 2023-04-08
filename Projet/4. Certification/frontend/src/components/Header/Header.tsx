@@ -28,7 +28,7 @@ const Header = () => {
             sx={{ backgroundColor: 'whitesmoke' }}
         >
             <Box width="30%">
-                <Image src="/../public/SmartStay.png" alt="Logo" width={60} height={60}></Image>
+                <Image src="/SmartStay.png" alt="Logo" width={60} height={60}></Image>
             </Box>
             <Box width="25%" display="flex" justifyContent="space-between" alignItems="center">
                 {_isConnected ? (
