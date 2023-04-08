@@ -56,7 +56,7 @@ export default function CardBooking({ _booking, type }: ICardBooking) {
         setLoadingRedeem(true);
         try {
             const NFTMetadata = {
-                image: `https://gateway.pinata.cloud/ipfs/QmP5xTq4AwNnSLj6r3hX44UBxsZcvMKxPucX4AY8MqUBya/${
+                image: `https://ipfs.io/ipfs/QmP5xTq4AwNnSLj6r3hX44UBxsZcvMKxPucX4AY8MqUBya/${
                     Math.floor(Math.random() * 10) + 1
                 }.png`,
                 name: 'NFT for Booking #' + booking.id,

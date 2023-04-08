@@ -135,7 +135,7 @@ export default function NewRentingDialog(props: IRentingDialog) {
             setAlert({ message: 'The renting was successfully created', severity: 'success' });
             setLoadingCreate(false);
             await updateFileName(
-                imageURL.slice(34),
+                imageURL.slice(21),
                 'image_renting_' + receipt.events[0].args['renting'].id.toNumber()
             );
             handleClose(receipt.events[0].args['renting']);

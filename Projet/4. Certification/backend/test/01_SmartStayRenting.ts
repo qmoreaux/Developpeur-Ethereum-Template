@@ -37,7 +37,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await smartStayRenting.createRenting(_renting);
 
@@ -63,7 +63,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await smartStayRenting.createRenting(_renting);
             const rentings = await smartStayRenting.getUserRenting();
@@ -88,7 +88,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await expect(smartStayRenting.createRenting(_renting))
                 .to.emit(smartStayRenting, 'RentingCreated')
@@ -105,7 +105,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             for (let i = 0; i < 5; i++) {
                 await smartStayRenting.createRenting(_renting);
@@ -130,7 +130,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await smartStayRenting.createRenting(_renting);
             await smartStayRenting.createRenting(_renting);
@@ -146,7 +146,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Lyon',
                 tags: ['Maison'],
                 description: 'Une très jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await smartStayRenting.updateRenting(_renting.id, _renting);
             const renting = await smartStayRenting.getRenting(_renting.id);
@@ -171,7 +171,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Lyon',
                 tags: ['Maison'],
                 description: 'Une très jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await smartStayRenting.updateRenting(_renting.id, _renting);
             const rentings = await smartStayRenting.getUserRenting();
@@ -196,7 +196,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await expect(smartStayRenting.updateRenting(_renting.id, _renting))
                 .to.emit(smartStayRenting, 'RentingUpdated')
@@ -213,7 +213,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await expect(smartStayRenting.connect(addr1).updateRenting(_renting.id, _renting)).to.be.revertedWith(
                 'SmartStay: Not owner of the renting'
@@ -237,7 +237,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await smartStayRenting.createRenting(_renting);
         });
@@ -296,7 +296,7 @@ describe('SmartStayRentingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
             await smartStayRenting.createRenting(_renting);
 

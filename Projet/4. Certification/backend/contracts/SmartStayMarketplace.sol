@@ -16,7 +16,7 @@ contract SmartStayMarketplace {
 
     event TokenListed(ListedToken token);
     event TokenDelisted(uint256 tokenID);
-    event TokenSaled (uint256 tokenId, uint256 price, address from, address to);
+    event TokenSold (uint256 tokenId, uint256 price, address from, address to);
 
     // Modifiers
 
@@ -136,6 +136,6 @@ contract SmartStayMarketplace {
         (bool success, ) = owner.call{value: msg.value}("");
         require(success, 'SmartStay: Funds transfer failed');  
 
-        emit TokenSaled(_tokenID, msg.value, owner, msg.sender); 
+        emit TokenSold(_tokenID, msg.value, owner, msg.sender); 
     }
 }

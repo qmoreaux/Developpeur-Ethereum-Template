@@ -26,7 +26,7 @@ export const uploadJSONToIPFS = async (JSONBody: any, pinataName: string) => {
         .then((response: any) => {
             return {
                 success: true,
-                pinataURL: 'https://gateway.pinata.cloud/ipfs/' + response.data.IpfsHash
+                pinataURL: 'https://ipfs.io/ipfs/' + response.data.IpfsHash
             };
         })
         .catch((error: any) => {
@@ -65,7 +65,7 @@ export const uploadFileToIPFS = async (file: any, pinataName: string) => {
         .then((response: any) => {
             return {
                 success: true,
-                pinataURL: 'https://gateway.pinata.cloud/ipfs/' + response.data.IpfsHash
+                pinataURL: 'https://ipfs.io/ipfs/' + response.data.IpfsHash
             };
         })
         .catch((error: any) => {
@@ -96,7 +96,7 @@ export const updateFileName = async (ipfsHash: any, pinataName: string) => {
         .then((response: any) => {
             return {
                 success: true,
-                pinataURL: 'https://gateway.pinata.cloud/ipfs/' + response.data.IpfsHash
+                pinataURL: 'https://ipfs.io/ipfs/' + response.data.IpfsHash
             };
         })
         .catch((error: any) => {

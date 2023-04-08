@@ -25,7 +25,7 @@ describe('SmartStaySBTCollectionTest', () => {
         });
 
         it('Should mint a SBT and check its attributes', async () => {
-            const SBTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI';
             const duration = 3;
             const price = ethers.utils.parseUnits('1', 'ether');
             const bookingID = 1;
@@ -43,7 +43,7 @@ describe('SmartStaySBTCollectionTest', () => {
         });
 
         it('Should mint a SBT and check its token URI', async () => {
-            const SBTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI';
             const duration = 3;
             const price = ethers.utils.parseUnits('1', 'ether');
             const bookingID = 1;
@@ -56,7 +56,7 @@ describe('SmartStaySBTCollectionTest', () => {
         });
 
         it('Should attempt to mint a DID without being the owner and expect a revert', async () => {
-            const SBTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI';
             const duration = 3;
             const price = ethers.utils.parseUnits('1', 'ether');
             const bookingID = 1;
@@ -74,7 +74,7 @@ describe('SmartStaySBTCollectionTest', () => {
             owner = _owner;
             addr1 = _addr1;
 
-            const SBTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI';
             const duration = 3;
             const price = ethers.utils.parseUnits('1', 'ether');
             const bookingID = 1;
@@ -84,8 +84,7 @@ describe('SmartStaySBTCollectionTest', () => {
         });
 
         it('Should update a SBT and check its attributes', async () => {
-            const SBTMetadataURI =
-                'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA?v2';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI?v2';
             const location = 'Paris';
             const owner = addr1.address;
 
@@ -100,8 +99,7 @@ describe('SmartStaySBTCollectionTest', () => {
         });
 
         it('Should update a SBT and check its tokenURI', async () => {
-            const SBTMetadataURI =
-                'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA?v2';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI?v2';
             const location = 'Paris';
             const owner = addr1.address;
 
@@ -113,8 +111,7 @@ describe('SmartStaySBTCollectionTest', () => {
         });
 
         it('Should attempt to update a SBT without being the owner and expect a revert', async () => {
-            const SBTMetadataURI =
-                'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA?v2';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI?v2';
             const location = 'Paris';
             const owner = addr1.address;
 
@@ -131,7 +128,7 @@ describe('SmartStaySBTCollectionTest', () => {
             owner = _owner;
             addr1 = _addr1;
 
-            const SBTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI';
             const duration = 3;
             const price = ethers.utils.parseUnits('1', 'ether');
             const bookingID = 1;
@@ -140,7 +137,7 @@ describe('SmartStaySBTCollectionTest', () => {
         });
 
         it('Should burn a SBT and check it is deleted', async () => {
-            const SBTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI';
             const duration = 3;
             const price = ethers.utils.parseUnits('1', 'ether');
             const bookingID = 1;
@@ -173,7 +170,7 @@ describe('SmartStaySBTCollectionTest', () => {
             owner = _owner;
             addr1 = _addr1;
 
-            const SBTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const SBTMetadataURI = 'https://ipfs.io/ipfs/SBTMetadataURI';
             const duration = 3;
             const price = ethers.utils.parseUnits('1', 'ether');
             const bookingID = 1;

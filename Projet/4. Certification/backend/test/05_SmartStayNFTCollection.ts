@@ -25,7 +25,7 @@ describe('SmartStayNFTCollectionTest', () => {
         });
 
         it('Should mint a NFT and check its attributes', async () => {
-            const NFTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI';
 
             await smartStayNFTCollection.mint(addr1.address, NFTMetadataURI);
 
@@ -37,7 +37,7 @@ describe('SmartStayNFTCollectionTest', () => {
         });
 
         it('Should mint a NFT and check its token URI', async () => {
-            const NFTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI';
 
             await smartStayNFTCollection.mint(addr1.address, NFTMetadataURI);
 
@@ -47,7 +47,7 @@ describe('SmartStayNFTCollectionTest', () => {
         });
 
         it('Should attempt to mint a NFT without being the owner and expect a revert', async () => {
-            const NFTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI';
 
             await expect(smartStayNFTCollection.connect(addr1).mint(addr1.address, NFTMetadataURI)).to.be.revertedWith(
                 'Ownable: caller is not the owner'
@@ -62,15 +62,14 @@ describe('SmartStayNFTCollectionTest', () => {
             owner = _owner;
             addr1 = _addr1;
 
-            const NFTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI';
 
             await smartStayNFTCollection.mint(addr1.address, NFTMetadataURI);
             await smartStayNFTCollection.mint(addr1.address, NFTMetadataURI);
         });
 
         it('Should update a NFT and check its attributes', async () => {
-            const NFTMetadataURI =
-                'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA?v2';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI?v2';
 
             await smartStayNFTCollection.update(2, NFTMetadataURI);
 
@@ -82,8 +81,7 @@ describe('SmartStayNFTCollectionTest', () => {
         });
 
         it('Should update a NFT and check its tokenURI', async () => {
-            const NFTMetadataURI =
-                'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA?v2';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI?v2';
 
             await smartStayNFTCollection.update(1, NFTMetadataURI);
 
@@ -93,8 +91,7 @@ describe('SmartStayNFTCollectionTest', () => {
         });
 
         it('Should attempt to update a NFT without being the owner and expect a revert', async () => {
-            const NFTMetadataURI =
-                'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA?v2';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI?v2';
 
             await expect(smartStayNFTCollection.connect(addr1).update(1, NFTMetadataURI)).to.be.revertedWith(
                 'Ownable: caller is not the owner'
@@ -109,13 +106,13 @@ describe('SmartStayNFTCollectionTest', () => {
             owner = _owner;
             addr1 = _addr1;
 
-            const NFTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI';
 
             await smartStayNFTCollection.mint(addr1.address, NFTMetadataURI);
         });
 
         it('Should burn a NFT and check it is deleted', async () => {
-            const NFTMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI';
             await smartStayNFTCollection.mint(addr1.address, NFTMetadataURI);
 
             await smartStayNFTCollection.burn(2);

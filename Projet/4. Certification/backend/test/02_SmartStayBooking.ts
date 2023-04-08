@@ -42,7 +42,7 @@ describe('SmartStayBookingTest', () => {
                     location: 'Paris',
                     tags: ['Maison', 'Bord de mer'],
                     description: 'Une jolie maison',
-                    imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                    imageURL: 'https://ipfs.io/ipfs/imageURI'
                 };
 
                 await smartStayRenting.createRenting(_renting);
@@ -125,7 +125,7 @@ describe('SmartStayBookingTest', () => {
                 location: 'Paris',
                 tags: ['Maison', 'Bord de mer'],
                 description: 'Une jolie maison',
-                imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                imageURL: 'https://ipfs.io/ipfs/imageURI'
             };
 
             beforeEach(async () => {
@@ -176,7 +176,7 @@ describe('SmartStayBookingTest', () => {
                         location: 'Paris',
                         tags: ['Maison', 'Bord de mer'],
                         description: 'Une jolie maison',
-                        imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                        imageURL: 'https://ipfs.io/ipfs/imageURI'
                     };
 
                     await smartStayRenting.createRenting(_renting);
@@ -235,7 +235,7 @@ describe('SmartStayBookingTest', () => {
                         location: 'Paris',
                         tags: ['Maison', 'Bord de mer'],
                         description: 'Une jolie maison',
-                        imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                        imageURL: 'https://ipfs.io/ipfs/imageURI'
                     };
 
                     await smartStayRenting.createRenting(_renting);
@@ -275,10 +275,8 @@ describe('SmartStayBookingTest', () => {
             });
 
             describe('ConfirmBooking', async () => {
-                const ownerMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                const recipientMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                 const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                 beforeEach(async () => {
@@ -299,7 +297,7 @@ describe('SmartStayBookingTest', () => {
                         location: 'Paris',
                         tags: ['Maison', 'Bord de mer'],
                         description: 'Une jolie maison',
-                        imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                        imageURL: 'https://ipfs.io/ipfs/imageURI'
                     };
 
                     await smartStayRenting.createRenting(_renting);
@@ -405,10 +403,8 @@ describe('SmartStayBookingTest', () => {
                     owner = _owner;
                     addr1 = _addr1;
 
-                    const ownerMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                    const recipientMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                    const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                    const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                     const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                     const _renting = {
@@ -420,7 +416,7 @@ describe('SmartStayBookingTest', () => {
                         location: 'Paris',
                         tags: ['Maison', 'Bord de mer'],
                         description: 'Une jolie maison',
-                        imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                        imageURL: 'https://ipfs.io/ipfs/imageURI'
                     };
 
                     await smartStayRenting.createRenting(_renting);
@@ -509,10 +505,8 @@ describe('SmartStayBookingTest', () => {
                     owner = _owner;
                     addr1 = _addr1;
 
-                    const ownerMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                    const recipientMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                    const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                    const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                     const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                     const _renting = {
@@ -524,7 +518,7 @@ describe('SmartStayBookingTest', () => {
                         location: 'Paris',
                         tags: ['Maison', 'Bord de mer'],
                         description: 'Une jolie maison',
-                        imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                        imageURL: 'https://ipfs.io/ipfs/imageURI'
                     };
 
                     await smartStayRenting.createRenting(_renting);
@@ -613,10 +607,8 @@ describe('SmartStayBookingTest', () => {
                     owner = _owner;
                     addr1 = _addr1;
 
-                    const ownerMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                    const recipientMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                    const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                    const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                     const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                     const _renting = {
@@ -628,7 +620,7 @@ describe('SmartStayBookingTest', () => {
                         location: 'Paris',
                         tags: ['Maison', 'Bord de mer'],
                         description: 'Une jolie maison',
-                        imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                        imageURL: 'https://ipfs.io/ipfs/imageURI'
                     };
 
                     await smartStayRenting.createRenting(_renting);
@@ -708,10 +700,8 @@ describe('SmartStayBookingTest', () => {
                     owner = _owner;
                     addr1 = _addr1;
 
-                    const ownerMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                    const recipientMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                    const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                    const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                     const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                     const _renting = {
@@ -723,7 +713,7 @@ describe('SmartStayBookingTest', () => {
                         location: 'Paris',
                         tags: ['Maison', 'Bord de mer'],
                         description: 'Une jolie maison',
-                        imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                        imageURL: 'https://ipfs.io/ipfs/imageURI'
                     };
 
                     await smartStayRenting.createRenting(_renting);
@@ -801,10 +791,8 @@ describe('SmartStayBookingTest', () => {
                     owner = _owner;
                     addr1 = _addr1;
 
-                    const ownerMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                    const recipientMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                    const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                    const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                     const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                     const _renting = {
@@ -816,7 +804,7 @@ describe('SmartStayBookingTest', () => {
                         location: 'Paris',
                         tags: ['Maison', 'Bord de mer'],
                         description: 'Une jolie maison',
-                        imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                        imageURL: 'https://ipfs.io/ipfs/imageURI'
                     };
 
                     await smartStayRenting.createRenting(_renting);
@@ -851,8 +839,7 @@ describe('SmartStayBookingTest', () => {
                 });
 
                 it('Should cancel booking and check NFT and SBT has been burned', async () => {
-                    const NFTMetadataURI =
-                        'https://gateway.pinata.cloud/ipfs/Qma36hp8ZcU9JEWvk2Fso2rpQRJXLuhfd5HfvM1Birm1of';
+                    const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI';
                     await smartStayBooking.connect(addr1).redeemNFT(1, NFTMetadataURI);
 
                     await smartStayBooking.connect(addr1).cancelBooking(1);
@@ -917,10 +904,8 @@ describe('SmartStayBookingTest', () => {
                 owner = _owner;
                 addr1 = _addr1;
 
-                const ownerMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                const recipientMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                 const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                 const _renting = {
@@ -932,7 +917,7 @@ describe('SmartStayBookingTest', () => {
                     location: 'Paris',
                     tags: ['Maison', 'Bord de mer'],
                     description: 'Une jolie maison',
-                    imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                    imageURL: 'https://ipfs.io/ipfs/imageURI'
                 };
 
                 await smartStayRenting.createRenting(_renting);
@@ -1044,10 +1029,8 @@ describe('SmartStayBookingTest', () => {
                 owner = _owner;
                 addr1 = _addr1;
 
-                const ownerMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                const recipientMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                 const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                 const _renting = {
@@ -1059,7 +1042,7 @@ describe('SmartStayBookingTest', () => {
                     location: 'Paris',
                     tags: ['Maison', 'Bord de mer'],
                     description: 'Une jolie maison',
-                    imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                    imageURL: 'https://ipfs.io/ipfs/imageURI'
                 };
 
                 await smartStayRenting.createRenting(_renting);
@@ -1176,8 +1159,7 @@ describe('SmartStayBookingTest', () => {
             });
 
             it('Should create a DID and check its attribute', async () => {
-                const DIDMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+                const DIDMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
                 const firstname = 'Prénom';
                 const lastname = 'Nom';
                 const email = 'email@email.com';
@@ -1204,9 +1186,8 @@ describe('SmartStayBookingTest', () => {
         });
 
         describe('SBT', async () => {
-            const ownerMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-            const recipientMetadataURI =
-                'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+            const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+            const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
 
             beforeEach(async () => {
                 const { _smartStayRenting, _smartStayBooking, _owner, _addr1 } = await loadFixture(
@@ -1228,7 +1209,7 @@ describe('SmartStayBookingTest', () => {
                     location: 'Paris',
                     tags: ['Maison', 'Bord de mer'],
                     description: 'Une jolie maison',
-                    imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                    imageURL: 'https://ipfs.io/ipfs/imageURI'
                 };
 
                 await smartStayRenting.createRenting(_renting);
@@ -1267,7 +1248,7 @@ describe('SmartStayBookingTest', () => {
         });
 
         describe('NFT', async () => {
-            const NFTMetadataURI = 'https://gateway.pinata.cloud/ipfs/Qma36hp8ZcU9JEWvk2Fso2rpQRJXLuhfd5HfvM1Birm1of';
+            const NFTMetadataURI = 'https://ipfs.io/ipfs/NFTMetadataURI';
             beforeEach(async () => {
                 const { _smartStayRenting, _smartStayBooking, _owner, _addr1 } = await loadFixture(
                     deploySmartStayFixture
@@ -1277,10 +1258,8 @@ describe('SmartStayBookingTest', () => {
                 owner = _owner;
                 addr1 = _addr1;
 
-                const ownerMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
-                const recipientMetadataURI =
-                    'https://gateway.pinata.cloud/ipfs/QmcyXcENL7dhwGCewet7jVH5ff9FvcKZoVgXLseZzwP9cr';
+                const ownerMetadataURI = 'https://ipfs.io/ipfs/ownerMetadataURI';
+                const recipientMetadataURI = 'https://ipfs.io/ipfs/recipientMetadataURI';
                 const amountToSend = ethers.utils.parseUnits('1.3', 'ether');
 
                 const _renting = {
@@ -1292,7 +1271,7 @@ describe('SmartStayBookingTest', () => {
                     location: 'Paris',
                     tags: ['Maison', 'Bord de mer'],
                     description: 'Une jolie maison',
-                    imageURL: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs'
+                    imageURL: 'https://ipfs.io/ipfs/imageURI'
                 };
 
                 await smartStayRenting.createRenting(_renting);

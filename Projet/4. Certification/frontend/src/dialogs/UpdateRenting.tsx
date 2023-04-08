@@ -94,7 +94,7 @@ export default function UpdateRentingDialog(props: IRentingDialog) {
         setLoadingImage(true);
         var file = e.target.files[0];
         try {
-            await unpinFileFromIPFS(imageURL.slice(34));
+            await unpinFileFromIPFS(imageURL.slice(21));
             const response = await uploadFileToIPFS(file, 'image_renting_' + renting.id.toNumber());
             if (response.success === true) {
                 setImageURL(response.pinataURL);

@@ -54,7 +54,7 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
                     { from: address }
                 ]);
                 await transaction.wait();
-                await unpinFileFromIPFS(SBT.tokenURI.slice(34));
+                await unpinFileFromIPFS(SBT.tokenURI.slice(21));
             }
 
             setAlert({ message: 'You have successfully retrieved your deposit', severity: 'success' });
@@ -105,7 +105,7 @@ export default function Validated({ booking, setBooking, type }: ICardBookingSta
                     { from: address }
                 ]);
                 await transaction.wait();
-                await unpinFileFromIPFS(SBT.tokenURI.slice(34));
+                await unpinFileFromIPFS(SBT.tokenURI.slice(21));
             }
 
             setAlert({ message: 'You have successfully retrieved your amount', severity: 'success' });

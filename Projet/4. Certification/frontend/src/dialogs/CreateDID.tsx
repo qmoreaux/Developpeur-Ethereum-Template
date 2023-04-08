@@ -56,7 +56,7 @@ export default function CreateDIDDialog(props: IRentingDialog) {
         try {
             setLoadingCreate(true);
             const DIDMetadata = {
-                image: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs',
+                image: 'https://ipfs.io/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs',
                 name: 'SmartStay DID for address ' + address,
                 description: '',
                 attributes: [

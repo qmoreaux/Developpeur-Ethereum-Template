@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { useNetwork, useAccount, useSigner } from 'wagmi';
+import { useNetwork, useAccount, useSigner, useProvider } from 'wagmi';
 
 import { ethers, BigNumber } from 'ethers';
 
@@ -9,6 +9,9 @@ import Axios from 'axios';
 
 import Head from 'next/head';
 import Layout from '@/components/Layout/Layout';
+import Available from '@/components/Marketplace/Available';
+import MyListed from '@/components/Marketplace/MyListed';
+import Listed from '@/components/Marketplace/Listed';
 
 import { useAlertContext, useContractContext } from '@/context';
 
@@ -22,13 +25,10 @@ import artifacts from '../../contracts/SmartStay.json';
 export default function Marketplace() {
     const { address } = useAccount();
     const { chain } = useNetwork();
-    const router = useRouter();
-    const { data: signer } = useSigner();
+    const provider = useProvider();
 
     const { setAlert } = useAlertContext();
     const { readContract, writeContract } = useContractContext();
-
-    const [price, setPrice] = useState<number>(10);
 
     const [NFTCollection, setNFTCollection] = useState<INFTItem[]>([]);
     const [listedNFT, setListedNFT] = useState<INFTItem[]>([]);
@@ -36,38 +36,45 @@ export default function Marketplace() {
 
     const [NFTCollectionAddress, setNFTCollectionAddress] = useState<string>('');
 
-    useEffect(() => {
-        try {
-            getCollectionAddress();
-            getMyListedNFT();
-        } catch (e) {
-            setAlert({
-                message: 'An error has occurred. Check the developer console for more information',
-                severity: 'error'
-            });
-            console.error(e);
-        }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chain, address]);
-
-    useEffect(() => {
-        getListedNFT();
-        getUserNFT();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [myListedNFT]);
-
     const getCollectionAddress = async () => {
         setNFTCollectionAddress(await readContract('SmartStayBooking', 'getNFTCollection', [{ from: address }]));
     };
 
+    const getTokenMetadata = async (token: INFTItem) => {
+        const contract = await new ethers.Contract(
+            NFTCollectionAddress,
+            (artifacts as IArtifacts).SmartStayNFTCollection.abi,
+            provider
+        );
+        const tokenURI = await contract.tokenURI(token.tokenID.toNumber(), { from: address });
+        const meta = await Axios.get(tokenURI);
+        return {
+            ...token,
+            ...meta.data
+        };
+    };
+
     const getListedNFT = async () => {
         const _listedNFT = await readContract('SmartStayMarketplace', 'getListedNFT', [{ from: address }]);
-        setListedNFT(_listedNFT.filter((NFTItem: any) => NFTItem.owner !== address));
+        const _filteredListedNFT = _listedNFT.filter((NFTItem: any) => NFTItem.owner !== address);
+        setListedNFT(
+            await Promise.all<INFTItem[]>(
+                _filteredListedNFT.map(async (NFTItem: INFTItem) => {
+                    return await getTokenMetadata(NFTItem);
+                })
+            )
+        );
     };
 
     const getMyListedNFT = async () => {
-        setMyListedNFT(await readContract('SmartStayMarketplace', 'getMyListedNFT', [{ from: address }]));
+        const _myListedNFT = await readContract('SmartStayMarketplace', 'getMyListedNFT', [{ from: address }]);
+        setMyListedNFT(
+            await Promise.all<INFTItem[]>(
+                _myListedNFT.map(async (NFTItem: INFTItem) => {
+                    return await getTokenMetadata(NFTItem);
+                })
+            )
+        );
     };
 
     const getUserNFT = async () => {
@@ -83,12 +90,7 @@ export default function Marketplace() {
             setNFTCollection(
                 await Promise.all<INFTItem[]>(
                     _filteredUserNFT.map(async (NFTItem: INFTItem) => {
-                        let meta = await Axios.get(NFTItem.tokenURI);
-                        meta = meta.data;
-                        return {
-                            ...meta,
-                            tokenID: NFTItem.tokenID
-                        };
+                        return await getTokenMetadata(NFTItem);
                     })
                 )
             );
@@ -101,97 +103,52 @@ export default function Marketplace() {
         }
     };
 
-    const listOnMarketplace = async (token: INFTItem) => {
-        try {
-            // await approveMarketplace(tokenID);
-            // const transaction = await writeContract('SmartStayMarketplace', 'listToken', [
-            //     tokenID,
-            //     price,
-            //     { from: address }
-            // ]);
-            // await transaction.wait();
-            // setAlert({ message: 'Your NFT has successfully been listed', severity: 'success' });
-            const tokenToList = NFTCollection.filter((NFTItem: any) => {
-                return NFTItem.tokenID === token.tokenID;
-            })[0];
-            setNFTCollection(
-                NFTCollection.filter((NFTItem: any) => {
-                    return NFTItem.tokenID !== token.tokenID;
-                })
-            );
-            setMyListedNFT([...myListedNFT, { ...tokenToList, price: BigNumber.from(price) }]);
-        } catch (e) {
-            setAlert({
-                message: 'An error has occurred. Check the developer console for more information',
-                severity: 'error'
-            });
-            console.error(e);
-        }
+    const onItemListed = (token: INFTItem) => {
+        setNFTCollection(
+            NFTCollection.filter((NFTItem: any) => {
+                return NFTItem.tokenID !== token.tokenID;
+            })
+        );
+        setMyListedNFT([...myListedNFT, { ...token }]);
     };
 
-    const delistToken = async (token: INFTItem) => {
-        try {
-            // const transaction = await writeContract('SmartStayMarketplace', 'delistToken', [
-            //     tokenID,
-            //     { from: address }
-            // ]);
-            // await transaction.wait();
-            // setAlert({ message: 'Your NFT has successfully been delisted', severity: 'success' });
-            const tokenToDelist = myListedNFT.filter((NFTItem: any) => {
-                return NFTItem.tokenID === token.tokenID;
-            })[0];
-            setNFTCollection([...NFTCollection, tokenToDelist]);
-            setMyListedNFT(
-                myListedNFT.filter((NFTItem: any) => {
-                    return NFTItem.tokenID !== token.tokenID;
-                })
-            );
-        } catch (e) {
-            setAlert({
-                message: 'An error has occurred. Check the developer console for more information',
-                severity: 'error'
-            });
-            console.error(e);
-        }
+    const onItemDelisted = (token: INFTItem) => {
+        setNFTCollection([...NFTCollection, token]);
+        setMyListedNFT(
+            myListedNFT.filter((NFTItem: any) => {
+                return NFTItem.tokenID !== token.tokenID;
+            })
+        );
     };
 
-    const executeSale = async (token: any) => {
-        try {
-            // const transaction = await writeContract('SmartStayMarketplace', 'delistToken', [
-            //     token.id,
-            //     { value: token.price, from: address }
-            // ]);
-            // await transaction.wait();
-            // setAlert({ message: 'NFT successfully purchased', severity: 'success' });
-            // TODO Remove from NFT available for purchase and move to NFT available
-            const tokenToDelist = listedNFT.filter((NFTItem: any) => {
-                return NFTItem.tokenID === token.tokenID;
-            })[0];
-            setNFTCollection([...NFTCollection, tokenToDelist]);
-            setListedNFT(
-                listedNFT.filter((NFTItem: any) => {
-                    return NFTItem.tokenID !== token.tokenID;
-                })
-            );
-        } catch (e) {
-            setAlert({
-                message: 'An error has occurred. Check the developer console for more information',
-                severity: 'error'
-            });
-            console.error(e);
-        }
+    const onItemSold = (token: INFTItem) => {
+        setNFTCollection([...NFTCollection, token]);
+        setListedNFT(
+            listedNFT.filter((NFTItem: any) => {
+                return NFTItem.tokenID !== token.tokenID;
+            })
+        );
     };
 
-    const approveMarketplace = async (tokenID: number) => {
-        if (chain && signer) {
-            const contract = new ethers.Contract(
-                NFTCollectionAddress,
-                (artifacts as IArtifacts).SmartStayNFTCollection.abi,
-                signer
-            );
-            await contract.approve((artifacts as IArtifacts).SmartStayMarketplace.networks[chain.id].address, tokenID);
+    useEffect(() => {
+        getCollectionAddress();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chain, address]);
+
+    useEffect(() => {
+        if (NFTCollectionAddress) {
+            getMyListedNFT();
         }
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [NFTCollectionAddress]);
+
+    useEffect(() => {
+        if (NFTCollectionAddress) {
+            getListedNFT();
+            getUserNFT();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [myListedNFT, NFTCollectionAddress]);
 
     return (
         <>
@@ -215,35 +172,23 @@ export default function Marketplace() {
                     </Typography>
                     <Container>
                         <Typography variant="h5" mb={'2rem'}>
-                            Your NFT available
+                            Your NFT available for listing
                         </Typography>
                         <Box display="flex" justifyContent={'space-evenly'} flexWrap="wrap">
                             {NFTCollection.length ? (
                                 <>
                                     {NFTCollection.map((NFTItem: INFTItem) => (
-                                        <Card key={NFTItem.tokenID.toString()} sx={{ marginBottom: '2rem' }}>
-                                            <CardMedia
-                                                component="img"
-                                                height="200px"
-                                                image={NFTItem.image}
-                                                alt="Image rental"
-                                                sx={{
-                                                    backgroundColor: 'white',
-                                                    objectFit: 'contain'
-                                                }}
-                                            ></CardMedia>
-                                            <CardContent>
-                                                <Typography>NFT ID : #{NFTItem.tokenID.toString()}</Typography>
-                                                <Button variant="contained" onClick={() => listOnMarketplace(NFTItem)}>
-                                                    List on marketplace
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
+                                        <Available
+                                            key={NFTItem.tokenID.toString()}
+                                            NFTCollectionAddress={NFTCollectionAddress}
+                                            NFTItem={NFTItem}
+                                            onItemListed={onItemListed}
+                                        ></Available>
                                     ))}
                                 </>
                             ) : (
                                 <Typography textAlign={'center'} mb={'2rem'}>
-                                    You do not have any NFT yet.
+                                    You do not have any NFT available for listing yet.
                                     <br /> Redeem it after a booking to display it here.
                                 </Typography>
                             )}
@@ -257,27 +202,11 @@ export default function Marketplace() {
                             {myListedNFT.length ? (
                                 <>
                                     {myListedNFT.map((NFTItem: any) => (
-                                        <Card key={NFTItem.tokenID.toString()} sx={{ marginBottom: '2rem' }}>
-                                            <CardMedia
-                                                component="img"
-                                                height="200px"
-                                                image={NFTItem.image}
-                                                alt="Image rental"
-                                                sx={{
-                                                    backgroundColor: 'white',
-                                                    objectFit: 'contain'
-                                                }}
-                                            ></CardMedia>
-                                            <CardContent>
-                                                <Typography>NFT ID : #{NFTItem.tokenID.toString()}</Typography>
-                                                <Typography>
-                                                    Listed price : {ethers.utils.formatEther(NFTItem.price)} ETH
-                                                </Typography>
-                                                <Button variant="contained" onClick={() => delistToken(NFTItem)}>
-                                                    Delist
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
+                                        <MyListed
+                                            key={NFTItem.tokenID.toString()}
+                                            NFTItem={NFTItem}
+                                            onItemDelisted={onItemDelisted}
+                                        ></MyListed>
                                     ))}
                                 </>
                             ) : (
@@ -296,24 +225,11 @@ export default function Marketplace() {
                             {listedNFT.length ? (
                                 <>
                                     {listedNFT.map((NFTItem: INFTItem) => (
-                                        <Card key={NFTItem.tokenID.toString()} sx={{ marginBottom: '2rem' }}>
-                                            <CardMedia
-                                                component="img"
-                                                height="200px"
-                                                image={NFTItem.image}
-                                                alt="Image rental"
-                                                sx={{
-                                                    backgroundColor: 'white',
-                                                    objectFit: 'contain'
-                                                }}
-                                            ></CardMedia>
-                                            <CardContent>
-                                                <Typography>NFT ID : #{NFTItem.tokenID.toString()}</Typography>
-                                                <Button variant="contained" onClick={() => executeSale(NFTItem)}>
-                                                    Buy
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
+                                        <Listed
+                                            key={NFTItem.tokenID.toString()}
+                                            NFTItem={NFTItem}
+                                            onItemSold={onItemSold}
+                                        ></Listed>
                                     ))}
                                 </>
                             ) : (

@@ -39,7 +39,7 @@ export default function DeleteRentingDialog(props: IRentingDialog) {
                 { from: address }
             ]);
             await transaction.wait();
-            await unpinFileFromIPFS(renting.imageURL.slice(34));
+            await unpinFileFromIPFS(renting.imageURL.slice(21));
 
             setAlert({ message: 'Your renting has been successfully deleted', severity: 'success' });
 

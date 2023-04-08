@@ -233,7 +233,7 @@ describe('SmartStayNFTMarketplaceTest', () => {
             const price = ethers.utils.parseUnits('1', 'ether');
 
             await expect(smartStayMarketplace.connect(addr1).executeSale(1, { value: price }))
-                .to.emit(smartStayMarketplace, 'TokenSaled')
+                .to.emit(smartStayMarketplace, 'TokenSold')
                 .withArgs(1, price, owner.address, addr1.address);
         });
 

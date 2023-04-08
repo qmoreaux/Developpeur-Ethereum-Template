@@ -26,7 +26,7 @@ describe('SmartStayDIDCollectionTest', () => {
         });
 
         it('Should mint a DID and check its attributes', async () => {
-            const DIDMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const DIDMetadataURI = 'https://ipfs.io/ipfs/DIDMetadataURI';
             const firstname = 'Prénom';
             const lastname = 'Nom';
             const email = 'email@email.com';
@@ -52,7 +52,7 @@ describe('SmartStayDIDCollectionTest', () => {
         });
 
         it('Should mint a DID and check its token URI', async () => {
-            const DIDMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const DIDMetadataURI = 'https://ipfs.io/ipfs/DIDMetadataURI';
             const firstname = 'Prénom';
             const lastname = 'Nom';
             const email = 'email@email.com';
@@ -73,7 +73,7 @@ describe('SmartStayDIDCollectionTest', () => {
         });
 
         it('Should attempt to mint a DID without being the owner and expect a revert', async () => {
-            const DIDMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const DIDMetadataURI = 'https://ipfs.io/ipfs/DIDMetadataURI';
             const firstname = 'Prénom';
             const lastname = 'Nom';
             const email = 'email@email.com';
@@ -87,7 +87,7 @@ describe('SmartStayDIDCollectionTest', () => {
         });
 
         it('Should attempt to mint a DID twice and expect a revert', async () => {
-            const DIDMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const DIDMetadataURI = 'https://ipfs.io/ipfs/DIDMetadataURI';
             const firstname = 'Prénom';
             const lastname = 'Nom';
             const email = 'email@email.com';
@@ -124,7 +124,7 @@ describe('SmartStayDIDCollectionTest', () => {
         });
 
         it('Should attempt to transfer a DID and expect a revert', async () => {
-            const DIDMetadataURI = 'https://gateway.pinata.cloud/ipfs/QmTJp4g3v2HUpmd19pi59HS4WsSEsL762aWVEKx9bbhhiA';
+            const DIDMetadataURI = 'https://ipfs.io/ipfs/DIDMetadataURI';
             const firstname = 'Prénom';
             const lastname = 'Nom';
             const email = 'email@email.com';

@@ -37,7 +37,7 @@ export default function WaitingForPayement({ booking, setBooking, type }: ICardB
             let renting = await getRenting(booking.id.toNumber());
 
             const SBTMetadata = {
-                image: 'https://gateway.pinata.cloud/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs',
+                image: 'https://ipfs.io/ipfs/QmVxnXboDSY9CpBsHZRaZxYDPZPeVKSdxwnAEYznD9vuTs',
                 name: 'SmartStay SBT for Booking #' + booking.id,
                 description: '',
                 attributes: [
