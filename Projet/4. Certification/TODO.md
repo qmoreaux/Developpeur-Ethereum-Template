@@ -4,11 +4,12 @@
 
 ## Normal
 
+* Update README
+* Test sale NFT
 
 ## Tomorrow
 
 * Rapport
-* Vidéo
 
 ## Point d'amélioration possible
 

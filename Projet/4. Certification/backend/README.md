@@ -106,7 +106,7 @@ The coverage according to `solidity-coverage` is the following :
 
 The deployement script not only deploy SmartStayRenting, SmartStayBooking, SmartStayMarketplace on the corresponding network, it also create a `SmartStay.json` file in the `frontend/` repository, that contains :
 
--   The ABI of the 3 contracts ( + SmartStayNFTCollection)
--   The address of the contract on the network it was deployed to
+* The ABI of the 3 contracts ( + SmartStayNFTCollection)
+* The address of the contract on the network it was deployed to
 
 > **_NOTE:_** The script can not add the address of SmartStayNFTCollection to the JSON file since it can be gotten directly from SmartStayBooking.getNFTCollection()

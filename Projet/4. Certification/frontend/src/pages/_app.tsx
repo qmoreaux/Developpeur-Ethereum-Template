@@ -5,14 +5,14 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { configureChains, createClient, WagmiConfig, goerli, useAccount } from 'wagmi';
+import { configureChains, createClient, WagmiConfig, useAccount } from 'wagmi';
 import { localhost, polygonMumbai, sepolia } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 
 import { AlertContextProvider } from '@/context/alert';
 import { ContractContextProvider } from '@/context/contract';
 
-const { chains, provider } = configureChains([localhost, goerli, sepolia, polygonMumbai], [publicProvider()]);
+const { chains, provider } = configureChains([localhost, sepolia, polygonMumbai], [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
     appName: 'SmartStay',
