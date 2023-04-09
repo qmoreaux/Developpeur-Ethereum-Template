@@ -16,7 +16,7 @@ export default function Listed({ NFTItem, onItemSold }: any) {
 
     const executeSale = async (token: INFTItem) => {
         try {
-            const transaction = await writeContract('SmartStayMarketplace', 'delistToken', [
+            const transaction = await writeContract('SmartStayMarketplace', 'executeSale', [
                 token.tokenID,
                 { value: token.price }
             ]);

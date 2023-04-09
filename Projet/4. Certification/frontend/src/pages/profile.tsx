@@ -341,7 +341,15 @@ export default function Profile() {
                             {NFTCollection.length ? (
                                 <>
                                     {NFTCollection.map((NFTItem: INFTItem) => (
-                                        <Card key={NFTItem.tokenID.toString()} sx={{ marginBottom: '2rem' }}>
+                                        <Card
+                                            key={NFTItem.tokenID.toString()}
+                                            sx={{
+                                                backgroundColor: 'whitesmoke',
+                                                width: '500px',
+                                                boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                                marginBottom: '2rem'
+                                            }}
+                                        >
                                             <CardMedia
                                                 component="img"
                                                 height="200px"
@@ -386,7 +394,15 @@ export default function Profile() {
                                 <>
                                     {SBTCollection.map((SBTItem: ISBTItem) => (
                                         <>
-                                            <Card key={SBTItem.tokenID.toString()} sx={{ marginBottom: '2rem' }}>
+                                            <Card
+                                                key={SBTItem.tokenID.toString()}
+                                                sx={{
+                                                    backgroundColor: 'whitesmoke',
+                                                    width: '500px',
+                                                    boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
+                                                    marginBottom: '2rem'
+                                                }}
+                                            >
                                                 <CardMedia
                                                     component="img"
                                                     height="200px"

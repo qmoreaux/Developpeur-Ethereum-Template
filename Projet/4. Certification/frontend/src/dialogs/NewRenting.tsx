@@ -257,7 +257,11 @@ export default function NewRentingDialog(props: IRentingDialog) {
                                 justifyContent="center"
                                 sx={{ marginBottom: '20px', height: '200px', position: 'relative' }}
                             >
-                                <Image fill style={{ objectFit: 'contain' }} alt="Renting image" src={imageURL}></Image>
+                                <img
+                                    style={{ objectFit: 'contain', width: '280px' }}
+                                    alt="Renting image"
+                                    src={imageURL}
+                                />
                             </Box>
                         ) : (
                             ''

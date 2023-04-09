@@ -140,7 +140,7 @@ export default function Marketplace() {
             getMyListedNFT();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [NFTCollectionAddress]);
+    }, [NFTCollectionAddress, chain, address]);
 
     useEffect(() => {
         if (NFTCollectionAddress) {
@@ -148,7 +148,7 @@ export default function Marketplace() {
             getUserNFT();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [myListedNFT, NFTCollectionAddress]);
+    }, [myListedNFT, NFTCollectionAddress, chain, address]);
 
     return (
         <>

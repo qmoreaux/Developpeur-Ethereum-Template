@@ -162,7 +162,7 @@ export default function Renter() {
                                         backgroundColor: 'whitesmoke',
                                         width: '400px',
                                         boxShadow: '0 0 4px rgba(0, 0, 0, 0.3)',
-                                        marginBottom: '2rem'
+                                        margin: '0 2rem 2rem 2rem'
                                     }}
                                 >
                                     <CardMedia

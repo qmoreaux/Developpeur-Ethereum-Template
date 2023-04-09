@@ -131,7 +131,7 @@ contract SmartStayMarketplace {
             }
         }
 
-        NFTCollection.safeTransferFrom(owner, msg.sender, _tokenID);
+        NFTCollection.sale(owner, msg.sender, _tokenID);
 
         (bool success, ) = owner.call{value: msg.value}("");
         require(success, 'SmartStay: Funds transfer failed');  
