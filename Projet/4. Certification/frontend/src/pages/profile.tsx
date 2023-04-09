@@ -89,7 +89,6 @@ export default function Profile() {
                 await Promise.all<INFTItem[]>(
                     NFTtransaction.map(async (NFTItem: INFTItem) => {
                         let meta = await Axios.get(NFTItem.tokenURI);
-                        console.log(meta);
                         meta = meta.data;
                         return {
                             ...meta,

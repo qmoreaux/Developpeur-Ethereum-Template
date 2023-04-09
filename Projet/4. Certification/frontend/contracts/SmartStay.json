@@ -216,8 +216,8 @@
         ],
         "networks": {
             "1337": {
-                "address": "0xe70f935c32dA4dB13e7876795f1e175465e6458e",
-                "transactionHash": "0xcf2665eaf6613e27ce75c30c36263e5616592f43a4e659f432b5c9b262684a36"
+                "address": "0x3904b8f5b0F49cD206b7d5AABeE5D1F37eE15D8d",
+                "transactionHash": "0xea0d7690e0ba32bde83f880a45dad39b3582b7274e13b3f50f70106d6574a1c9"
             },
             "80001": {
                 "address": "0xf46D3bf64629Fa371b7292D0b0EFAB3A8Fd8CfE4",
@@ -676,8 +676,8 @@
         ],
         "networks": {
             "1337": {
-                "address": "0x3C15538ED063e688c8DF3d571Cb7a0062d2fB18D",
-                "transactionHash": "0x3e04b2abb18ab90d3cf57b028f9d1a02a37720d1dba67e6d83da64ecf456216e"
+                "address": "0x2Dd78Fd9B8F40659Af32eF98555B8b31bC97A351",
+                "transactionHash": "0x32ba8ef99236a0a1a61a36fd34b99ff800805f800c43c6ba4942de3644066df5"
             },
             "80001": {
                 "address": "0xF97A169724Df2e1Bb5DC403F0Dcc8CFcF4fb4E9b",
@@ -812,8 +812,8 @@
         ],
         "networks": {
             "1337": {
-                "address": "0xccf1769D8713099172642EB55DDFFC0c5A444FE9",
-                "transactionHash": "0x8af69748908d7447104fccc5baac8e81d65bce0e78d1cdaa0b3fffc17ed95188"
+                "address": "0x56fC17a65ccFEC6B7ad0aDe9BD9416CB365B9BE8",
+                "transactionHash": "0x45eb9c5c9dba14a21ed99b8b052e62efba1cc8346e212cb21f086f50e13e9161"
             },
             "80001": {
                 "address": "0x3756146f7933a267958D4Da11F250ccbcea106d6",

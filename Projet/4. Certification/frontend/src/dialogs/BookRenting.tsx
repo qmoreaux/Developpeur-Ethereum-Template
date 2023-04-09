@@ -49,9 +49,6 @@ export default function BookRentingDialog(props: IBookingDialog) {
     };
 
     const showDemoWarning = () => {
-        console.log(new Date(startDate).getTime());
-        console.log(new Date(new Date().setDate(new Date().getDate() + 1)).getTime());
-
         return new Date(startDate).getTime() < new Date().getTime();
     };
 

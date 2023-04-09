@@ -104,9 +104,18 @@ The coverage according to `solidity-coverage` is the following :
 
 ## Deployement
 
+There is 2 deployement script : `scripts/deploy.ts` and `scripts/deploy_demo.ts`. They do essentially the same things, the only difference is that `deploy_demo.ts` set the state variable `demoMode` to `true`. It allow the smart contracts to bypass 2 checks :
+
+* Allow the creation of a booking in the past
+* Allow the creation of a booking for your own rentings
+
 The deployement script not only deploy SmartStayRenting, SmartStayBooking, SmartStayMarketplace on the corresponding network, it also create a `SmartStay.json` file in the `frontend/` repository, that contains :
 
 * The ABI of the 3 contracts ( + SmartStayNFTCollection)
 * The address of the contract on the network it was deployed to
 
 > **_NOTE:_** The script can not add the address of SmartStayNFTCollection to the JSON file since it can be gotten directly from SmartStayBooking.getNFTCollection()
+
+## Scripts
+
+There is also a third script called `scripts/populate.ts`. This script initialize the contract with plenty of data, in order to make the demonstration faster

@@ -19,6 +19,9 @@ SmartStay is available on the following networks :
   * [SmartStayBooking](0xF97A169724Df2e1Bb5DC403F0Dcc8CFcF4fb4E9b)
   * [SmartStayMarketplace](0x3756146f7933a267958D4Da11F250ccbcea106d6)
 
+
+> **_NOTE:_** The contract on Mumbai is deployed in `demoMode`, which means that some checks are bypassed (Creating a booking in the past, and creating a booking for your own rentings)
+
 ## Demo Video
 
 A few short demo video is available [here](https://www.loom.com/share/folder/899738800b6c480abe46e93e1e158869)

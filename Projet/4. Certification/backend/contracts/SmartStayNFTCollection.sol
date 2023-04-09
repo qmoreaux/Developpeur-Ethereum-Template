@@ -78,7 +78,7 @@ contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
         _burn(_tokenID);
     }
 
-    function sale(address from, address to, uint256 _tokenID) external {
+    function transfer(address from, address to, uint256 _tokenID) external {
         for (uint i; i < tokenOwner[from].length; i++) {
             if (tokenOwner[from][i].tokenID == _tokenID) {
                 tokenOwner[to].push(tokenOwner[from][i]);
@@ -87,7 +87,6 @@ contract SmartStayNFTCollection is ERC721URIStorage, Ownable {
             }
         }
 
-        safeTransferFrom(from, to, _tokenID);
     }
 
 }
