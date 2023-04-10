@@ -3,15 +3,15 @@
 pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
  
 contract SmartStayDIDCollection is ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private tokenID;
 
-    mapping (address => SmartStayDID) tokenOwner;
+    using Counters for Counters.Counter;
+
+    Counters.Counter tokenID;
+    SmartStayDID[] tokenList;
 
     struct SmartStayDID {
         uint256 tokenID;
@@ -22,43 +22,55 @@ contract SmartStayDIDCollection is ERC721URIStorage, Ownable {
         string email;
     } 
  
-    constructor() ERC721 ("SmartStayDIDCollection", "SSDID") {}
+    constructor() ERC721 ("SmartStayDIDCollection", "SSDID") {
+        SmartStayDID memory _token;
+        tokenList.push(_token);
+    }
 
     /**
      * @dev Return the DID for an address
      * @param _address Address of the user to get the DID
-     * @return DID possessed by the address passed in parameters
+     * @return token DID possessed by the address passed in parameters
      */
-    function getUserDID(address _address) public view returns  (SmartStayDID memory) {
-        return tokenOwner[_address];
+    function getUserDID(address _address) public view returns  (SmartStayDID memory token) {
+        for (uint256 i = 1; i <= tokenID.current() ; i++) {
+            if (tokenList[i].tokenID != 0 && ownerOf(tokenList[i].tokenID) == _address) {
+                SmartStayDID memory _token;
+
+                _token = tokenList[i];
+                _token.tokenURI = tokenURI(tokenList[i].tokenID);
+
+                return _token;
+            }
+        }
     }
  
      /**
      * @dev Create a DID for a user
-     * @param to Address to mint the DID for
+     * @param _to Address to mint the DID for
      * @param _tokenURI URI of the DID metadata
      * @param _firstname Firstname of the user
      * @param _lastname Lastname of the user
      * @param _email Email of the user
      * @param _registeringNumber Registering number of the user
      */
-    function mint(address to, string memory _tokenURI, string memory _firstname, string memory _lastname, string memory _email, uint256 _registeringNumber) public onlyOwner {
-        require(tokenOwner[to].tokenID == 0, 'SmartStay : DID already minted for this address');
+    function mint(address _to, string memory _tokenURI, string memory _firstname, string memory _lastname, string memory _email, uint256 _registeringNumber) public onlyOwner {
+        require(balanceOf(_to) == 0, 'SmartStay : DID already minted for this address');
+
         tokenID.increment();
         uint256 newTokenID = tokenID.current();
-        _mint(to, newTokenID);
-        _setTokenURI(newTokenID, _tokenURI);
 
+        _mint(_to, newTokenID);
+        _setTokenURI(newTokenID, _tokenURI);
 
         SmartStayDID memory _token;
         _token.tokenID = newTokenID;
-        _token.tokenURI = _tokenURI;
         _token.firstname = _firstname;
         _token.lastname = _lastname;
         _token.email = _email;
         _token.registeringNumber = _registeringNumber;
 
-        tokenOwner[to] = _token;
+        tokenList.push(_token);
     }
 
 

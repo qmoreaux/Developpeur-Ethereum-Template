@@ -216,8 +216,8 @@
         ],
         "networks": {
             "1337": {
-                "address": "0x3904b8f5b0F49cD206b7d5AABeE5D1F37eE15D8d",
-                "transactionHash": "0xea0d7690e0ba32bde83f880a45dad39b3582b7274e13b3f50f70106d6574a1c9"
+                "address": "0x930b218f3e63eE452c13561057a8d5E61367d5b7",
+                "transactionHash": "0x38c08ede8c232da556faf5e1bd97a2de44b95d29f0d0d976e3f8b9f0b6fed972"
             },
             "80001": {
                 "address": "0xf46D3bf64629Fa371b7292D0b0EFAB3A8Fd8CfE4",
@@ -676,8 +676,8 @@
         ],
         "networks": {
             "1337": {
-                "address": "0x2Dd78Fd9B8F40659Af32eF98555B8b31bC97A351",
-                "transactionHash": "0x32ba8ef99236a0a1a61a36fd34b99ff800805f800c43c6ba4942de3644066df5"
+                "address": "0x721d8077771Ebf9B931733986d619aceea412a1C",
+                "transactionHash": "0x48f9ab8cd3488f4b18a926af9b4692760ecd72175c2744e5e8dde789b3ef7c30"
             },
             "80001": {
                 "address": "0xF97A169724Df2e1Bb5DC403F0Dcc8CFcF4fb4E9b",
@@ -812,8 +812,8 @@
         ],
         "networks": {
             "1337": {
-                "address": "0x56fC17a65ccFEC6B7ad0aDe9BD9416CB365B9BE8",
-                "transactionHash": "0x45eb9c5c9dba14a21ed99b8b052e62efba1cc8346e212cb21f086f50e13e9161"
+                "address": "0x38c76A767d45Fc390160449948aF80569E2C4217",
+                "transactionHash": "0xb1a053da32aa882c0ad21f017b11dea3bf40171e66f3e145747386c189f5913f"
             },
             "80001": {
                 "address": "0x3756146f7933a267958D4Da11F250ccbcea106d6",
@@ -982,17 +982,6 @@
                     { "internalType": "bytes", "name": "data", "type": "bytes" }
                 ],
                 "name": "safeTransferFrom",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    { "internalType": "address", "name": "from", "type": "address" },
-                    { "internalType": "address", "name": "to", "type": "address" },
-                    { "internalType": "uint256", "name": "_tokenID", "type": "uint256" }
-                ],
-                "name": "sale",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"

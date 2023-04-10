@@ -33,6 +33,15 @@ describe('SmartStayDIDCollectionTest', () => {
             const registeringNumber = BigNumber.from(7511606576443);
 
             await smartStayDIDCollection.mint(
+                owner.address,
+                DIDMetadataURI,
+                firstname,
+                lastname,
+                email,
+                registeringNumber
+            );
+
+            await smartStayDIDCollection.mint(
                 addr1.address,
                 DIDMetadataURI,
                 firstname,
@@ -43,7 +52,7 @@ describe('SmartStayDIDCollectionTest', () => {
 
             const DID = await smartStayDIDCollection.getUserDID(addr1.address);
 
-            expect(DID.tokenID).to.be.equal(1);
+            expect(DID.tokenID).to.be.equal(2);
             expect(DID.tokenURI).to.be.equal(DIDMetadataURI);
             expect(DID.firstname).to.be.equal(firstname);
             expect(DID.lastname).to.be.equal(lastname);

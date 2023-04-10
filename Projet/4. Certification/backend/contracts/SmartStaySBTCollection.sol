@@ -3,17 +3,15 @@
 pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-
-import 'hardhat/console.sol';
  
 contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private tokenID;
 
-    mapping (address => SmartStaySBT[]) tokenOwner;
+    using Counters for Counters.Counter;
+
+    Counters.Counter tokenID;
+    SmartStaySBT[] tokenList;
 
      struct SmartStaySBT {
         uint256 tokenID;
@@ -25,7 +23,10 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
         address owner;
     } 
  
-    constructor() ERC721 ("SmartStayNFTCollection", "SSNFT") {}
+    constructor() ERC721 ("SmartStayBSTCollection", "SSSBT") {
+        SmartStaySBT memory _token;
+        tokenList.push(_token);
+    }
 
     /**
      * @dev Return the SBTs for an address
@@ -33,7 +34,28 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
      * @return Array of SBT possessed by the address passed in parameters
      */
     function getUserSBT(address _address) public view returns  (SmartStaySBT[] memory) {
-        return tokenOwner[_address];
+        uint256 count;
+        for (uint256 i = 1; i <= tokenID.current() ; i++) {
+           
+            if (tokenList[i].tokenID != 0 && ownerOf(tokenList[i].tokenID) == _address) {
+                count++;
+            }
+        }
+        SmartStaySBT[] memory userSBT = new SmartStaySBT[](count);
+        uint256 index;
+        for (uint256 i = 1; i <= tokenID.current() ; i++) {
+            if (tokenList[i].tokenID != 0 && ownerOf(tokenList[i].tokenID) == _address) {
+                SmartStaySBT memory _token;
+
+                _token = tokenList[i];
+                _token.tokenURI = tokenURI(tokenList[i].tokenID);
+               
+
+                userSBT[index] = _token;
+                index++;
+            }
+        }
+        return userSBT;
     }
  
     /**
@@ -47,16 +69,16 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
     function mint(address _to, string memory _tokenURI, uint64 _duration, uint128 _price, uint256 _bookingID) public onlyOwner returns (uint256){
         tokenID.increment();
         uint256 newTokenID = tokenID.current();
+
         _mint(_to, newTokenID);
         _setTokenURI(newTokenID, _tokenURI);
 
         SmartStaySBT memory _token;
         _token.tokenID = newTokenID;
-        _token.tokenURI = _tokenURI;
         _token.duration = _duration;
         _token.price = _price;
         _token.bookingID = _bookingID;
-        tokenOwner[_to].push(_token);
+        tokenList.push(_token);
 
         return newTokenID;
     }
@@ -69,14 +91,9 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
      * @param _owner Address of the owner of the SBT
      */
     function update(uint256 _tokenID, string memory _tokenURI, string memory _location, address _owner) public onlyOwner {
-        for (uint i; i < tokenOwner[ownerOf(_tokenID)].length; i++) {
-            if (tokenOwner[ownerOf(_tokenID)][i].tokenID == _tokenID) {
-                tokenOwner[ownerOf(_tokenID)][i].tokenURI = _tokenURI;
-                tokenOwner[ownerOf(_tokenID)][i].location = _location;
-                tokenOwner[ownerOf(_tokenID)][i].owner = _owner;
-            }
-        }
-
+        tokenList[_tokenID].location = _location;
+        tokenList[_tokenID].owner = _owner;
+    
         _setTokenURI(_tokenID, _tokenURI);
     }
     
@@ -85,12 +102,7 @@ contract SmartStaySBTCollection is ERC721URIStorage, Ownable {
      * @param _tokenID ID of the SBT to burn
      */
     function burn(uint256 _tokenID) public onlyOwner {
-        for (uint i; i < tokenOwner[ownerOf(_tokenID)].length; i++) {
-            if (tokenOwner[ownerOf(_tokenID)][i].tokenID == _tokenID) {
-                tokenOwner[ownerOf(_tokenID)][i] = tokenOwner[ownerOf(_tokenID)][tokenOwner[ownerOf(_tokenID)].length - 1];
-                tokenOwner[ownerOf(_tokenID)].pop();
-            }
-        }
+        delete tokenList[_tokenID];
 
         _burn(_tokenID);
     }
