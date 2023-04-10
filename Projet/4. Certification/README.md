@@ -11,19 +11,19 @@ SmartStay can be accessed with the following URL : [SmartStay](https://smart-sta
 SmartStay is available on the following networks :
 
 * Sepolia at these addresses :
-  * [SmartStayRenting](https://sepolia.etherscan.io/address/0xcFaF3116F381d88cF1C1eDd904cd607e2c1a61D1)
-  * [SmartStayBooking](https://sepolia.etherscan.io/address/0x2E3462f9B7Db978c44f3dC306b29d499c94B787D)
-  * [SmartStayMarketplace](https://sepolia.etherscan.io/address/0x48BDaBdEd14169e106e868d24ef4A1d6d4A61758)
+  * [SmartStayRenting](https://sepolia.etherscan.io/address/0x9e9c9499217616e62EaB0e499e1762f04A6740e2)
+  * [SmartStayBooking](https://sepolia.etherscan.io/address/0x505e5c85a0260A60e65cc1A2248D26f78F6143Eb)
+  * [SmartStayMarketplace](https://sepolia.etherscan.io/address/0x139d4ee5C657926a8a40a2Ba769b434e8B9F2fF7)
 * Mumbai at these addresses
-  * [SmartStayRenting](0xf46D3bf64629Fa371b7292D0b0EFAB3A8Fd8CfE4)
-  * [SmartStayBooking](0xF97A169724Df2e1Bb5DC403F0Dcc8CFcF4fb4E9b)
-  * [SmartStayMarketplace](0x3756146f7933a267958D4Da11F250ccbcea106d6)
+  * [SmartStayRenting](https://mumbai.polygonscan.com/address/0x952fc6936A33a3da17187Fc2D1daF6B3C4D0E832)
+  * [SmartStayBooking](https://mumbai.polygonscan.com/address/0xfaf8BA283Daa58c6790f68afEe1730f2210c9a3E)
+  * [SmartStayMarketplace](https://mumbai.polygonscan.com/address/0x6831987102Fde226222A04839E3b45c3E9764f25)
 
 > **_NOTE:_** The contract on Mumbai is deployed in `demoMode`, which means that some checks are bypassed (Creating a booking in the past, and creating a booking for your own rentings)
 
 ## Demo Video
 
-A few short demo video is available [here](https://www.loom.com/share/folder/899738800b6c480abe46e93e1e158869)
+A few short demo video are available [here](https://www.loom.com/share/folder/899738800b6c480abe46e93e1e158869)
 
 ## How to run locally
 
